@@ -1,5 +1,6 @@
 #include <GLFW/glfw3.h>
 #include <brightcpp/internal/vulkan.hpp>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <vulkan/vulkan.hpp>
@@ -117,18 +118,26 @@ static auto create_device(vk::PhysicalDevice phys_device, queue_index_set queue_
     std::vector<const char *> layers = device_layer_required();
     std::vector<const char *> exts = device_extension_required();
 
-    vk::DeviceQueueCreateInfo queueCreateInfo[2];
+    std::vector<vk::DeviceQueueCreateInfo> queueCreateInfo;
     float queuePriorities[1] = {1.0f};
-    queueCreateInfo[0].queueFamilyIndex = queue_indices.graphics_queue;
-    queueCreateInfo[0].queueCount = 1;
-    queueCreateInfo[0].pQueuePriorities = queuePriorities;
-    queueCreateInfo[1].queueFamilyIndex = queue_indices.presentation_queue;
-    queueCreateInfo[1].queueCount = 1;
-    queueCreateInfo[1].pQueuePriorities = queuePriorities;
+
+    queueCreateInfo.push_back(
+        vk::DeviceQueueCreateInfo{}
+            .setQueueFamilyIndex(queue_indices.graphics_queue)
+            .setQueueCount(1)
+            .setPQueuePriorities(queuePriorities));
+
+    if (queue_indices.presentation_queue != queue_indices.graphics_queue) {
+        queueCreateInfo.push_back(
+            vk::DeviceQueueCreateInfo{}
+                .setQueueFamilyIndex(queue_indices.presentation_queue)
+                .setQueueCount(1)
+                .setPQueuePriorities(queuePriorities));
+    }
 
     vk::DeviceCreateInfo create_info;
-    create_info.queueCreateInfoCount = 2;
-    create_info.pQueueCreateInfos = queueCreateInfo;
+    create_info.queueCreateInfoCount = queueCreateInfo.size();
+    create_info.pQueueCreateInfos = queueCreateInfo.data();
     create_info.enabledLayerCount = uint32_t(layers.size());
     create_info.ppEnabledLayerNames = layers.data();
     create_info.enabledExtensionCount = uint32_t(exts.size());
@@ -137,14 +146,75 @@ static auto create_device(vk::PhysicalDevice phys_device, queue_index_set queue_
     return phys_device.createDeviceUnique(create_info);
 }
 
+auto create_tmp_cmd_pool(vk::Device device, const queue_index_set &queue_indices) {
+    vk::CommandPoolCreateInfo create_info;
+    create_info.flags = vk::CommandPoolCreateFlagBits::eTransient | vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+    create_info.queueFamilyIndex = queue_indices.graphics_queue;
+
+    return device.createCommandPoolUnique(create_info);
+}
+
+auto create_draw_cmd_pool(vk::Device device, const queue_index_set &queue_indices) {
+    vk::CommandPoolCreateInfo create_info;
+    create_info.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+    create_info.queueFamilyIndex = queue_indices.graphics_queue;
+
+    return device.createCommandPoolUnique(create_info);
+}
+
+auto create_cmd_buf(vk::Device device, vk::CommandPool pool) {
+    vk::CommandBufferAllocateInfo alloc_info;
+    alloc_info.commandPool = pool;
+    alloc_info.commandBufferCount = 1;
+    alloc_info.level = vk::CommandBufferLevel::ePrimary;
+
+    return device.allocateCommandBuffersUnique(alloc_info);
+}
+
+auto create_render_pass(vk::Device device) {
+    vk::AttachmentDescription attachments[1];
+    attachments[0].format = vk::Format::eR8G8B8A8Unorm;
+    attachments[0].samples = vk::SampleCountFlagBits::e1;
+    attachments[0].loadOp = vk::AttachmentLoadOp::eDontCare;
+    attachments[0].storeOp = vk::AttachmentStoreOp::eStore;
+    attachments[0].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+    attachments[0].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+    attachments[0].initialLayout = vk::ImageLayout::eUndefined;
+    attachments[0].finalLayout = vk::ImageLayout::ePresentSrcKHR;
+
+    vk::AttachmentReference subpass0_attachmentRefs[1];
+    subpass0_attachmentRefs[0].attachment = 0;
+    subpass0_attachmentRefs[0].layout = vk::ImageLayout::eColorAttachmentOptimal;
+
+    vk::SubpassDescription subpasses[1];
+    subpasses[0].pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
+    subpasses[0].colorAttachmentCount = 1;
+    subpasses[0].pColorAttachments = subpass0_attachmentRefs;
+
+    vk::RenderPassCreateInfo renderpassCreateInfo;
+    renderpassCreateInfo.attachmentCount = 1;
+    renderpassCreateInfo.pAttachments = attachments;
+    renderpassCreateInfo.subpassCount = 1;
+    renderpassCreateInfo.pSubpasses = subpasses;
+    renderpassCreateInfo.dependencyCount = 0;
+    renderpassCreateInfo.pDependencies = nullptr;
+
+    return device.createRenderPassUnique(renderpassCreateInfo);
+}
+
 class vulkan_manager : public system_module {
     vk::UniqueInstance instance;
     vk::PhysicalDevice phys_device;
     queue_index_set queue_indices;
     vk::UniqueDevice device;
     vk::Queue graphics_queue, presentation_queue;
-    vk::UniqueCommandPool cmd_pool;
-    vk::UniqueCommandBuffer cmd_buf;
+    vk::UniqueCommandPool tmp_cmd_pool;
+    vk::UniqueCommandPool draw_cmd_pool;
+    std::vector<vk::UniqueCommandBuffer> tmp_cmd_buf;
+    std::vector<vk::UniqueCommandBuffer> draw_cmd_buf;
+    vk::UniqueRenderPass renderpass;
+    vk::UniqueShaderModule vert_shader;
+    vk::UniqueShaderModule frag_shader;
     vk::UniquePipeline pipeline;
     vk::UniqueFramebuffer framebuf;
     std::vector<vk::SurfaceKHR> surface_needed_support;
@@ -156,12 +226,20 @@ class vulkan_manager : public system_module {
           queue_indices{choose_queue(phys_device, {}).value()},
           device{create_device(phys_device, queue_indices)},
           graphics_queue{device->getQueue(queue_indices.graphics_queue, 0)},
-          presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)} {
+          presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
+          tmp_cmd_pool{create_tmp_cmd_pool(device.get(), queue_indices)},
+          tmp_cmd_buf{create_cmd_buf(device.get(), tmp_cmd_pool.get())},
+          draw_cmd_pool{create_tmp_cmd_pool(device.get(), queue_indices)},
+          draw_cmd_buf{create_cmd_buf(device.get(), draw_cmd_pool.get())},
+          renderpass{create_render_pass(device.get())} {
+#ifdef _DEBUG
+        std::cout << "vulkan initialized." << std::endl;
+#endif
     }
 };
 
 std::unique_ptr<system_module> make_vulkan_manager() {
-    return std::make_unique<system_module>();
+    return std::make_unique<vulkan_manager>();
 }
 
 } // namespace internal
