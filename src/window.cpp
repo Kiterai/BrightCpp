@@ -1,44 +1,17 @@
 #include <GLFW/glfw3.h>
+#include <brightcpp/internal/glfw.hpp>
+#include <brightcpp/internal/system.hpp>
 #include <brightcpp/window.hpp>
 #include <stdexcept>
 #include <unordered_set>
-
-#define STRINGIZE(x) STRINGIZE2(x)
-#define STRINGIZE2(x) #x
-#define _LINE STRINGIZE(__LINE__)
-
-#define BRIGHTCPP_GLFW_CHK_ERR(call)                                                                          \
-    {                                                                                                         \
-        call;                                                                                                 \
-        if (const char *buf; glfwGetError(&buf) != GLFW_NO_ERROR) {                                           \
-            throw std::runtime_error("error on " __FILE__ " line " _LINE ", " #call ": " + std::string(buf)); \
-        }                                                                                                     \
-    }
 
 namespace BRIGHTCPP_NAMESPACE {
 
 static size_t initialized_count = 0;
 static std::unordered_set<GLFWwindow *> glfw_windows;
 
-class glfw_initialization_handle {
-  public:
-    glfw_initialization_handle() {
-        if (initialized_count == 0) {
-            BRIGHTCPP_GLFW_CHK_ERR(glfwInit());
-        }
-        initialized_count++;
-    }
-
-    ~glfw_initialization_handle() {
-        initialized_count--;
-        if (initialized_count == 0) {
-            glfwTerminate();
-        }
-    }
-};
-
 class window::_impl {
-    glfw_initialization_handle gih;
+    [[no_unique_address]] internal::system_initializer _sys;
     GLFWwindow *glfw_window;
     settings current_settings;
 
