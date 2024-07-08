@@ -138,7 +138,7 @@ static auto create_device(vk::PhysicalDevice phys_device, queue_index_set queue_
     }
 
     vk::DeviceCreateInfo create_info;
-    create_info.queueCreateInfoCount = queueCreateInfo.size();
+    create_info.queueCreateInfoCount = uint32_t(queueCreateInfo.size());
     create_info.pQueueCreateInfos = queueCreateInfo.data();
     create_info.enabledLayerCount = uint32_t(layers.size());
     create_info.ppEnabledLayerNames = layers.data();
@@ -210,8 +210,8 @@ auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D 
     viewports[0].y = 0.0;
     viewports[0].minDepth = 0.0;
     viewports[0].maxDepth = 1.0;
-    viewports[0].width = extent.width;
-    viewports[0].height = extent.height;
+    viewports[0].width = float(extent.width);
+    viewports[0].height = float(extent.height);
 
     vk::Rect2D scissors[1];
     scissors[0].offset = vk::Offset2D{0, 0};
@@ -377,7 +377,7 @@ auto create_frame_buf(vk::Device device, vk::ImageView image_view, const vk::Ext
     create_info.height = extent.height;
     create_info.layers = 1;
     create_info.renderPass = renderpass;
-    create_info.attachmentCount = frameBufAttachments.size();
+    create_info.attachmentCount = uint32_t(frameBufAttachments.size());
     create_info.pAttachments = frameBufAttachments.begin();
 
     return device.createFramebufferUnique(create_info);
