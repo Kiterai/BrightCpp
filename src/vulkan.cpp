@@ -175,9 +175,9 @@ auto create_cmd_buf(vk::Device device, vk::CommandPool pool) {
     return device.allocateCommandBuffersUnique(alloc_info);
 }
 
-auto create_render_pass(vk::Device device) {
+auto create_render_pass(vk::Device device, vk::Format format) {
     vk::AttachmentDescription attachments[1];
-    attachments[0].format = vk::Format::eR8G8B8A8Unorm;
+    attachments[0].format = format;
     attachments[0].samples = vk::SampleCountFlagBits::e1;
     attachments[0].loadOp = vk::AttachmentLoadOp::eDontCare;
     attachments[0].storeOp = vk::AttachmentStoreOp::eStore;
@@ -447,6 +447,7 @@ class render_target {
     }
 
     const auto &image_views() const { return swapchain_imageviews; }
+    auto format() const { return swapchain.format.format; }
     auto extent() const { return swapchain.extent; }
 };
 
@@ -459,7 +460,7 @@ class render_proc {
 
   public:
     render_proc(vk::Device device, const render_target &rt)
-        : renderpass{create_render_pass(device)},
+        : renderpass{create_render_pass(device, rt.format())},
           vert_shader{create_vert_shader(device)},
           frag_shader{create_frag_shader(device)},
           pipeline{create_pipeline(device, renderpass.get(), rt.extent(), vert_shader.get(), frag_shader.get())},
@@ -508,7 +509,8 @@ std::map<GLFWwindow *, render_target> render_targets;
 render_target *current_render_target;
 
 void create_render_target(GLFWwindow *window) {
-    render_targets.try_emplace(window, g_vulkan_manager->create_render_target_from_glfw_window(window));
+    auto result = render_targets.try_emplace(window, g_vulkan_manager->create_render_target_from_glfw_window(window));
+    g_vulkan_manager->create_render_proc(result.first->second);
 }
 void destroy_render_target(GLFWwindow *window) {
     render_targets.erase(window);
