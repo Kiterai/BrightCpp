@@ -1,7 +1,7 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
-#include <brightcpp/internal/system.hpp>
+#include <brightcpp/common.hpp>
 #include <memory>
 #include <stdexcept>
 

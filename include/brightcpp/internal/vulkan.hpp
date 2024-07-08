@@ -1,6 +1,7 @@
 #pragma once
 
-#include <brightcpp/internal/system.hpp>
+#include <GLFW/glfw3.h>
+#include <brightcpp/common.hpp>
 #include <memory>
 
 namespace BRIGHTCPP_NAMESPACE {
@@ -10,10 +11,9 @@ namespace internal {
 void setup_vulkan_manager();
 void shutdown_vulkan_manager();
 
-class render_target;
-class render_proc;
-
-
+void create_render_target(GLFWwindow *window);
+void destroy_render_target(GLFWwindow *window);
+void set_current_render_target(GLFWwindow *window);
 
 } // namespace internal
 

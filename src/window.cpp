@@ -1,6 +1,7 @@
 #include <GLFW/glfw3.h>
 #include <brightcpp/internal/glfw.hpp>
 #include <brightcpp/internal/system.hpp>
+#include <brightcpp/internal/vulkan.hpp>
 #include <brightcpp/window.hpp>
 #include <stdexcept>
 #include <unordered_set>
@@ -28,8 +29,12 @@ class window::_impl {
         BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API));
         BRIGHTCPP_GLFW_CHK_ERR(glfw_window = glfwCreateWindow(current_settings.size.w, current_settings.size.h, current_settings.title.c_str(), NULL, NULL));
         glfw_windows.insert(glfw_window);
+
+        internal::create_render_target(glfw_window);
+        internal::set_current_render_target(glfw_window);
     }
     ~_impl() {
+        // destroy render target
         glfw_windows.erase(glfw_window);
         glfwDestroyWindow(glfw_window);
     }

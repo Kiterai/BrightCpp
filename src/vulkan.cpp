@@ -441,6 +441,11 @@ class render_target {
           swapchain_images{device.getSwapchainImagesKHR(swapchain.swapchain.get())},
           swapchain_imageviews{create_image_views(device, swapchain_images, swapchain.format.format)} {}
 
+    // for suppress error on create_render_target(GLFWwindow)
+    [[noreturn]] render_target() {
+        throw std::runtime_error("empty render target created");
+    }
+
     const auto &image_views() const { return swapchain_imageviews; }
     auto extent() const { return swapchain.extent; }
 };
@@ -461,7 +466,7 @@ class render_proc {
           framebufs{create_frame_bufs(device, rt.image_views(), rt.extent(), renderpass.get())} {}
 };
 
-class vulkan_manager : public system_module {
+class vulkan_manager {
     vk::UniqueInstance instance;
     vk::PhysicalDevice phys_device;
     queue_index_set queue_indices;
@@ -511,6 +516,19 @@ void shutdown_vulkan_manager() {
     std::cout << "vulkan shutdown..." << std::endl;
 #endif
     g_vulkan_manager.reset();
+}
+
+std::map<GLFWwindow *, render_target> render_targets;
+render_target *current_render_target;
+
+void create_render_target(GLFWwindow *window) {
+    render_targets.try_emplace(window, g_vulkan_manager->create_render_target_from_glfw_window(window));
+}
+void destroy_render_target(GLFWwindow *window) {
+    render_targets.erase(window);
+}
+void set_current_render_target(GLFWwindow *window) {
+    current_render_target = &render_targets[window];
 }
 
 } // namespace internal
