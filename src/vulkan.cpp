@@ -504,20 +504,6 @@ class vulkan_manager {
 };
 
 std::optional<vulkan_manager> g_vulkan_manager;
-
-void setup_vulkan_manager() {
-    g_vulkan_manager.emplace();
-#ifdef _DEBUG
-    std::cout << "vulkan initialized." << std::endl;
-#endif
-}
-void shutdown_vulkan_manager() {
-#ifdef _DEBUG
-    std::cout << "vulkan shutdown..." << std::endl;
-#endif
-    g_vulkan_manager.reset();
-}
-
 std::map<GLFWwindow *, render_target> render_targets;
 render_target *current_render_target;
 
@@ -529,6 +515,20 @@ void destroy_render_target(GLFWwindow *window) {
 }
 void set_current_render_target(GLFWwindow *window) {
     current_render_target = &render_targets[window];
+}
+
+void setup_vulkan_manager() {
+    g_vulkan_manager.emplace();
+#ifdef _DEBUG
+    std::cout << "vulkan initialized." << std::endl;
+#endif
+}
+void shutdown_vulkan_manager() {
+#ifdef _DEBUG
+    std::cout << "vulkan shutdown..." << std::endl;
+#endif
+    render_targets.clear();
+    g_vulkan_manager.reset();
 }
 
 } // namespace internal
