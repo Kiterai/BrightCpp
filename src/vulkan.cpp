@@ -7,6 +7,8 @@
 #include <optional>
 #include <vulkan/vulkan.hpp>
 
+#include <battery/embed.hpp>
+
 namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
@@ -456,6 +458,10 @@ class vulkan_manager : public system_module {
         glfwCreateWindowSurface(instance.get(), window, nullptr, &surface);
 
         return render_target(instance.get(), phys_device, device.get(), surface);
+    }
+
+    auto create_render_proc(const render_target &rt) {
+        return render_proc(device.get(), rt);
     }
 };
 
