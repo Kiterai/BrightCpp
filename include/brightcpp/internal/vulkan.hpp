@@ -7,7 +7,8 @@ namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
-std::unique_ptr<system_module> make_vulkan_manager();
+void setup_vulkan_manager();
+void shutdown_vulkan_manager();
 
 } // namespace internal
 

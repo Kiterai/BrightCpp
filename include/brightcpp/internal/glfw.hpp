@@ -21,8 +21,9 @@ namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
-std::unique_ptr<system_module> make_glfw_initializer();
+void setup_glfw();
+void shutdown_glfw();
 
-}
+} // namespace internal
 
 } // namespace BRIGHTCPP_NAMESPACE

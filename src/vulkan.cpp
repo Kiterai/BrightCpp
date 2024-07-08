@@ -449,11 +449,7 @@ class vulkan_manager : public system_module {
           tmp_cmd_pool{create_tmp_cmd_pool(device.get(), queue_indices)},
           tmp_cmd_buf{create_cmd_buf(device.get(), tmp_cmd_pool.get())},
           draw_cmd_pool{create_tmp_cmd_pool(device.get(), queue_indices)},
-          draw_cmd_buf{create_cmd_buf(device.get(), draw_cmd_pool.get())} {
-#ifdef _DEBUG
-        std::cout << "vulkan initialized." << std::endl;
-#endif
-    }
+          draw_cmd_buf{create_cmd_buf(device.get(), draw_cmd_pool.get())} {}
 
     auto create_render_target_from_glfw_window(GLFWwindow *window) {
         VkSurfaceKHR surface;
@@ -463,8 +459,19 @@ class vulkan_manager : public system_module {
     }
 };
 
-std::unique_ptr<system_module> make_vulkan_manager() {
-    return std::make_unique<vulkan_manager>();
+std::optional<vulkan_manager> g_vulkan_manager;
+
+void setup_vulkan_manager() {
+    g_vulkan_manager.emplace();
+#ifdef _DEBUG
+    std::cout << "vulkan initialized." << std::endl;
+#endif
+}
+void shutdown_vulkan_manager() {
+#ifdef _DEBUG
+    std::cout << "vulkan shutdown..." << std::endl;
+#endif
+    g_vulkan_manager.reset();
 }
 
 } // namespace internal

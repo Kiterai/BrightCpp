@@ -1,22 +1,22 @@
 #include <brightcpp/internal/glfw.hpp>
+#include <iostream>
 
 namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
-class glfw_initialization_handle : public system_module {
-  public:
-    glfw_initialization_handle() {
-        BRIGHTCPP_GLFW_CHK_ERR(glfwInit());
-    }
+void setup_glfw() {
+    BRIGHTCPP_GLFW_CHK_ERR(glfwInit());
+#ifdef _DEBUG
+    std::cout << "GLFW initialized." << std::endl;
+#endif
+}
 
-    ~glfw_initialization_handle() {
-        glfwTerminate();
-    }
-};
-
-std::unique_ptr<system_module> make_glfw_initializer() {
-    return std::make_unique<glfw_initialization_handle>();
+void shutdown_glfw() {
+#ifdef _DEBUG
+    std::cout << "GLFW shutdown..." << std::endl;
+#endif
+    glfwTerminate();
 }
 
 } // namespace internal
