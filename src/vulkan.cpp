@@ -1,6 +1,8 @@
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <brightcpp/internal/vulkan.hpp>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <optional>
 #include <vulkan/vulkan.hpp>
@@ -202,6 +204,228 @@ auto create_render_pass(vk::Device device) {
     return device.createRenderPassUnique(renderpassCreateInfo);
 }
 
+auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D extent) {
+    vk::Viewport viewports[1];
+    viewports[0].x = 0.0;
+    viewports[0].y = 0.0;
+    viewports[0].minDepth = 0.0;
+    viewports[0].maxDepth = 1.0;
+    viewports[0].width = extent.width;
+    viewports[0].height = extent.height;
+
+    vk::Rect2D scissors[1];
+    scissors[0].offset = vk::Offset2D{0, 0};
+    scissors[0].extent = extent;
+
+    vk::PipelineViewportStateCreateInfo viewportState;
+    viewportState.viewportCount = 1;
+    viewportState.pViewports = viewports;
+    viewportState.scissorCount = 1;
+    viewportState.pScissors = scissors;
+
+    vk::PipelineVertexInputStateCreateInfo vertexInputInfo;
+    vertexInputInfo.vertexAttributeDescriptionCount = 0;
+    vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+    vertexInputInfo.vertexBindingDescriptionCount = 0;
+    vertexInputInfo.pVertexBindingDescriptions = nullptr;
+
+    vk::PipelineInputAssemblyStateCreateInfo inputAssembly;
+    inputAssembly.topology = vk::PrimitiveTopology::eTriangleList;
+    inputAssembly.primitiveRestartEnable = false;
+
+    vk::PipelineRasterizationStateCreateInfo rasterizer;
+    rasterizer.depthClampEnable = false;
+    rasterizer.rasterizerDiscardEnable = false;
+    rasterizer.polygonMode = vk::PolygonMode::eFill;
+    rasterizer.lineWidth = 1.0f;
+    rasterizer.cullMode = vk::CullModeFlagBits::eBack;
+    rasterizer.frontFace = vk::FrontFace::eClockwise;
+    rasterizer.depthBiasEnable = false;
+
+    vk::PipelineMultisampleStateCreateInfo multisample;
+    multisample.sampleShadingEnable = false;
+    multisample.rasterizationSamples = vk::SampleCountFlagBits::e1;
+
+    vk::PipelineColorBlendAttachmentState blendattachment[1];
+    blendattachment[0].colorWriteMask =
+        vk::ColorComponentFlagBits::eA |
+        vk::ColorComponentFlagBits::eR |
+        vk::ColorComponentFlagBits::eG |
+        vk::ColorComponentFlagBits::eB;
+    blendattachment[0].blendEnable = false;
+
+    vk::PipelineColorBlendStateCreateInfo blend;
+    blend.logicOpEnable = false;
+    blend.attachmentCount = 1;
+    blend.pAttachments = blendattachment;
+
+    vk::PipelineLayoutCreateInfo layoutCreateInfo;
+    layoutCreateInfo.setLayoutCount = 0;
+    layoutCreateInfo.pSetLayouts = nullptr;
+
+    vk::UniquePipelineLayout pipelineLayout = device.createPipelineLayoutUnique(layoutCreateInfo);
+
+    vk::GraphicsPipelineCreateInfo pipelineCreateInfo;
+    pipelineCreateInfo.pViewportState = &viewportState;
+    pipelineCreateInfo.pVertexInputState = &vertexInputInfo;
+    pipelineCreateInfo.pInputAssemblyState = &inputAssembly;
+    pipelineCreateInfo.pRasterizationState = &rasterizer;
+    pipelineCreateInfo.pMultisampleState = &multisample;
+    pipelineCreateInfo.pColorBlendState = &blend;
+    pipelineCreateInfo.layout = pipelineLayout.get();
+    pipelineCreateInfo.stageCount = 0;
+    pipelineCreateInfo.pStages = nullptr;
+    pipelineCreateInfo.renderPass = renderpass;
+    pipelineCreateInfo.subpass = 0;
+
+    return device.createGraphicsPipelineUnique(nullptr, pipelineCreateInfo).value;
+}
+
+struct SwapchainWithInfo {
+    vk::SurfaceFormatKHR format;
+    vk::Extent2D extent;
+    vk::UniqueSwapchainKHR swapchain;
+};
+
+auto create_swapchain(vk::Device device, vk::PhysicalDevice phys_device, vk::SurfaceKHR surface) {
+    auto surfaceCapabilities = phys_device.getSurfaceCapabilitiesKHR(surface);
+    auto surfaceFormats = phys_device.getSurfaceFormatsKHR(surface);
+    auto surfacePresentModes = phys_device.getSurfacePresentModesKHR(surface);
+
+    stable_sort(surfaceFormats.begin(), surfaceFormats.end(), [&](vk::SurfaceFormatKHR format1, vk::SurfaceFormatKHR format2) {
+        const std::map<std::pair<vk::Format, vk::ColorSpaceKHR>, uint32_t> priority = {
+            {{vk::Format::eB8G8R8A8Srgb, vk::ColorSpaceKHR::eSrgbNonlinear}, 10},
+        };
+
+        const auto it1 = priority.find({format1.format, format1.colorSpace});
+        const auto priority_number1 = it1 == priority.end() ? 0 : it1->second;
+        const auto it2 = priority.find({format2.format, format2.colorSpace});
+        const auto priority_number2 = it2 == priority.end() ? 0 : it2->second;
+
+        return priority_number1 > priority_number2;
+    });
+    stable_sort(surfacePresentModes.begin(), surfacePresentModes.end(), [&](vk::PresentModeKHR mode1, vk::PresentModeKHR mode2) {
+        const std::map<vk::PresentModeKHR, uint32_t> priority = {
+            {vk::PresentModeKHR::eMailbox, 10},
+        };
+
+        const auto it1 = priority.find(mode1);
+        const auto priority_number1 = it1 == priority.end() ? 0 : it1->second;
+        const auto it2 = priority.find(mode2);
+        const auto priority_number2 = it2 == priority.end() ? 0 : it2->second;
+
+        return priority_number1 > priority_number2;
+    });
+
+    vk::SurfaceFormatKHR swapchainFormat = surfaceFormats[0];
+    vk::PresentModeKHR swapchainPresentMode = surfacePresentModes[0];
+
+    vk::SwapchainCreateInfoKHR swapchainCreateInfo;
+    swapchainCreateInfo.surface = surface;
+    swapchainCreateInfo.minImageCount = surfaceCapabilities.minImageCount + 1;
+    swapchainCreateInfo.imageFormat = swapchainFormat.format;
+    swapchainCreateInfo.imageColorSpace = swapchainFormat.colorSpace;
+    swapchainCreateInfo.imageExtent = surfaceCapabilities.currentExtent;
+    swapchainCreateInfo.imageArrayLayers = 1;
+    swapchainCreateInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
+    swapchainCreateInfo.imageSharingMode = vk::SharingMode::eExclusive;
+    swapchainCreateInfo.preTransform = surfaceCapabilities.currentTransform;
+    swapchainCreateInfo.presentMode = swapchainPresentMode;
+    swapchainCreateInfo.clipped = VK_TRUE;
+
+    return SwapchainWithInfo{
+        .format = swapchainFormat,
+        .extent = surfaceCapabilities.currentExtent,
+        .swapchain = device.createSwapchainKHRUnique(swapchainCreateInfo),
+    };
+}
+
+auto create_image_view(vk::Device device, vk::Image image, vk::Format format) {
+    vk::ImageViewCreateInfo create_info;
+    create_info.image = image;
+    create_info.viewType = vk::ImageViewType::e2D;
+    create_info.format = format;
+    create_info.components.r = vk::ComponentSwizzle::eIdentity;
+    create_info.components.g = vk::ComponentSwizzle::eIdentity;
+    create_info.components.b = vk::ComponentSwizzle::eIdentity;
+    create_info.components.a = vk::ComponentSwizzle::eIdentity;
+    create_info.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+    create_info.subresourceRange.baseMipLevel = 0;
+    create_info.subresourceRange.levelCount = 1;
+    create_info.subresourceRange.baseArrayLayer = 0;
+    create_info.subresourceRange.layerCount = 1;
+
+    return device.createImageViewUnique(create_info);
+}
+
+auto create_image_views(vk::Device device, std::span<vk::Image> images, vk::Format format) {
+    std::vector<vk::UniqueImageView> image_views;
+    std::transform(
+        images.begin(), images.end(), std::back_inserter(image_views),
+        [&](vk::Image image) {
+            return create_image_view(device, image, format);
+        });
+
+    return image_views;
+}
+
+auto create_frame_buf(vk::Device device, vk::ImageView image_view, const vk::Extent2D &extent, vk::RenderPass renderpass) {
+    auto frameBufAttachments = {image_view};
+
+    vk::FramebufferCreateInfo create_info;
+    create_info.width = extent.width;
+    create_info.height = extent.height;
+    create_info.layers = 1;
+    create_info.renderPass = renderpass;
+    create_info.attachmentCount = frameBufAttachments.size();
+    create_info.pAttachments = frameBufAttachments.begin();
+
+    return device.createFramebufferUnique(create_info);
+}
+
+auto create_frame_bufs(vk::Device device, std::span<const vk::UniqueImageView> image_views, const vk::Extent2D &extent, vk::RenderPass renderpass) {
+    std::vector<vk::UniqueFramebuffer> frame_bufs;
+    std::transform(
+        image_views.begin(), image_views.end(), std::back_inserter(frame_bufs),
+        [&](const vk::UniqueImageView &image_view) {
+            return create_frame_buf(device, image_view.get(), extent, renderpass);
+        });
+
+    return frame_bufs;
+}
+
+class render_target {
+    vk::UniqueSurfaceKHR surface;
+    SwapchainWithInfo swapchain;
+    std::vector<vk::Image> swapchain_images;
+    std::vector<vk::UniqueImageView> swapchain_imageviews;
+
+  public:
+    // this handles ownership of surface
+    render_target(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, vk::SurfaceKHR surface)
+        : surface{surface, instance},
+          swapchain{create_swapchain(device, phys_device, surface)},
+          swapchain_images{device.getSwapchainImagesKHR(swapchain.swapchain.get())},
+          swapchain_imageviews{create_image_views(device, swapchain_images, swapchain.format.format)} {}
+
+    const auto &image_views() const { return swapchain_imageviews; }
+    auto extent() const { return swapchain.extent; }
+};
+
+class render_proc {
+    vk::UniqueRenderPass renderpass;
+    vk::UniqueShaderModule vert_shader;
+    vk::UniqueShaderModule frag_shader;
+    vk::UniquePipeline pipeline;
+    std::vector<vk::UniqueFramebuffer> framebufs;
+
+  public:
+    render_proc(vk::Device device, const render_target &rt)
+        : renderpass{create_render_pass(device)},
+          pipeline{create_pipeline(device, renderpass.get(), rt.extent())},
+          framebufs{create_frame_bufs(device, rt.image_views(), rt.extent(), renderpass.get())} {}
+};
+
 class vulkan_manager : public system_module {
     vk::UniqueInstance instance;
     vk::PhysicalDevice phys_device;
@@ -212,11 +436,6 @@ class vulkan_manager : public system_module {
     vk::UniqueCommandPool draw_cmd_pool;
     std::vector<vk::UniqueCommandBuffer> tmp_cmd_buf;
     std::vector<vk::UniqueCommandBuffer> draw_cmd_buf;
-    vk::UniqueRenderPass renderpass;
-    vk::UniqueShaderModule vert_shader;
-    vk::UniqueShaderModule frag_shader;
-    vk::UniquePipeline pipeline;
-    vk::UniqueFramebuffer framebuf;
     std::vector<vk::SurfaceKHR> surface_needed_support;
 
   public:
@@ -230,11 +449,17 @@ class vulkan_manager : public system_module {
           tmp_cmd_pool{create_tmp_cmd_pool(device.get(), queue_indices)},
           tmp_cmd_buf{create_cmd_buf(device.get(), tmp_cmd_pool.get())},
           draw_cmd_pool{create_tmp_cmd_pool(device.get(), queue_indices)},
-          draw_cmd_buf{create_cmd_buf(device.get(), draw_cmd_pool.get())},
-          renderpass{create_render_pass(device.get())} {
+          draw_cmd_buf{create_cmd_buf(device.get(), draw_cmd_pool.get())} {
 #ifdef _DEBUG
         std::cout << "vulkan initialized." << std::endl;
 #endif
+    }
+
+    auto create_render_target_from_glfw_window(GLFWwindow *window) {
+        VkSurfaceKHR surface;
+        glfwCreateWindowSurface(instance.get(), window, nullptr, &surface);
+
+        return render_target(instance.get(), phys_device, device.get(), surface);
     }
 };
 
