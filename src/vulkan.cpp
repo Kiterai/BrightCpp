@@ -206,7 +206,27 @@ auto create_render_pass(vk::Device device) {
     return device.createRenderPassUnique(renderpassCreateInfo);
 }
 
-auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D extent) {
+auto create_vert_shader(vk::Device device) {
+    const auto data = b::embed<"shaders/shader.vert.spv">();
+
+    vk::ShaderModuleCreateInfo create_info;
+    create_info.codeSize = data.size();
+    create_info.pCode = reinterpret_cast<const uint32_t *>(data.data());
+
+    return device.createShaderModuleUnique(create_info);
+}
+
+auto create_frag_shader(vk::Device device) {
+    const auto data = b::embed<"shaders/shader.frag.spv">();
+
+    vk::ShaderModuleCreateInfo create_info;
+    create_info.codeSize = data.size();
+    create_info.pCode = reinterpret_cast<const uint32_t *>(data.data());
+
+    return device.createShaderModuleUnique(create_info);
+}
+
+auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D extent, vk::ShaderModule vert_shader, vk::ShaderModule frag_shader) {
     vk::Viewport viewports[1];
     viewports[0].x = 0.0;
     viewports[0].y = 0.0;
@@ -267,6 +287,17 @@ auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D 
 
     vk::UniquePipelineLayout pipelineLayout = device.createPipelineLayoutUnique(layoutCreateInfo);
 
+    auto shader_stages = {
+        vk::PipelineShaderStageCreateInfo{}
+            .setStage(vk::ShaderStageFlagBits::eVertex)
+            .setModule(vert_shader)
+            .setPName("main"),
+        vk::PipelineShaderStageCreateInfo{}
+            .setStage(vk::ShaderStageFlagBits::eFragment)
+            .setModule(frag_shader)
+            .setPName("main"),
+    };
+
     vk::GraphicsPipelineCreateInfo pipelineCreateInfo;
     pipelineCreateInfo.pViewportState = &viewportState;
     pipelineCreateInfo.pVertexInputState = &vertexInputInfo;
@@ -275,8 +306,8 @@ auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D 
     pipelineCreateInfo.pMultisampleState = &multisample;
     pipelineCreateInfo.pColorBlendState = &blend;
     pipelineCreateInfo.layout = pipelineLayout.get();
-    pipelineCreateInfo.stageCount = 0;
-    pipelineCreateInfo.pStages = nullptr;
+    pipelineCreateInfo.stageCount = uint32_t(shader_stages.size());
+    pipelineCreateInfo.pStages = shader_stages.begin();
     pipelineCreateInfo.renderPass = renderpass;
     pipelineCreateInfo.subpass = 0;
 
@@ -424,7 +455,9 @@ class render_proc {
   public:
     render_proc(vk::Device device, const render_target &rt)
         : renderpass{create_render_pass(device)},
-          pipeline{create_pipeline(device, renderpass.get(), rt.extent())},
+          vert_shader{create_vert_shader(device)},
+          frag_shader{create_frag_shader(device)},
+          pipeline{create_pipeline(device, renderpass.get(), rt.extent(), vert_shader.get(), frag_shader.get())},
           framebufs{create_frame_bufs(device, rt.image_views(), rt.extent(), renderpass.get())} {}
 };
 
