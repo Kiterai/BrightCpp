@@ -506,13 +506,18 @@ class vulkan_manager {
 
 std::optional<vulkan_manager> g_vulkan_manager;
 std::map<GLFWwindow *, render_target> render_targets;
+std::map<GLFWwindow *, render_proc> render_procs;
 render_target *current_render_target;
 
 void create_render_target(GLFWwindow *window) {
     auto result = render_targets.try_emplace(window, g_vulkan_manager->create_render_target_from_glfw_window(window));
-    g_vulkan_manager->create_render_proc(result.first->second);
+
+    render_procs.emplace(
+        window,
+        g_vulkan_manager->create_render_proc(result.first->second));
 }
 void destroy_render_target(GLFWwindow *window) {
+    render_procs.erase(window);
     render_targets.erase(window);
 }
 void set_current_render_target(GLFWwindow *window) {
@@ -529,6 +534,7 @@ void shutdown_vulkan_manager() {
 #ifdef _DEBUG
     std::cout << "vulkan shutdown..." << std::endl;
 #endif
+    render_procs.clear();
     render_targets.clear();
     g_vulkan_manager.reset();
 }
