@@ -1,11 +1,18 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
+#include <brightcpp/internal/linear_algebra.hpp>
 #include <brightcpp/internal/vulkan/render_target.hpp>
 
 namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
+
+struct render_rect_info {
+    vec2 pos, size, apos, clip_pos, clip_size;
+    vec4 color;
+    float theta;
+};
 
 class render_proc {
     vk::Device device;
@@ -29,7 +36,7 @@ class render_proc {
 
     void render_begin(const render_target &rt);
     void render_end(const render_target &rt);
-    void draw_rect(const render_target &rt, float x, float y, float w, float h, float theta, float ax, float ay);
+    void draw_rect(const render_target &rt, render_rect_info rect_info);
 };
 
 } // namespace internal

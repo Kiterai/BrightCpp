@@ -14,6 +14,7 @@ struct shader_pushconstant {
     vec2 screen_size;
     vec2 tex_clip_pos;
     vec2 tex_clip_size;
+    vec4 color;
 };
 
 static auto create_draw_cmd_pool(vk::Device device, const queue_index_set &queue_indices) {
@@ -249,12 +250,19 @@ void render_proc::render_end(const render_target &rt) {
     rt.present(presentation_queue, current_img_index, std::array{rendered_semaphore});
 }
 
-void render_proc::draw_rect(const render_target &rt, float x, float y, float w, float h, float theta, float ax, float ay) {
+void render_proc::draw_rect(const render_target &rt, render_rect_info rect_info) {
     const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
 
     const auto
-        cos_th = cosf(theta),
-        sin_th = sinf(theta);
+        cos_th = cosf(rect_info.theta),
+        sin_th = sinf(rect_info.theta);
+
+    const auto ax = rect_info.apos.v[0];
+    const auto ay = rect_info.apos.v[1];
+    const auto w = rect_info.size.v[0];
+    const auto h = rect_info.size.v[1];
+    const auto x = rect_info.pos.v[0];
+    const auto y = rect_info.pos.v[1];
 
     mat3 pivot_mat{.m{
         {1.0f, 0.0f, -ax},
@@ -282,6 +290,7 @@ void render_proc::draw_rect(const render_target &rt, float x, float y, float w, 
         .screen_size{
             .v{float(rt.extent().width), float(rt.extent().height)},
         },
+        .color{rect_info.color},
     };
     cmd_buf.pushConstants<shader_pushconstant>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {data});
     cmd_buf.draw(4, 1, 0, 0);

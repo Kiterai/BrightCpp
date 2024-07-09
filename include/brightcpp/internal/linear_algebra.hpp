@@ -9,7 +9,7 @@ struct alignas(16) vec3 {
 };
 
 struct alignas(16) vec4 {
-    float v[3];
+    float v[4];
 };
 
 struct alignas(16) mat3 {
