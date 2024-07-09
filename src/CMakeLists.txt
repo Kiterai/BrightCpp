@@ -14,7 +14,11 @@ add_library(
     window.cpp
     system.cpp
     glfw.cpp
+
     vulkan.cpp
+    vulkan/common.cpp
+    vulkan/render_target.cpp
+    vulkan/render_proc.cpp
 )
 target_include_directories(brightcpp PUBLIC ../include)
 b_embed(brightcpp shaders/shader.vert.spv)
