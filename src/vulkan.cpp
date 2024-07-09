@@ -616,6 +616,9 @@ class vulkan_manager {
           presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
           tmp_cmd_pool{create_tmp_cmd_pool(device.get(), queue_indices)},
           tmp_cmd_buf{create_cmd_bufs(device.get(), tmp_cmd_pool.get(), 1)} {}
+    ~vulkan_manager() {
+        wait_idle();
+    }
 
     auto create_render_target_from_glfw_window(GLFWwindow *window) {
         VkSurfaceKHR surface;
@@ -626,6 +629,11 @@ class vulkan_manager {
 
     auto create_render_proc(const render_target &rt) {
         return render_proc(device.get(), rt, queue_indices);
+    }
+
+    void wait_idle() {
+        presentation_queue.waitIdle();
+        graphics_queue.waitIdle();
     }
 };
 
@@ -679,6 +687,7 @@ void shutdown_vulkan_manager() {
 #ifdef _DEBUG
     std::cout << "vulkan shutdown..." << std::endl;
 #endif
+    g_vulkan_manager->wait_idle();
     render_procs.clear();
     render_targets.clear();
     g_vulkan_manager.reset();
