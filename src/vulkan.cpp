@@ -435,6 +435,14 @@ auto create_fence(vk::Device device, bool signaled) {
     return device.createFenceUnique(create_info);
 }
 
+auto create_fences(vk::Device device, bool signaled, uint32_t num) {
+    std::vector<vk::UniqueFence> fences;
+
+    for (uint32_t i = 0; i < num; i++)
+        fences.push_back(create_fence(device, signaled));
+    return fences;
+}
+
 auto create_semaphore(vk::Device device) {
     vk::SemaphoreCreateInfo create_info;
     return device.createSemaphoreUnique(create_info);
@@ -517,6 +525,7 @@ class render_proc {
     vk::Queue graphics_queue;
     std::vector<vk::UniqueSemaphore> rendered_semaphores;
     vk::Queue presentation_queue;
+    std::vector<vk::UniqueFence> rendered_fences;
     uint32_t current_img_index;
 
   public:
@@ -531,11 +540,18 @@ class render_proc {
           draw_cmd_buf{create_cmd_bufs(device, draw_cmd_pool.get(), uint32_t(framebufs.size()))},
           graphics_queue{device.getQueue(queue_indices.graphics_queue, 0)},
           rendered_semaphores{create_semaphores(device, uint32_t(framebufs.size()))},
-          presentation_queue{device.getQueue(queue_indices.presentation_queue, 0)} {}
+          presentation_queue{device.getQueue(queue_indices.presentation_queue, 0)},
+          rendered_fences{create_fences(device, true, uint32_t(framebufs.size()))} {}
 
-    void render_begin(vk::Device device, const render_target &rt) {
+    void render_begin(const render_target &rt) {
         current_img_index = rt.acquire_frame(device);
         const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
+        const auto &fence = rendered_fences[current_img_index].get();
+
+        device.waitForFences({fence}, VK_TRUE, UINT64_MAX);
+
+        cmd_buf.reset();
+        device.resetFences({fence});
 
         vk::CommandBufferBeginInfo cmdBeginInfo;
         cmd_buf.begin(cmdBeginInfo);
@@ -551,6 +567,7 @@ class render_proc {
     }
     void render_end(const render_target &rt) {
         const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
+        const auto &rendered_semaphore = rendered_semaphores[current_img_index].get();
 
         cmd_buf.endRenderPass();
         cmd_buf.end();
@@ -562,16 +579,20 @@ class render_proc {
             submitInfo.commandBufferCount = uint32_t(submit_cmd_buf.size());
             submitInfo.pCommandBuffers = submit_cmd_buf.begin();
 
+            auto render_signal_semaphores = {rendered_semaphore};
+            submitInfo.signalSemaphoreCount = uint32_t(render_signal_semaphores.size());
+            submitInfo.pSignalSemaphores = render_signal_semaphores.begin();
+
             vk::Semaphore renderwaitSemaphores[] = {rt.image_prepared_semaphore()};
             vk::PipelineStageFlags renderwaitStages[] = {vk::PipelineStageFlagBits::eColorAttachmentOutput};
             submitInfo.waitSemaphoreCount = 1;
             submitInfo.pWaitSemaphores = renderwaitSemaphores;
             submitInfo.pWaitDstStageMask = renderwaitStages;
 
-            graphics_queue.submit({submitInfo});
+            graphics_queue.submit({submitInfo}, rendered_fences[current_img_index].get());
         }
 
-        rt.present(presentation_queue, current_img_index, std::array{rendered_semaphores[current_img_index].get()});
+        rt.present(presentation_queue, current_img_index, std::array{rendered_semaphore});
     }
 };
 
@@ -610,22 +631,42 @@ class vulkan_manager {
 
 std::optional<vulkan_manager> g_vulkan_manager;
 std::map<GLFWwindow *, render_target> render_targets;
-std::map<GLFWwindow *, render_proc> render_procs;
-render_target *current_render_target;
+std::map<render_target *, render_proc> render_procs;
+render_target *current_render_target = nullptr;
 
 void create_render_target(GLFWwindow *window) {
-    auto result = render_targets.try_emplace(window, g_vulkan_manager->create_render_target_from_glfw_window(window));
+    auto [elem, result] = render_targets.try_emplace(window, g_vulkan_manager->create_render_target_from_glfw_window(window));
 
     render_procs.emplace(
-        window,
-        g_vulkan_manager->create_render_proc(result.first->second));
+        &elem->second,
+        g_vulkan_manager->create_render_proc(elem->second));
 }
 void destroy_render_target(GLFWwindow *window) {
-    render_procs.erase(window);
+    const auto it = render_procs.find(current_render_target);
+    it->second.render_end(*current_render_target);
+
+    render_procs.erase(it->first);
     render_targets.erase(window);
 }
 void set_current_render_target(GLFWwindow *window) {
+    if (current_render_target) {
+        const auto it = render_procs.find(current_render_target);
+        it->second.render_end(*current_render_target);
+    }
+
     current_render_target = &render_targets[window];
+
+    if (current_render_target) {
+        const auto it = render_procs.find(current_render_target);
+        it->second.render_begin(*current_render_target);
+    }
+}
+void apply_render() {
+    if (current_render_target) {
+        const auto it = render_procs.find(current_render_target);
+        it->second.render_end(*current_render_target);
+        it->second.render_begin(*current_render_target);
+    }
 }
 
 void setup_vulkan_manager() {

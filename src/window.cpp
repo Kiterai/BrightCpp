@@ -107,6 +107,7 @@ void window::on_maximized(std::function<void()> &cb) { pimpl->on_maximized(cb); 
 void window::on_close(std::function<void()> &cb) { pimpl->on_close(cb); }
 
 bool frame_update() {
+    internal::apply_render();
     for (const auto glfw_window : glfw_windows) {
         glfwSwapBuffers(glfw_window);
     }
