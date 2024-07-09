@@ -28,7 +28,7 @@ static auto create_render_pass(vk::Device device, vk::Format format) {
     vk::AttachmentDescription attachments[1];
     attachments[0].format = format;
     attachments[0].samples = vk::SampleCountFlagBits::e1;
-    attachments[0].loadOp = vk::AttachmentLoadOp::eDontCare;
+    attachments[0].loadOp = vk::AttachmentLoadOp::eClear;
     attachments[0].storeOp = vk::AttachmentStoreOp::eStore;
     attachments[0].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
     attachments[0].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
@@ -206,8 +206,14 @@ void render_proc::render_begin(const render_target &rt) {
     renderpassBeginInfo.renderPass = renderpass.get();
     renderpassBeginInfo.framebuffer = framebufs[current_img_index].get();
     renderpassBeginInfo.renderArea = vk::Rect2D({0, 0}, rt.extent());
-    renderpassBeginInfo.clearValueCount = 0;
-    renderpassBeginInfo.pClearValues = nullptr;
+
+    auto clearVal = {
+        vk::ClearValue{}
+            .setColor(vk::ClearColorValue({0.0f, 0.0f, 0.0f, 1.0f})),
+    };
+
+    renderpassBeginInfo.clearValueCount = clearVal.size();
+    renderpassBeginInfo.pClearValues = clearVal.begin();
 
     cmd_buf.beginRenderPass(renderpassBeginInfo, vk::SubpassContents::eInline);
 
