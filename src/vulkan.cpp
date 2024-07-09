@@ -252,7 +252,7 @@ auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D 
     vertexInputInfo.pVertexBindingDescriptions = nullptr;
 
     vk::PipelineInputAssemblyStateCreateInfo inputAssembly;
-    inputAssembly.topology = vk::PrimitiveTopology::eTriangleList;
+    inputAssembly.topology = vk::PrimitiveTopology::eTriangleStrip;
     inputAssembly.primitiveRestartEnable = false;
 
     vk::PipelineRasterizationStateCreateInfo rasterizer;
@@ -564,6 +564,9 @@ class render_proc {
         renderpassBeginInfo.pClearValues = nullptr;
 
         cmd_buf.beginRenderPass(renderpassBeginInfo, vk::SubpassContents::eInline);
+
+        cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get());
+        cmd_buf.draw(4, 1, 0, 0);
     }
     void render_end(const render_target &rt) {
         const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
