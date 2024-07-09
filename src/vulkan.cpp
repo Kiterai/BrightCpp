@@ -226,7 +226,60 @@ auto create_frag_shader(vk::Device device) {
     return device.createShaderModuleUnique(create_info);
 }
 
-auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D extent, vk::ShaderModule vert_shader, vk::ShaderModule frag_shader) {
+struct alignas(8) vec2 {
+    float v[2];
+};
+
+struct alignas(16) vec3 {
+    float v[3];
+};
+
+struct alignas(16) vec4 {
+    float v[3];
+};
+
+struct alignas(16) mat3 {
+    vec3 m[3];
+};
+
+constexpr mat3 operator*(mat3 a, mat3 b) {
+    mat3 m{};
+    for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 3; j++)
+            for (int k = 0; k < 3; k++)
+                m.m[i].v[j] += a.m[i].v[k] * b.m[k].v[j];
+    return m;
+}
+
+struct alignas(16) mat4 {
+    vec4 m[4];
+};
+
+struct shader_pushconstant {
+    mat3 draw_matrix;
+    vec2 screen_size;
+    vec2 tex_clip_pos;
+    vec2 tex_clip_size;
+};
+
+auto create_pipeline_layout(vk::Device device) {
+    auto pushConstantRanges = {
+        vk::PushConstantRange{}
+            .setOffset(0)
+            .setSize(sizeof(shader_pushconstant))
+            .setStageFlags(vk::ShaderStageFlagBits::eVertex),
+    };
+
+    vk::PipelineLayoutCreateInfo layoutCreateInfo;
+    layoutCreateInfo.setLayoutCount = 0;
+    layoutCreateInfo.pSetLayouts = nullptr;
+    layoutCreateInfo.pPushConstantRanges = pushConstantRanges.begin();
+    layoutCreateInfo.pushConstantRangeCount = uint32_t(pushConstantRanges.size());
+
+    return device.createPipelineLayoutUnique(layoutCreateInfo);
+}
+
+auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D extent, vk::PipelineLayout pipeline_layout, vk::ShaderModule vert_shader, vk::ShaderModule frag_shader) {
     vk::Viewport viewports[1];
     viewports[0].x = 0.0;
     viewports[0].y = 0.0;
@@ -281,12 +334,6 @@ auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D 
     blend.attachmentCount = 1;
     blend.pAttachments = blendattachment;
 
-    vk::PipelineLayoutCreateInfo layoutCreateInfo;
-    layoutCreateInfo.setLayoutCount = 0;
-    layoutCreateInfo.pSetLayouts = nullptr;
-
-    vk::UniquePipelineLayout pipelineLayout = device.createPipelineLayoutUnique(layoutCreateInfo);
-
     auto shader_stages = {
         vk::PipelineShaderStageCreateInfo{}
             .setStage(vk::ShaderStageFlagBits::eVertex)
@@ -305,7 +352,7 @@ auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D 
     pipelineCreateInfo.pRasterizationState = &rasterizer;
     pipelineCreateInfo.pMultisampleState = &multisample;
     pipelineCreateInfo.pColorBlendState = &blend;
-    pipelineCreateInfo.layout = pipelineLayout.get();
+    pipelineCreateInfo.layout = pipeline_layout;
     pipelineCreateInfo.stageCount = uint32_t(shader_stages.size());
     pipelineCreateInfo.pStages = shader_stages.begin();
     pipelineCreateInfo.renderPass = renderpass;
@@ -517,6 +564,7 @@ class render_proc {
     vk::UniqueRenderPass renderpass;
     vk::UniqueShaderModule vert_shader;
     vk::UniqueShaderModule frag_shader;
+    vk::UniquePipelineLayout pipeline_layout;
     vk::UniquePipeline pipeline;
     std::vector<vk::UniqueFramebuffer> framebufs;
     vk::UniqueCommandPool draw_cmd_pool;
@@ -534,7 +582,8 @@ class render_proc {
           renderpass{create_render_pass(device, rt.format())},
           vert_shader{create_vert_shader(device)},
           frag_shader{create_frag_shader(device)},
-          pipeline{create_pipeline(device, renderpass.get(), rt.extent(), vert_shader.get(), frag_shader.get())},
+          pipeline_layout{create_pipeline_layout(device)},
+          pipeline{create_pipeline(device, renderpass.get(), rt.extent(), pipeline_layout.get(), vert_shader.get(), frag_shader.get())},
           framebufs{create_frame_bufs(device, rt.image_views(), rt.extent(), renderpass.get())},
           draw_cmd_pool{create_draw_cmd_pool(device, queue_indices)},
           draw_cmd_buf{create_cmd_bufs(device, draw_cmd_pool.get(), uint32_t(framebufs.size()))},
@@ -566,7 +615,6 @@ class render_proc {
         cmd_buf.beginRenderPass(renderpassBeginInfo, vk::SubpassContents::eInline);
 
         cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get());
-        cmd_buf.draw(4, 1, 0, 0);
     }
     void render_end(const render_target &rt) {
         const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
@@ -596,6 +644,44 @@ class render_proc {
         }
 
         rt.present(presentation_queue, current_img_index, std::array{rendered_semaphore});
+    }
+
+    void draw_rect(const render_target &rt, float x, float y, float w, float h, float theta, float ax, float ay) {
+        const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
+
+        const auto
+            cos_th = cosf(theta),
+            sin_th = sinf(theta);
+
+        mat3 pivot_mat{.m{
+            {1.0f, 0.0f, -ax},
+            {0.0f, 1.0f, -ay},
+            {0.0f, 0.0f, 1.0f},
+        }};
+        mat3 scale_mat{.m{
+            {w, 0.0f, 0.0f},
+            {0.0f, h, 0.0f},
+            {0.0f, 0.0f, 1.0f},
+        }};
+        mat3 rotate_mat{.m{
+            {cos_th, -sin_th, 0.0f},
+            {sin_th, cos_th, 0.0f},
+            {0.0f, 0.0f, 1.0f},
+        }};
+        mat3 move_mat{.m{
+            {1.0f, 0.0f, x},
+            {0.0f, 1.0f, y},
+            {0.0f, 0.0f, 1.0f},
+        }};
+
+        const shader_pushconstant data{
+            .draw_matrix{move_mat * rotate_mat * scale_mat * pivot_mat},
+            .screen_size{
+                .v{float(rt.extent().width), float(rt.extent().height)},
+            },
+        };
+        cmd_buf.pushConstants<shader_pushconstant>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {data});
+        cmd_buf.draw(4, 1, 0, 0);
     }
 };
 
