@@ -1,6 +1,11 @@
 #pragma once
 
+#include <brightcpp/common.hpp>
 #include <brightcpp/internal/vulkan/render_target.hpp>
+
+namespace BRIGHTCPP_NAMESPACE {
+
+namespace internal {
 
 vk::UniqueRenderPass create_render_pass(vk::Device device, vk::Format format);
 vk::UniqueShaderModule create_vert_shader(vk::Device device);
@@ -33,3 +38,7 @@ class render_proc {
     void render_end(const render_target &rt);
     void draw_rect(const render_target &rt, float x, float y, float w, float h, float theta, float ax, float ay);
 };
+
+} // namespace internal
+
+} // namespace BRIGHTCPP_NAMESPACE

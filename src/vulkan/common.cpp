@@ -1,5 +1,9 @@
 #include <brightcpp/internal/vulkan/common.hpp>
 
+namespace BRIGHTCPP_NAMESPACE {
+
+namespace internal {
+
 std::vector<vk::UniqueCommandBuffer> create_cmd_bufs(vk::Device device, vk::CommandPool pool, uint32_t num) {
     vk::CommandBufferAllocateInfo alloc_info;
     alloc_info.commandPool = pool;
@@ -145,3 +149,7 @@ std::vector<vk::UniqueSemaphore> create_semaphores(vk::Device device, uint32_t n
         semaphores.push_back(device.createSemaphoreUnique(create_info));
     return semaphores;
 }
+
+} // namespace internal
+
+} // namespace BRIGHTCPP_NAMESPACE

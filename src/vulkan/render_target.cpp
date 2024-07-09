@@ -1,5 +1,9 @@
 #include <brightcpp/internal/vulkan/render_target.hpp>
 
+namespace BRIGHTCPP_NAMESPACE {
+
+namespace internal {
+
 render_target::render_target(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, vk::SurfaceKHR surface)
     : surface{surface, instance},
       swapchain{create_swapchain(device, phys_device, surface)},
@@ -36,3 +40,7 @@ void render_target::present(vk::Queue presentation_queue, uint32_t img_index, st
         throw std::runtime_error("error occured on presentKHR(): " + vk::to_string(result));
     }
 }
+
+} // namespace internal
+
+} // namespace BRIGHTCPP_NAMESPACE

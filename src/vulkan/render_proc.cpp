@@ -5,6 +5,10 @@
 
 #include <battery/embed.hpp>
 
+namespace BRIGHTCPP_NAMESPACE {
+
+namespace internal {
+
 struct shader_pushconstant {
     mat3 draw_matrix;
     vec2 screen_size;
@@ -276,3 +280,7 @@ void render_proc::draw_rect(const render_target &rt, float x, float y, float w, 
     cmd_buf.pushConstants<shader_pushconstant>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {data});
     cmd_buf.draw(4, 1, 0, 0);
 }
+
+} // namespace internal
+
+} // namespace BRIGHTCPP_NAMESPACE

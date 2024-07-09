@@ -1,6 +1,11 @@
 #pragma once
 
+#include <brightcpp/common.hpp>
 #include <brightcpp/internal/vulkan/common.hpp>
+
+namespace BRIGHTCPP_NAMESPACE {
+
+namespace internal {
 
 class render_target {
     vk::UniqueSurfaceKHR surface;
@@ -24,3 +29,7 @@ class render_target {
     uint32_t acquire_frame(vk::Device device) const;
     void present(vk::Queue presentation_queue, uint32_t img_index, std::span<const vk::Semaphore> wait_semaphore) const;
 };
+
+} // namespace internal
+
+} // namespace BRIGHTCPP_NAMESPACE
