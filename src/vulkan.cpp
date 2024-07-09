@@ -166,10 +166,10 @@ auto create_draw_cmd_pool(vk::Device device, const queue_index_set &queue_indice
     return device.createCommandPoolUnique(create_info);
 }
 
-auto create_cmd_buf(vk::Device device, vk::CommandPool pool) {
+auto create_cmd_bufs(vk::Device device, vk::CommandPool pool, uint32_t num) {
     vk::CommandBufferAllocateInfo alloc_info;
     alloc_info.commandPool = pool;
-    alloc_info.commandBufferCount = 1;
+    alloc_info.commandBufferCount = num;
     alloc_info.level = vk::CommandBufferLevel::ePrimary;
 
     return device.allocateCommandBuffersUnique(alloc_info);
@@ -391,7 +391,7 @@ auto create_image_view(vk::Device device, vk::Image image, vk::Format format) {
     return device.createImageViewUnique(create_info);
 }
 
-auto create_image_views(vk::Device device, std::span<vk::Image> images, vk::Format format) {
+auto create_image_views(vk::Device device, std::span<const vk::Image> images, vk::Format format) {
     std::vector<vk::UniqueImageView> image_views;
     std::transform(
         images.begin(), images.end(), std::back_inserter(image_views),
@@ -427,11 +427,34 @@ auto create_frame_bufs(vk::Device device, std::span<const vk::UniqueImageView> i
     return frame_bufs;
 }
 
+auto create_fence(vk::Device device, bool signaled) {
+    vk::FenceCreateInfo create_info;
+    if (signaled)
+        create_info.flags = vk::FenceCreateFlagBits::eSignaled;
+
+    return device.createFenceUnique(create_info);
+}
+
+auto create_semaphore(vk::Device device) {
+    vk::SemaphoreCreateInfo create_info;
+    return device.createSemaphoreUnique(create_info);
+}
+
+auto create_semaphores(vk::Device device, uint32_t num) {
+    std::vector<vk::UniqueSemaphore> semaphores;
+
+    vk::SemaphoreCreateInfo create_info;
+    for (uint32_t i = 0; i < num; i++)
+        semaphores.push_back(device.createSemaphoreUnique(create_info));
+    return semaphores;
+}
+
 class render_target {
     vk::UniqueSurfaceKHR surface;
     SwapchainWithInfo swapchain;
     std::vector<vk::Image> swapchain_images;
     std::vector<vk::UniqueImageView> swapchain_imageviews;
+    vk::UniqueSemaphore image_acquire_semaphore;
 
   public:
     // this handles ownership of surface
@@ -439,7 +462,8 @@ class render_target {
         : surface{surface, instance},
           swapchain{create_swapchain(device, phys_device, surface)},
           swapchain_images{device.getSwapchainImagesKHR(swapchain.swapchain.get())},
-          swapchain_imageviews{create_image_views(device, swapchain_images, swapchain.format.format)} {}
+          swapchain_imageviews{create_image_views(device, swapchain_images, swapchain.format.format)},
+          image_acquire_semaphore{create_semaphore(device)} {}
 
     // for suppress error on create_render_target(GLFWwindow)
     [[noreturn]] render_target() {
@@ -449,22 +473,106 @@ class render_target {
     const auto &image_views() const { return swapchain_imageviews; }
     auto format() const { return swapchain.format.format; }
     auto extent() const { return swapchain.extent; }
+
+    uint32_t acquire_frame(vk::Device device) const {
+        vk::ResultValue result = device.acquireNextImageKHR(swapchain.swapchain.get(), 1'000'000'000, image_acquire_semaphore.get(), {});
+        if (result.result != vk::Result::eSuccess) {
+            throw std::runtime_error("error occured on acquireNextImageKHR(): " + vk::to_string(result.result));
+        }
+        return result.value;
+    }
+    auto image_prepared_semaphore() const {
+        return image_acquire_semaphore.get();
+    }
+    void present(vk::Queue presentation_queue, uint32_t img_index, std::span<const vk::Semaphore> wait_semaphore) const {
+        vk::PresentInfoKHR presentInfo;
+
+        auto presentSwapchains = {swapchain.swapchain.get()};
+        auto imgIndices = {img_index};
+
+        presentInfo.swapchainCount = uint32_t(presentSwapchains.size());
+        presentInfo.pSwapchains = presentSwapchains.begin();
+        presentInfo.pImageIndices = imgIndices.begin();
+
+        presentInfo.waitSemaphoreCount = uint32_t(wait_semaphore.size());
+        presentInfo.pWaitSemaphores = wait_semaphore.data();
+
+        auto result = presentation_queue.presentKHR(presentInfo);
+        if (result != vk::Result::eSuccess) {
+            throw std::runtime_error("error occured on presentKHR(): " + vk::to_string(result));
+        }
+    }
 };
 
 class render_proc {
+    vk::Device device;
     vk::UniqueRenderPass renderpass;
     vk::UniqueShaderModule vert_shader;
     vk::UniqueShaderModule frag_shader;
     vk::UniquePipeline pipeline;
     std::vector<vk::UniqueFramebuffer> framebufs;
+    vk::UniqueCommandPool draw_cmd_pool;
+    std::vector<vk::UniqueCommandBuffer> draw_cmd_buf;
+
+    vk::Queue graphics_queue;
+    std::vector<vk::UniqueSemaphore> rendered_semaphores;
+    vk::Queue presentation_queue;
+    uint32_t current_img_index;
 
   public:
-    render_proc(vk::Device device, const render_target &rt)
-        : renderpass{create_render_pass(device, rt.format())},
+    render_proc(vk::Device device, const render_target &rt, const queue_index_set &queue_indices)
+        : device{device},
+          renderpass{create_render_pass(device, rt.format())},
           vert_shader{create_vert_shader(device)},
           frag_shader{create_frag_shader(device)},
           pipeline{create_pipeline(device, renderpass.get(), rt.extent(), vert_shader.get(), frag_shader.get())},
-          framebufs{create_frame_bufs(device, rt.image_views(), rt.extent(), renderpass.get())} {}
+          framebufs{create_frame_bufs(device, rt.image_views(), rt.extent(), renderpass.get())},
+          draw_cmd_pool{create_draw_cmd_pool(device, queue_indices)},
+          draw_cmd_buf{create_cmd_bufs(device, draw_cmd_pool.get(), uint32_t(framebufs.size()))},
+          graphics_queue{device.getQueue(queue_indices.graphics_queue, 0)},
+          rendered_semaphores{create_semaphores(device, uint32_t(framebufs.size()))},
+          presentation_queue{device.getQueue(queue_indices.presentation_queue, 0)} {}
+
+    void render_begin(vk::Device device, const render_target &rt) {
+        current_img_index = rt.acquire_frame(device);
+        const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
+
+        vk::CommandBufferBeginInfo cmdBeginInfo;
+        cmd_buf.begin(cmdBeginInfo);
+
+        vk::RenderPassBeginInfo renderpassBeginInfo;
+        renderpassBeginInfo.renderPass = renderpass.get();
+        renderpassBeginInfo.framebuffer = framebufs[current_img_index].get();
+        renderpassBeginInfo.renderArea = vk::Rect2D({0, 0}, rt.extent());
+        renderpassBeginInfo.clearValueCount = 0;
+        renderpassBeginInfo.pClearValues = nullptr;
+
+        cmd_buf.beginRenderPass(renderpassBeginInfo, vk::SubpassContents::eInline);
+    }
+    void render_end(const render_target &rt) {
+        const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
+
+        cmd_buf.endRenderPass();
+        cmd_buf.end();
+
+        {
+            vk::SubmitInfo submitInfo;
+
+            auto submit_cmd_buf = {cmd_buf};
+            submitInfo.commandBufferCount = uint32_t(submit_cmd_buf.size());
+            submitInfo.pCommandBuffers = submit_cmd_buf.begin();
+
+            vk::Semaphore renderwaitSemaphores[] = {rt.image_prepared_semaphore()};
+            vk::PipelineStageFlags renderwaitStages[] = {vk::PipelineStageFlagBits::eColorAttachmentOutput};
+            submitInfo.waitSemaphoreCount = 1;
+            submitInfo.pWaitSemaphores = renderwaitSemaphores;
+            submitInfo.pWaitDstStageMask = renderwaitStages;
+
+            graphics_queue.submit({submitInfo});
+        }
+
+        rt.present(presentation_queue, current_img_index, std::array{rendered_semaphores[current_img_index].get()});
+    }
 };
 
 class vulkan_manager {
@@ -474,9 +582,7 @@ class vulkan_manager {
     vk::UniqueDevice device;
     vk::Queue graphics_queue, presentation_queue;
     vk::UniqueCommandPool tmp_cmd_pool;
-    vk::UniqueCommandPool draw_cmd_pool;
     std::vector<vk::UniqueCommandBuffer> tmp_cmd_buf;
-    std::vector<vk::UniqueCommandBuffer> draw_cmd_buf;
     std::vector<vk::SurfaceKHR> surface_needed_support;
 
   public:
@@ -488,9 +594,7 @@ class vulkan_manager {
           graphics_queue{device->getQueue(queue_indices.graphics_queue, 0)},
           presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
           tmp_cmd_pool{create_tmp_cmd_pool(device.get(), queue_indices)},
-          tmp_cmd_buf{create_cmd_buf(device.get(), tmp_cmd_pool.get())},
-          draw_cmd_pool{create_tmp_cmd_pool(device.get(), queue_indices)},
-          draw_cmd_buf{create_cmd_buf(device.get(), draw_cmd_pool.get())} {}
+          tmp_cmd_buf{create_cmd_bufs(device.get(), tmp_cmd_pool.get(), 1)} {}
 
     auto create_render_target_from_glfw_window(GLFWwindow *window) {
         VkSurfaceKHR surface;
@@ -500,7 +604,7 @@ class vulkan_manager {
     }
 
     auto create_render_proc(const render_target &rt) {
-        return render_proc(device.get(), rt);
+        return render_proc(device.get(), rt, queue_indices);
     }
 };
 
