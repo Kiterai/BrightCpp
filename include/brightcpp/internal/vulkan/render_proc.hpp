@@ -7,13 +7,6 @@ namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
-vk::UniqueRenderPass create_render_pass(vk::Device device, vk::Format format);
-vk::UniqueShaderModule create_vert_shader(vk::Device device);
-vk::UniqueShaderModule create_frag_shader(vk::Device device);
-
-vk::UniquePipelineLayout create_pipeline_layout(vk::Device device);
-vk::UniquePipeline create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D extent, vk::PipelineLayout pipeline_layout, vk::ShaderModule vert_shader, vk::ShaderModule frag_shader);
-
 class render_proc {
     vk::Device device;
     vk::UniqueRenderPass renderpass;

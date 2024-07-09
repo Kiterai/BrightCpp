@@ -16,7 +16,7 @@ struct shader_pushconstant {
     vec2 tex_clip_size;
 };
 
-auto create_draw_cmd_pool(vk::Device device, const queue_index_set &queue_indices) {
+static auto create_draw_cmd_pool(vk::Device device, const queue_index_set &queue_indices) {
     vk::CommandPoolCreateInfo create_info;
     create_info.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
     create_info.queueFamilyIndex = queue_indices.graphics_queue;
@@ -24,7 +24,7 @@ auto create_draw_cmd_pool(vk::Device device, const queue_index_set &queue_indice
     return device.createCommandPoolUnique(create_info);
 }
 
-vk::UniqueRenderPass create_render_pass(vk::Device device, vk::Format format) {
+static auto create_render_pass(vk::Device device, vk::Format format) {
     vk::AttachmentDescription attachments[1];
     attachments[0].format = format;
     attachments[0].samples = vk::SampleCountFlagBits::e1;
@@ -55,7 +55,7 @@ vk::UniqueRenderPass create_render_pass(vk::Device device, vk::Format format) {
     return device.createRenderPassUnique(renderpassCreateInfo);
 }
 
-vk::UniqueShaderModule create_vert_shader(vk::Device device) {
+static auto create_vert_shader(vk::Device device) {
     const auto data = b::embed<"shaders/shader.vert.spv">();
 
     vk::ShaderModuleCreateInfo create_info;
@@ -65,7 +65,7 @@ vk::UniqueShaderModule create_vert_shader(vk::Device device) {
     return device.createShaderModuleUnique(create_info);
 }
 
-vk::UniqueShaderModule create_frag_shader(vk::Device device) {
+static auto create_frag_shader(vk::Device device) {
     const auto data = b::embed<"shaders/shader.frag.spv">();
 
     vk::ShaderModuleCreateInfo create_info;
@@ -75,7 +75,7 @@ vk::UniqueShaderModule create_frag_shader(vk::Device device) {
     return device.createShaderModuleUnique(create_info);
 }
 
-vk::UniquePipelineLayout create_pipeline_layout(vk::Device device) {
+static auto create_pipeline_layout(vk::Device device) {
     auto pushConstantRanges = {
         vk::PushConstantRange{}
             .setOffset(0)
@@ -92,7 +92,7 @@ vk::UniquePipelineLayout create_pipeline_layout(vk::Device device) {
     return device.createPipelineLayoutUnique(layoutCreateInfo);
 }
 
-vk::UniquePipeline create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D extent, vk::PipelineLayout pipeline_layout, vk::ShaderModule vert_shader, vk::ShaderModule frag_shader) {
+static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D extent, vk::PipelineLayout pipeline_layout, vk::ShaderModule vert_shader, vk::ShaderModule frag_shader) {
     vk::Viewport viewports[1];
     viewports[0].x = 0.0;
     viewports[0].y = 0.0;
