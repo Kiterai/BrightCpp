@@ -213,7 +213,7 @@ void render_proc::render_begin(const render_target &rt) {
             .setColor(vk::ClearColorValue({0.0f, 0.0f, 0.0f, 1.0f})),
     };
 
-    renderpassBeginInfo.clearValueCount = clearVal.size();
+    renderpassBeginInfo.clearValueCount = uint32_t(clearVal.size());
     renderpassBeginInfo.pClearValues = clearVal.begin();
 
     cmd_buf.beginRenderPass(renderpassBeginInfo, vk::SubpassContents::eInline);
