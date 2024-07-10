@@ -14,7 +14,18 @@ FetchContent_Declare(
   glfw
   GIT_REPOSITORY https://github.com/glfw/glfw.git
   GIT_TAG 3.4)
-FetchContent_MakeAvailable(glfw)
+
+FetchContent_Declare(
+  VulkanMemoryAllocator
+  GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+  GIT_TAG v3.1.0)
+
+FetchContent_MakeAvailable(glfw VulkanMemoryAllocator)
+
+FetchContent_Populate(
+  VulkanMemoryAllocator-Hpp
+  GIT_REPOSITORY https://github.com/YaaZ/VulkanMemoryAllocator-Hpp.git
+  GIT_TAG v3.1.0)
 
 execute_process(COMMAND glslc ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert.spv)
 execute_process(COMMAND glslc ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag.spv)
@@ -26,8 +37,10 @@ add_library(
 
     vulkan.cpp
     vulkan/common.cpp
+    vulkan/vma_impl.cpp
     vulkan/render_target.cpp
     vulkan/render_proc.cpp
+    vulkan/texture.cpp
 )
 target_include_directories(brightcpp PUBLIC ../include)
 b_embed(brightcpp shaders/shader.vert.spv)
@@ -39,3 +52,5 @@ target_link_libraries(brightcpp PRIVATE ${Vulkan_LIBRARIES})
 
 set_target_properties(brightcpp PROPERTIES CXX_STANDARD 20)
 target_link_libraries(brightcpp PRIVATE glfw)
+target_link_libraries(brightcpp PRIVATE VulkanMemoryAllocator)
+target_include_directories(brightcpp PRIVATE ${VulkanMemoryAllocator-Hpp_SOURCE_DIR}/include)
