@@ -29,7 +29,7 @@ class render_proc {
     std::vector<vk::UniqueSemaphore> rendered_semaphores;
     vk::Queue presentation_queue;
     std::vector<vk::UniqueFence> rendered_fences;
-    uint32_t current_img_index;
+    uint32_t current_img_index, current_frame_flight_index = 0;
 
   public:
     render_proc(vk::Device device, const render_target &rt, const queue_index_set &queue_indices);

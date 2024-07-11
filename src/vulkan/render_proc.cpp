@@ -9,6 +9,8 @@ namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
+constexpr uint32_t frames_inflight = 2;
+
 struct shader_pushconstant {
     mat3 draw_matrix;
     vec2 screen_size;
@@ -188,14 +190,16 @@ render_proc::render_proc(vk::Device device, const render_target &rt, const queue
       graphics_queue{device.getQueue(queue_indices.graphics_queue, 0)},
       rendered_semaphores{create_semaphores(device, uint32_t(framebufs.size()))},
       presentation_queue{device.getQueue(queue_indices.presentation_queue, 0)},
-      rendered_fences{create_fences(device, true, uint32_t(framebufs.size()))} {}
+      rendered_fences{create_fences(device, true, frames_inflight)} {}
 
 void render_proc::render_begin(const render_target &rt) {
+    device.waitForFences({rendered_fences[current_frame_flight_index].get()}, VK_TRUE, UINT64_MAX);
+    current_frame_flight_index++;
+    current_frame_flight_index %= frames_inflight;
+
     current_img_index = rt.acquire_frame(device);
     const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
-    const auto &fence = rendered_fences[current_img_index].get();
-
-    device.waitForFences({fence}, VK_TRUE, UINT64_MAX);
+    const auto &fence = rendered_fences[current_frame_flight_index].get();
 
     cmd_buf.reset();
     device.resetFences({fence});
@@ -244,7 +248,7 @@ void render_proc::render_end(const render_target &rt) {
         submitInfo.pWaitSemaphores = renderwaitSemaphores;
         submitInfo.pWaitDstStageMask = renderwaitStages;
 
-        graphics_queue.submit({submitInfo}, rendered_fences[current_img_index].get());
+        graphics_queue.submit({submitInfo}, rendered_fences[current_frame_flight_index].get());
     }
 
     rt.present(presentation_queue, current_img_index, std::array{rendered_semaphore});
