@@ -179,11 +179,7 @@ class vulkan_manager {
           graphics_queue{device->getQueue(queue_indices.graphics_queue, 0)},
           presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
           allocator{create_allocator(instance.get(), phys_device, device.get())},
-          tex_factory{device.get(), allocator.get(), queue_indices} {
-
-            std::vector<uint8_t> d(16 * 16 * 4);
-            tex_factory.create_texture(d.data(), 16, 16);
-          }
+          tex_factory{device.get(), allocator.get(), queue_indices} {}
     ~vulkan_manager() {
         wait_idle();
     }
