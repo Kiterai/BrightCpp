@@ -2,8 +2,10 @@
 #include <GLFW/glfw3.h>
 #include <brightcpp/internal/vulkan.hpp>
 #include <brightcpp/internal/vulkan/common.hpp>
-#include <brightcpp/internal/vulkan/render_target.hpp>
 #include <brightcpp/internal/vulkan/render_proc.hpp>
+#include <brightcpp/internal/vulkan/render_target.hpp>
+#include <brightcpp/internal/vulkan/texture.hpp>
+#include <brightcpp/internal/vulkan/vma.hpp>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -149,12 +151,22 @@ static auto create_device(vk::PhysicalDevice phys_device, queue_index_set queue_
     return phys_device.createDeviceUnique(create_info);
 }
 
+static auto create_allocator(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device) {
+    vma::AllocatorCreateInfo create_info;
+    create_info.device = device;
+    create_info.physicalDevice = phys_device;
+    create_info.instance = instance;
+
+    return vma::createAllocatorUnique(create_info);
+}
+
 class vulkan_manager {
     vk::UniqueInstance instance;
     vk::PhysicalDevice phys_device;
     queue_index_set queue_indices;
     vk::UniqueDevice device;
     vk::Queue graphics_queue, presentation_queue;
+    vma::UniqueAllocator allocator;
     std::vector<vk::SurfaceKHR> surface_needed_support;
 
   public:
@@ -164,7 +176,8 @@ class vulkan_manager {
           queue_indices{choose_queue(phys_device, {}).value()},
           device{create_device(phys_device, queue_indices)},
           graphics_queue{device->getQueue(queue_indices.graphics_queue, 0)},
-          presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)} {}
+          presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
+          allocator{create_allocator(instance.get(), phys_device, device.get())} {}
     ~vulkan_manager() {
         wait_idle();
     }
