@@ -23,6 +23,7 @@ class texture_factory {
     vk::Queue queue;
     vk::UniqueCommandPool cmd_pool;
     vk::UniqueCommandBuffer cmd_buf;
+    vk::UniqueFence texture_creating_fence;
 
     vk::UniqueDescriptorSet create_texture_descriptor_set(vk::ImageView image_view);
 

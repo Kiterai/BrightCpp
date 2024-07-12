@@ -43,17 +43,26 @@ static auto cmd_change_image_layout(vk::CommandBuffer cmd_buf, vk::Image image, 
 
     vk::PipelineStageFlags src_stage = {}, dst_stage = {};
 
-    if (new_layout == vk::ImageLayout::eTransferDstOptimal) {
-        barrior.dstAccessMask |= vk::AccessFlagBits::eTransferWrite;
-        dst_stage |= vk::PipelineStageFlagBits::eTransfer;
-    }
-    if (old_layout == vk::ImageLayout::eTransferDstOptimal) {
+    switch (old_layout) {
+    case vk::ImageLayout::eTransferDstOptimal:
         barrior.srcAccessMask |= vk::AccessFlagBits::eTransferWrite;
         src_stage |= vk::PipelineStageFlagBits::eTransfer;
+        break;
+    default:
+        src_stage |= vk::PipelineStageFlagBits::eTopOfPipe;
+        break;
     }
-    if (new_layout == vk::ImageLayout::eShaderReadOnlyOptimal) {
+    switch (new_layout) {
+    case vk::ImageLayout::eTransferDstOptimal:
+        barrior.dstAccessMask |= vk::AccessFlagBits::eTransferWrite;
+        dst_stage |= vk::PipelineStageFlagBits::eTransfer;
+        break;
+    case vk::ImageLayout::eShaderReadOnlyOptimal:
         barrior.dstAccessMask |= vk::AccessFlagBits::eShaderRead;
         dst_stage |= vk::PipelineStageFlagBits::eFragmentShader;
+        break;
+    default:
+        break;
     }
 
     cmd_buf.pipelineBarrier(src_stage, dst_stage, {}, {}, {}, {barrior});
@@ -149,6 +158,7 @@ static auto create_descriptor_pool(vk::Device device) {
     };
 
     vk::DescriptorPoolCreateInfo create_info;
+    create_info.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
     create_info.poolSizeCount = uint32_t(pool_sizes.size());
     create_info.pPoolSizes = pool_sizes.begin();
     create_info.maxSets = 256;
@@ -164,7 +174,8 @@ texture_factory::texture_factory(vk::Device device, vma::Allocator allocator, co
       desc_pool{create_descriptor_pool(device)},
       queue{device.getQueue(queue_indices.graphics_queue, 0)},
       cmd_pool{create_cmd_pool(device, queue_indices, vk::CommandPoolCreateFlagBits::eTransient | vk::CommandPoolCreateFlagBits::eResetCommandBuffer)},
-      cmd_buf{std::move(create_cmd_bufs(device, cmd_pool.get(), 1)[0])} {}
+      cmd_buf{std::move(create_cmd_bufs(device, cmd_pool.get(), 1)[0])},
+      texture_creating_fence{create_fence(device, false)} {}
 
 vk::UniqueDescriptorSet texture_factory::create_texture_descriptor_set(vk::ImageView image_view) {
     auto layouts = {desc_layout.get()};
@@ -224,12 +235,15 @@ texture_resource texture_factory::create_texture(const uint8_t *data, uint32_t w
         submit_info.commandBufferCount = uint32_t(submit_cmd_buf.size());
         submit_info.pCommandBuffers = submit_cmd_buf.begin();
 
-        queue.submit({submit_info});
+        queue.submit({submit_info}, texture_creating_fence.get());
     }
 
     auto image_view = create_image_view(device, image.get(), vk::Format::eR8G8B8A8Unorm);
 
     auto desc_set = create_texture_descriptor_set(image_view.get());
+
+    device.waitForFences({texture_creating_fence.get()}, VK_TRUE, UINT64_MAX);
+    device.resetFences({texture_creating_fence.get()});
 
     return {
         .image = std::move(image),
