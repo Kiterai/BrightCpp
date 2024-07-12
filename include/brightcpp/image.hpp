@@ -1,6 +1,7 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
+#include <functional>
 #include <memory>
 #include <string>
 
@@ -19,49 +20,60 @@ constexpr ratio operator""_percent(long double value) {
     return ratio{static_cast<decltype(ratio::value)>(value / 100.0l)};
 }
 
-struct anchor {
+struct pivot {
     ratio x, y;
 };
-namespace anchor_pos {
+namespace pivot_pos {
 
-constexpr anchor left_top =
+constexpr pivot left_top =
     {0.0_unit, 0.0_unit};
-constexpr anchor left_center =
+constexpr pivot left_center =
     {0.0_unit, 0.5_unit};
-constexpr anchor left_bottom =
+constexpr pivot left_bottom =
     {0.0_unit, 1.0_unit};
 
-constexpr anchor center_top =
+constexpr pivot center_top =
     {0.5_unit, 0.0_unit};
-constexpr anchor center =
+constexpr pivot center =
     {0.5_unit, 0.5_unit};
-constexpr anchor center_bottom =
+constexpr pivot center_bottom =
     {0.5_unit, 1.0_unit};
 
-constexpr anchor right_top =
+constexpr pivot right_top =
     {1.0_unit, 0.0_unit};
-constexpr anchor right_center =
+constexpr pivot right_center =
     {1.0_unit, 0.5_unit};
-constexpr anchor right_bottom =
+constexpr pivot right_bottom =
     {1.0_unit, 1.0_unit};
 
-} // namespace anchor_pos
+} // namespace pivot_pos
 
-class image {
-  private:
-    class _impl;
-    std::unique_ptr<_impl> pimpl;
+namespace internal {
+
+class image_impl;
+
+}
+
+class image_clip {
+    std::reference_wrapper<internal::image_impl> p_impl;
 
   public:
-    class image_clip {
-      private:
-      public:
-        image_clip(/* args */);
-        ~image_clip();
-    };
+    image_clip(std::reference_wrapper<internal::image_impl> p);
+    ~image_clip();
 
-    image();
+    void draw(int x, int y);
+};
+
+class image {
+    std::unique_ptr<internal::image_impl> p_impl;
+
+  public:
+    image(const char* path);
     ~image();
+
+    void draw(int x, int y);
+
+    image_clip clip(int x, int y, int w, int h);
 };
 
 } // namespace BRIGHTCPP_NAMESPACE

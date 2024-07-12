@@ -27,6 +27,10 @@ FetchContent_Populate(
   GIT_REPOSITORY https://github.com/YaaZ/VulkanMemoryAllocator-Hpp.git
   GIT_TAG v3.1.0)
 
+FetchContent_Populate(
+  stb
+  GIT_REPOSITORY https://github.com/nothings/stb.git)
+
 execute_process(COMMAND glslc ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert.spv)
 execute_process(COMMAND glslc ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag.spv)
 add_library(
@@ -34,6 +38,7 @@ add_library(
     window.cpp
     system.cpp
     glfw.cpp
+    image.cpp
 
     vulkan.cpp
     vulkan/common.cpp
@@ -54,3 +59,4 @@ set_target_properties(brightcpp PROPERTIES CXX_STANDARD 20)
 target_link_libraries(brightcpp PRIVATE glfw)
 target_link_libraries(brightcpp PRIVATE VulkanMemoryAllocator)
 target_include_directories(brightcpp PRIVATE ${VulkanMemoryAllocator-Hpp_SOURCE_DIR}/include)
+target_include_directories(brightcpp PRIVATE ${stb_SOURCE_DIR})
