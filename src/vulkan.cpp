@@ -7,7 +7,7 @@
 #include <brightcpp/internal/vulkan/texture.hpp>
 #include <brightcpp/internal/vulkan/vma.hpp>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 #include <memory>
 #include <optional>
 #include <vulkan/vulkan.hpp>
@@ -202,8 +202,8 @@ class vulkan_manager {
 };
 
 std::optional<vulkan_manager> g_vulkan_manager;
-std::map<GLFWwindow *, render_target> render_targets;
-std::map<render_target *, render_proc> render_procs;
+std::unordered_map<GLFWwindow *, render_target> render_targets;
+std::unordered_map<render_target *, render_proc> render_procs;
 render_target *current_render_target = nullptr;
 
 void create_render_target(GLFWwindow *window) {
