@@ -4,7 +4,7 @@ namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
-auto create_cmd_pool(vk::Device device, const queue_index_set &queue_indices, vk::CommandPoolCreateFlags flags) {
+vk::UniqueCommandPool create_cmd_pool(vk::Device device, const queue_index_set &queue_indices, vk::CommandPoolCreateFlags flags) {
     vk::CommandPoolCreateInfo create_info;
     create_info.flags = flags;
     create_info.queueFamilyIndex = queue_indices.graphics_queue;
