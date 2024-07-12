@@ -4,6 +4,14 @@ namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
+auto create_cmd_pool(vk::Device device, const queue_index_set &queue_indices, vk::CommandPoolCreateFlags flags) {
+    vk::CommandPoolCreateInfo create_info;
+    create_info.flags = flags;
+    create_info.queueFamilyIndex = queue_indices.graphics_queue;
+
+    return device.createCommandPoolUnique(create_info);
+}
+
 std::vector<vk::UniqueCommandBuffer> create_cmd_bufs(vk::Device device, vk::CommandPool pool, uint32_t num) {
     vk::CommandBufferAllocateInfo alloc_info;
     alloc_info.commandPool = pool;

@@ -149,22 +149,12 @@ static auto create_device(vk::PhysicalDevice phys_device, queue_index_set queue_
     return phys_device.createDeviceUnique(create_info);
 }
 
-auto create_tmp_cmd_pool(vk::Device device, const queue_index_set &queue_indices) {
-    vk::CommandPoolCreateInfo create_info;
-    create_info.flags = vk::CommandPoolCreateFlagBits::eTransient | vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
-    create_info.queueFamilyIndex = queue_indices.graphics_queue;
-
-    return device.createCommandPoolUnique(create_info);
-}
-
 class vulkan_manager {
     vk::UniqueInstance instance;
     vk::PhysicalDevice phys_device;
     queue_index_set queue_indices;
     vk::UniqueDevice device;
     vk::Queue graphics_queue, presentation_queue;
-    vk::UniqueCommandPool tmp_cmd_pool;
-    std::vector<vk::UniqueCommandBuffer> tmp_cmd_buf;
     std::vector<vk::SurfaceKHR> surface_needed_support;
 
   public:
@@ -174,9 +164,7 @@ class vulkan_manager {
           queue_indices{choose_queue(phys_device, {}).value()},
           device{create_device(phys_device, queue_indices)},
           graphics_queue{device->getQueue(queue_indices.graphics_queue, 0)},
-          presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
-          tmp_cmd_pool{create_tmp_cmd_pool(device.get(), queue_indices)},
-          tmp_cmd_buf{create_cmd_bufs(device.get(), tmp_cmd_pool.get(), 1)} {}
+          presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)} {}
     ~vulkan_manager() {
         wait_idle();
     }

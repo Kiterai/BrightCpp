@@ -16,6 +16,7 @@ struct queue_index_set {
     uint32_t graphics_queue, presentation_queue;
 };
 
+vk::UniqueCommandPool create_cmd_pool(vk::Device device, const queue_index_set &queue_indices, vk::CommandPoolCreateFlags flags);
 std::vector<vk::UniqueCommandBuffer> create_cmd_bufs(vk::Device device, vk::CommandPool pool, uint32_t num);
 
 struct SwapchainWithInfo {
