@@ -7,7 +7,7 @@
 #include <brightcpp/internal/vulkan/texture.hpp>
 #include <brightcpp/internal/vulkan/vma.hpp>
 #include <iostream>
-#include <unordered_map>
+#include <list>
 #include <memory>
 #include <optional>
 #include <vulkan/vulkan.hpp>
@@ -167,7 +167,10 @@ class vulkan_manager {
     vk::UniqueDevice device;
     vk::Queue graphics_queue, presentation_queue;
     vma::UniqueAllocator allocator;
+
     texture_factory tex_factory;
+    std::list<texture_resource> textures;
+
     std::vector<vk::SurfaceKHR> surface_needed_support;
 
   public:
@@ -193,6 +196,12 @@ class vulkan_manager {
 
     auto create_render_proc(const render_target &rt) {
         return render_proc(device.get(), rt, queue_indices);
+    }
+
+    auto create_texture(const uint8_t *data, uint32_t w, uint32_t h) {
+        textures.emplace_front(tex_factory.create_texture(data, w, h));
+
+        return textures.begin();
     }
 
     void wait_idle() {
