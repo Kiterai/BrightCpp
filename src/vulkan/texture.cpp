@@ -252,6 +252,7 @@ struct texture_factory {
             .image = std::move(image),
             .allocation = std::move(image_allocation),
             .image_view = std::move(image_view),
+            .desc_set = std::move(desc_set),
         };
     }
 };
