@@ -1,6 +1,7 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
+#include <brightcpp/internal/vulkan/common.hpp>
 #include <brightcpp/internal/vulkan/vma.hpp>
 
 namespace BRIGHTCPP_NAMESPACE {
