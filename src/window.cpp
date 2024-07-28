@@ -1,7 +1,7 @@
 #include <GLFW/glfw3.h>
 #include <brightcpp/internal/glfw.hpp>
 #include <brightcpp/internal/system.hpp>
-#include <brightcpp/internal/vulkan.hpp>
+#include <brightcpp/internal/vulkan/vulkan.hpp>
 #include <brightcpp/window.hpp>
 #include <stdexcept>
 #include <unordered_set>

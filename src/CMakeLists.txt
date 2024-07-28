@@ -40,7 +40,7 @@ add_library(
     glfw.cpp
     image.cpp
 
-    vulkan.cpp
+    vulkan/vulkan.cpp
     vulkan/common.cpp
     vulkan/vma_impl.cpp
     vulkan/render_target.cpp

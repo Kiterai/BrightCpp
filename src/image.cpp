@@ -1,5 +1,5 @@
 #include <brightcpp/image.hpp>
-#include <brightcpp/internal/vulkan.hpp>
+#include <brightcpp/internal/vulkan/vulkan.hpp>
 #include <stb_image.h>
 
 namespace BRIGHTCPP_NAMESPACE {
