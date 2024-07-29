@@ -55,17 +55,19 @@ class image_impl;
 }
 
 class image_clip {
-    std::reference_wrapper<internal::image_impl> p_impl;
+    std::weak_ptr<internal::image_impl> p_impl;
+    int cx, cy, cw, ch;
 
   public:
-    image_clip(std::reference_wrapper<internal::image_impl> p);
+    image_clip(const std::weak_ptr<internal::image_impl> &p, int cx, int cy, int cw, int ch);
     ~image_clip();
 
     void draw(int x, int y);
+    image_clip clip(int x, int y, int w, int h);
 };
 
 class image {
-    std::unique_ptr<internal::image_impl> p_impl;
+    std::shared_ptr<internal::image_impl> p_impl;
 
   public:
     image(const char* path);
