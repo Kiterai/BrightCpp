@@ -6,11 +6,6 @@ namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
-class system_module {
-  public:
-    virtual ~system_module() = default;
-};
-
 class system_initializer {
   public:
     system_initializer();
