@@ -2,12 +2,14 @@
 #include <brightcpp/internal/system.hpp>
 #include <brightcpp/internal/vulkan/vulkan.hpp>
 #include <iostream>
+#include <optional>
 
 namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
 static size_t initializer_count = 0;
+static std::optional<system_container> global_container_obj;
 
 system_initializer::system_initializer() {
     if (initializer_count == 0) {
@@ -31,6 +33,10 @@ system_initializer::~system_initializer() {
     }
 }
 
-} // namespace internal
+system_container& system_initializer::global_container() {
+    return global_container_obj.value();
+}
 
-} // namespace BRIGHTCPP_NAMESPACE
+}  // namespace internal
+
+}  // namespace BRIGHTCPP_NAMESPACE
