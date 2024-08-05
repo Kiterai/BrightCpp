@@ -2,7 +2,7 @@
 
 #include <brightcpp/common.hpp>
 #include <brightcpp/internal/rendering.hpp>
-#include <brightcpp/internal/vulkan/render_target.hpp>
+#include "render_target.hpp"
 
 namespace BRIGHTCPP_NAMESPACE {
 
