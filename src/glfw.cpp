@@ -19,6 +19,14 @@ void shutdown_glfw() {
     glfwTerminate();
 }
 
+vk::UniqueSurfaceKHR window_backend_glfw::get_vulkan_surface(vk::Instance instance) {
+    VkSurfaceKHR c_surface;
+    glfwCreateWindowSurface(instance, window_handle, nullptr, &c_surface);
+    return vk::UniqueSurfaceKHR(c_surface, instance);
+}
+bool window_backend_glfw::is_close_requested() {
+}
+
 } // namespace internal
 
 } // namespace BRIGHTCPP_NAMESPACE
