@@ -1,8 +1,8 @@
 #pragma once
 
+#include "../rendering.hpp"
 #include "os_util.hpp"
 #include <brightcpp/common.hpp>
-#include <brightcpp/internal/rendering.hpp>
 #include <cstdint>
 
 namespace BRIGHTCPP_NAMESPACE {

@@ -1,8 +1,7 @@
 #pragma once
 
-#include <brightcpp/common.hpp>
-#include <brightcpp/internal/rendering.hpp>
 #include "render_target.hpp"
+#include <brightcpp/common.hpp>
 
 namespace BRIGHTCPP_NAMESPACE {
 

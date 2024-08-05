@@ -1,6 +1,6 @@
 #pragma once
 
-#include <brightcpp/internal/linear_algebra.hpp>
+#include "linear_algebra.hpp"
 
 namespace BRIGHTCPP_NAMESPACE {
 
