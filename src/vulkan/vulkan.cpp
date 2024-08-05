@@ -1,14 +1,12 @@
 #define GLFW_INCLUDE_VULKAN
 #include "vulkan.hpp"
-#include "vulkan_util.hpp"
 #include "render_proc.hpp"
 #include "render_target.hpp"
 #include "texture.hpp"
 #include "vma.hpp"
-#include <GLFW/glfw3.h>
+#include "vulkan_util.hpp"
 #include <iostream>
 #include <list>
-#include <memory>
 #include <optional>
 #include <vulkan/vulkan.hpp>
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
-#include <functional>
 #include <memory>
 #include <string>
 
@@ -70,7 +69,7 @@ class image {
     std::shared_ptr<internal::image_impl> p_impl;
 
   public:
-    image(const char* path);
+    image(const char *path);
     ~image();
 
     void draw(int x, int y);

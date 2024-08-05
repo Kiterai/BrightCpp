@@ -2,8 +2,6 @@
 
 #include <GLFW/glfw3.h>
 #include <brightcpp/common.hpp>
-#include <map>
-#include <optional>
 #include <span>
 #include <vector>
 #include <vulkan/vulkan.hpp>

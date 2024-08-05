@@ -1,4 +1,5 @@
 #include "vulkan_util.hpp"
+#include <map>
 
 namespace BRIGHTCPP_NAMESPACE {
 
