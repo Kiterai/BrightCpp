@@ -1,8 +1,8 @@
 #pragma once
 
+#include "vulkan_util.hpp"
 #include <brightcpp/common.hpp>
 #include <brightcpp/internal/interfaces/graphics.hpp>
-#include <brightcpp/internal/vulkan/common.hpp>
 
 namespace BRIGHTCPP_NAMESPACE {
 

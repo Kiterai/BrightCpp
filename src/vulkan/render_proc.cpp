@@ -1,7 +1,7 @@
 #include "render_proc.hpp"
-#include <brightcpp/internal/linear_algebra.hpp>
-#include <brightcpp/internal/vulkan/common.hpp>
+#include "vulkan_util.hpp"
 #include "render_target.hpp"
+#include <brightcpp/internal/linear_algebra.hpp>
 
 #include <battery/embed.hpp>
 

@@ -1,4 +1,4 @@
-#include <brightcpp/internal/vulkan/common.hpp>
+#include "vulkan_util.hpp"
 
 namespace BRIGHTCPP_NAMESPACE {
 

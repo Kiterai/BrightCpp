@@ -42,7 +42,7 @@ add_library(
     glfw/glfw.cpp
 
     vulkan/vulkan.cpp
-    vulkan/common.cpp
+    vulkan/vulkan_util.cpp
     vulkan/vma_impl.cpp
     vulkan/render_target.cpp
     vulkan/render_proc.cpp
