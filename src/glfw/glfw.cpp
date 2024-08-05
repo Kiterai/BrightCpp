@@ -1,6 +1,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include <brightcpp/internal/glfw.hpp>
+#include "glfw.hpp"
 #include <iostream>
 #include <vulkan/vulkan.hpp>
 

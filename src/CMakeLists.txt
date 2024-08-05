@@ -37,8 +37,9 @@ add_library(
     brightcpp
     window.cpp
     system.cpp
-    glfw.cpp
     image.cpp
+
+    glfw/glfw.cpp
 
     vulkan/vulkan.cpp
     vulkan/common.cpp

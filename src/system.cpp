@@ -1,4 +1,3 @@
-#include <brightcpp/internal/glfw.hpp>
 #include <brightcpp/internal/system.hpp>
 #include <brightcpp/internal/vulkan/vulkan.hpp>
 #include <iostream>
