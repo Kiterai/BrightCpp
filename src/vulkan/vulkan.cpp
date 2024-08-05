@@ -3,9 +3,9 @@
 #include "render_proc.hpp"
 #include "render_target.hpp"
 #include "texture.hpp"
+#include "vma.hpp"
 #include <GLFW/glfw3.h>
 #include <brightcpp/internal/vulkan/common.hpp>
-#include <brightcpp/internal/vulkan/vma.hpp>
 #include <iostream>
 #include <list>
 #include <memory>
