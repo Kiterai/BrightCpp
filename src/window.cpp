@@ -25,18 +25,22 @@ class window::_impl {
     friend bool frame_update();
 
     _impl(const settings &initial_settings) : current_settings(initial_settings) {
-        BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_RESIZABLE, current_settings.is_resizable ? GLFW_TRUE : GLFW_FALSE));
-        BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API));
-        BRIGHTCPP_GLFW_CHK_ERR(glfw_window = glfwCreateWindow(current_settings.size.w, current_settings.size.h, current_settings.title.c_str(), NULL, NULL));
-        glfw_windows.insert(glfw_window);
+        // COMMENTED OUT FOR ARCHITECTURE CHANGE
 
-        internal::create_render_target(glfw_window);
-        internal::set_current_render_target(glfw_window);
+        // BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_RESIZABLE, current_settings.is_resizable ? GLFW_TRUE : GLFW_FALSE));
+        // BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API));
+        // BRIGHTCPP_GLFW_CHK_ERR(glfw_window = glfwCreateWindow(current_settings.size.w, current_settings.size.h, current_settings.title.c_str(), NULL, NULL));
+        // glfw_windows.insert(glfw_window);
+
+        // internal::create_render_target(glfw_window);
+        // internal::set_current_render_target(glfw_window);
     }
     ~_impl() {
-        // destroy render target
-        glfw_windows.erase(glfw_window);
-        glfwDestroyWindow(glfw_window);
+        // COMMENTED OUT FOR ARCHITECTURE CHANGE
+
+        // // destroy render target
+        // glfw_windows.erase(glfw_window);
+        // glfwDestroyWindow(glfw_window);
     }
 
     void resize(window_size size) {
@@ -107,18 +111,18 @@ void window::on_maximized(std::function<void()> &cb) { pimpl->on_maximized(cb); 
 void window::on_close(std::function<void()> &cb) { pimpl->on_close(cb); }
 
 bool frame_update() {
-    internal::apply_render();
-    for (const auto glfw_window : glfw_windows) {
-        glfwSwapBuffers(glfw_window);
-    }
-    glfwPollEvents();
+    // internal::apply_render();
+    // for (const auto glfw_window : glfw_windows) {
+    //     glfwSwapBuffers(glfw_window);
+    // }
+    // glfwPollEvents();
 
-    // one of windows closed, to finish application
-    for (const auto glfw_window : glfw_windows) {
-        if (glfwWindowShouldClose(glfw_window)) {
-            return false;
-        }
-    }
+    // // one of windows closed, to finish application
+    // for (const auto glfw_window : glfw_windows) {
+    //     if (glfwWindowShouldClose(glfw_window)) {
+    //         return false;
+    //     }
+    // }
     return true;
 }
 

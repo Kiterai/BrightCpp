@@ -13,8 +13,10 @@ static std::optional<system_container> global_container_obj;
 
 system_initializer::system_initializer() {
     if (initializer_count == 0) {
-        setup_glfw();
-        setup_vulkan_manager();
+        // COMMENTED OUT FOR ARCHITECTURE CHANGE
+
+        // setup_glfw();
+        // setup_vulkan_manager();
 #ifdef _DEBUG
         std::cout << "successfully initialized BrightCpp." << std::endl;
 #endif
@@ -28,8 +30,10 @@ system_initializer::~system_initializer() {
 #ifdef _DEBUG
         std::cout << "shutdown BrightCpp..." << std::endl;
 #endif
-        shutdown_vulkan_manager();
-        shutdown_glfw();
+        // COMMENTED OUT FOR ARCHITECTURE CHANGE
+
+        // shutdown_vulkan_manager();
+        // shutdown_glfw();
     }
 }
 

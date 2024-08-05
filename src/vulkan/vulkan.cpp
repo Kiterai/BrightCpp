@@ -1,11 +1,12 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include <brightcpp/internal/vulkan/vulkan.hpp>
+#include <brightcpp/internal/glfw.hpp>
 #include <brightcpp/internal/vulkan/common.hpp>
 #include <brightcpp/internal/vulkan/render_proc.hpp>
 #include <brightcpp/internal/vulkan/render_target.hpp>
 #include <brightcpp/internal/vulkan/texture.hpp>
 #include <brightcpp/internal/vulkan/vma.hpp>
+#include <brightcpp/internal/vulkan/vulkan.hpp>
 #include <iostream>
 #include <list>
 #include <memory>
@@ -160,7 +161,7 @@ static auto create_allocator(vk::Instance instance, vk::PhysicalDevice phys_devi
     return vma::createAllocatorUnique(create_info);
 }
 
-class vulkan_manager {
+class vulkan_manager : public graphics_backend {
     vk::UniqueInstance instance;
     vk::PhysicalDevice phys_device;
     queue_index_set queue_indices;
@@ -187,13 +188,6 @@ class vulkan_manager {
         wait_idle();
     }
 
-    auto create_render_target_from_glfw_window(GLFWwindow *window) {
-        VkSurfaceKHR surface;
-        glfwCreateWindowSurface(instance.get(), window, nullptr, &surface);
-
-        return render_target(instance.get(), phys_device, device.get(), surface);
-    }
-
     auto create_render_proc(const render_target &rt) {
         return render_proc(device.get(), rt, queue_indices);
     }
@@ -208,62 +202,22 @@ class vulkan_manager {
         presentation_queue.waitIdle();
         graphics_queue.waitIdle();
     }
+
+    std::unique_ptr<render_target_backend> create_render_target(window_backend &window) {
+        if (true) {
+            return std::make_unique<render_target>(instance.get(), phys_device, device.get(), window.get_vulkan_surface(instance.get()));
+        }
+    }
+    void destroy_render_target(render_target_backend &rt) noexcept override {
+    }
+    void set_current_render_target(render_target_backend &rt) override {
+    }
+    void draw(texture_backend texture, render_rect_info &info) override {
+    };
 };
 
-std::optional<vulkan_manager> g_vulkan_manager;
-std::unordered_map<GLFWwindow *, render_target> render_targets;
-std::unordered_map<render_target *, render_proc> render_procs;
-render_target *current_render_target = nullptr;
-
-void create_render_target(GLFWwindow *window) {
-    auto [elem, result] = render_targets.try_emplace(window, g_vulkan_manager->create_render_target_from_glfw_window(window));
-
-    render_procs.emplace(
-        &elem->second,
-        g_vulkan_manager->create_render_proc(elem->second));
-}
-void destroy_render_target(GLFWwindow *window) {
-    const auto it = render_procs.find(current_render_target);
-    it->second.render_end(*current_render_target);
-
-    render_procs.erase(it->first);
-    render_targets.erase(window);
-}
-void set_current_render_target(GLFWwindow *window) {
-    if (current_render_target) {
-        const auto it = render_procs.find(current_render_target);
-        it->second.render_end(*current_render_target);
-    }
-
-    current_render_target = &render_targets[window];
-
-    if (current_render_target) {
-        const auto it = render_procs.find(current_render_target);
-        it->second.render_begin(*current_render_target);
-    }
-}
-void apply_render() {
-    if (current_render_target) {
-        const auto it = render_procs.find(current_render_target);
-        it->second.render_end(*current_render_target);
-        it->second.render_begin(*current_render_target);
-    }
-}
-
-void setup_vulkan_manager() {
-    g_vulkan_manager.emplace();
-#ifdef _DEBUG
-    std::cout << "vulkan initialized." << std::endl;
-#endif
-}
-void shutdown_vulkan_manager() {
-#ifdef _DEBUG
-    std::cout << "vulkan shutdown..." << std::endl;
-#endif
-    g_vulkan_manager->wait_idle();
-    render_procs.clear();
-    render_targets.clear();
-    g_vulkan_manager.reset();
+std::unique_ptr<graphics_backend> make_graphics_vulkan() {
+    return std::make_unique<vulkan_manager>();
 }
 
 } // namespace internal
