@@ -8,6 +8,7 @@ namespace BRIGHTCPP_NAMESPACE {
 namespace internal {
 
 class window_backend {
+  public:
     virtual ~window_backend() = default;
 
     virtual vk::UniqueSurfaceKHR get_vulkan_surface(vk::Instance instance) {
