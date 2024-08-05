@@ -1,7 +1,9 @@
 #pragma once
 
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <brightcpp/common.hpp>
+#include <brightcpp/internal/interfaces/os_util.hpp>
 #include <memory>
 #include <stdexcept>
 
@@ -23,6 +25,14 @@ namespace internal {
 
 void setup_glfw();
 void shutdown_glfw();
+
+class window_backend_glfw : public window_backend {
+    GLFWwindow *window_handle;
+
+  public:
+    vk::UniqueSurfaceKHR get_vulkan_surface(vk::Instance instance);
+    bool is_close_requested();
+};
 
 } // namespace internal
 
