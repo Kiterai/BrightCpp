@@ -4,9 +4,9 @@ namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
-render_target::render_target(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, vk::SurfaceKHR surface)
-    : surface{surface, instance},
-      swapchain{create_swapchain(device, phys_device, surface)},
+render_target::render_target(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, vk::UniqueSurfaceKHR &&_surface)
+    : surface{std::move(_surface)},
+      swapchain{create_swapchain(device, phys_device, surface.get())},
       swapchain_images{device.getSwapchainImagesKHR(swapchain.swapchain.get())},
       swapchain_imageviews{create_image_views(device, swapchain_images, swapchain.format.format)},
       image_acquire_semaphore{create_semaphore(device)} {}

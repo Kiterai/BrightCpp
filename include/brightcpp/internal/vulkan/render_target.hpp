@@ -16,7 +16,7 @@ class render_target {
 
   public:
     // this handles ownership of surface
-    render_target(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, vk::SurfaceKHR surface);
+    render_target(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, vk::UniqueSurfaceKHR &&surface);
 
     // for suppress error on create_render_target(GLFWwindow)
     [[noreturn]] render_target();
