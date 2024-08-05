@@ -1,7 +1,6 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
-#include <functional>
 #include <memory>
 #include <string>
 
@@ -37,11 +36,6 @@ class window {
 
     void set_title(std::string title);
     std::string title() const;
-
-    void on_resize(std::function<void(window_size)> &);
-    void on_minimized(std::function<void()> &);
-    void on_maximized(std::function<void()> &);
-    void on_close(std::function<void()> &);
 };
 
 bool frame_update();
