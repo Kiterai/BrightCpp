@@ -1,7 +1,7 @@
 #pragma once
 
+#include "os_util.hpp"
 #include <brightcpp/common.hpp>
-#include <brightcpp/internal/interfaces/os_util.hpp>
 #include <brightcpp/internal/rendering.hpp>
 #include <cstdint>
 

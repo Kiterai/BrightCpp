@@ -2,7 +2,7 @@
 
 #include "vulkan_util.hpp"
 #include <brightcpp/common.hpp>
-#include <brightcpp/internal/interfaces/graphics.hpp>
+#include "../interfaces/graphics.hpp"
 
 namespace BRIGHTCPP_NAMESPACE {
 

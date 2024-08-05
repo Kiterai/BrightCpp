@@ -1,7 +1,7 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
-#include <brightcpp/internal/interfaces/graphics.hpp>
+#include "../interfaces/graphics.hpp"
 #include <memory>
 
 namespace BRIGHTCPP_NAMESPACE {

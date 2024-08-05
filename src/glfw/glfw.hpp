@@ -1,8 +1,8 @@
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
+#include "../interfaces/os_util.hpp"
 #include <brightcpp/common.hpp>
-#include <brightcpp/internal/interfaces/os_util.hpp>
 #include <memory>
 #include <stdexcept>
 
