@@ -1,4 +1,4 @@
-#include <brightcpp/internal/system.hpp>
+#include "system.hpp"
 #include <brightcpp/window.hpp>
 #include <stdexcept>
 #include <unordered_set>

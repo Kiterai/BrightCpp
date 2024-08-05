@@ -1,4 +1,4 @@
-#include <brightcpp/internal/system.hpp>
+#include "system.hpp"
 #include <iostream>
 #include <optional>
 
@@ -35,10 +35,10 @@ system_initializer::~system_initializer() {
     }
 }
 
-system_container& system_initializer::global_container() {
+system_container &system_initializer::global_container() {
     return global_container_obj.value();
 }
 
-}  // namespace internal
+} // namespace internal
 
-}  // namespace BRIGHTCPP_NAMESPACE
+} // namespace BRIGHTCPP_NAMESPACE
