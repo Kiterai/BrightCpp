@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../rendering.hpp"
+#include "../rendering_data.hpp"
 #include "os_util.hpp"
 #include <brightcpp/common.hpp>
 #include <cstdint>
