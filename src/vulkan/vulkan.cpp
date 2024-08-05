@@ -1,10 +1,10 @@
 #define GLFW_INCLUDE_VULKAN
-#include "vulkan/vulkan.hpp"
+#include "vulkan.hpp"
+#include "texture.hpp"
 #include <GLFW/glfw3.h>
 #include <brightcpp/internal/vulkan/common.hpp>
 #include <brightcpp/internal/vulkan/render_proc.hpp>
 #include <brightcpp/internal/vulkan/render_target.hpp>
-#include <brightcpp/internal/vulkan/texture.hpp>
 #include <brightcpp/internal/vulkan/vma.hpp>
 #include <iostream>
 #include <list>

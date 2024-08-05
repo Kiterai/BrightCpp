@@ -1,5 +1,5 @@
 #include <brightcpp/internal/vulkan/common.hpp>
-#include <brightcpp/internal/vulkan/texture.hpp>
+#include "texture.hpp"
 
 namespace BRIGHTCPP_NAMESPACE {
 

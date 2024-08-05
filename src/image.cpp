@@ -1,7 +1,7 @@
 #include <stb_image.h>
 
 #include <brightcpp/image.hpp>
-#include <brightcpp/internal/vulkan/texture.hpp>
+#include "vulkan/texture.hpp"
 #include "vulkan/vulkan.hpp"
 
 namespace BRIGHTCPP_NAMESPACE {
