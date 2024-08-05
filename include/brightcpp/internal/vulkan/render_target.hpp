@@ -1,13 +1,14 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
+#include <brightcpp/internal/interfaces/graphics.hpp>
 #include <brightcpp/internal/vulkan/common.hpp>
 
 namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
-class render_target {
+class render_target : public render_target_backend {
     vk::UniqueSurfaceKHR surface;
     SwapchainWithInfo swapchain;
     std::vector<vk::Image> swapchain_images;
