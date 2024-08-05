@@ -1,5 +1,11 @@
 #pragma once
 
+#include <brightcpp/common.hpp>
+
+namespace BRIGHTCPP_NAMESPACE {
+
+namespace internal {
+
 struct alignas(8) vec2 {
     float v[2];
 };
@@ -28,3 +34,7 @@ inline constexpr mat3 operator*(mat3 a, mat3 b) {
 struct alignas(16) mat4 {
     vec4 m[4];
 };
+
+} // namespace internal
+
+} // namespace BRIGHTCPP_NAMESPACE
