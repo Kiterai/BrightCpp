@@ -1,3 +1,5 @@
+#pragma once
+
 #include <brightcpp/common.hpp>
 #include <brightcpp/internal/interfaces/os_util.hpp>
 #include <brightcpp/internal/rendering.hpp>
