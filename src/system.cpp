@@ -1,5 +1,4 @@
 #include <brightcpp/internal/system.hpp>
-#include <brightcpp/internal/vulkan/vulkan.hpp>
 #include <iostream>
 #include <optional>
 
