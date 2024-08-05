@@ -1,6 +1,6 @@
+#include "render_proc.hpp"
 #include <brightcpp/internal/linear_algebra.hpp>
 #include <brightcpp/internal/vulkan/common.hpp>
-#include <brightcpp/internal/vulkan/render_proc.hpp>
 #include <brightcpp/internal/vulkan/render_target.hpp>
 
 #include <battery/embed.hpp>
