@@ -25,6 +25,7 @@ vk::UniqueSurfaceKHR window_backend_glfw::get_vulkan_surface(vk::Instance instan
     return vk::UniqueSurfaceKHR(c_surface, instance);
 }
 bool window_backend_glfw::is_close_requested() {
+    return glfwWindowShouldClose(window_handle) != GLFW_FALSE;
 }
 
 } // namespace internal
