@@ -23,7 +23,7 @@ class os_util_backend {
   public:
     virtual ~os_util_backend() = default;
 
-    virtual std::unique_ptr<window_backend> create_window(window::settings settings) = 0;
+    virtual std::unique_ptr<window_backend> create_window(const window::settings &settings) = 0;
 };
 
 } // namespace internal
