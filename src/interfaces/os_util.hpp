@@ -3,6 +3,7 @@
 #include <brightcpp/common.hpp>
 #include <brightcpp/window.hpp>
 #include <optional>
+#include <vector>
 #include <vulkan/vulkan.hpp>
 
 namespace BRIGHTCPP_NAMESPACE {
@@ -24,6 +25,10 @@ class os_util_backend {
     virtual ~os_util_backend() = default;
 
     virtual std::unique_ptr<window_backend> create_window(const window::settings &settings) = 0;
+
+    virtual std::vector<const char *> get_vulkan_required_instance_extensions() {
+        throw std::exception("not implemented get_vulkan_required_instance_extensions()");
+    }
 };
 
 } // namespace internal

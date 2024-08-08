@@ -1,6 +1,6 @@
 #define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 #include "glfw.hpp"
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include <vulkan/vulkan.hpp>
 
@@ -60,6 +60,17 @@ class os_util_backend_glfw : public os_util_backend {
 
     std::unique_ptr<window_backend> create_window(const window::settings &settings) override {
         return std::make_unique<window_backend_glfw>(settings);
+    }
+
+    virtual std::vector<const char *> get_vulkan_required_instance_extensions() override {
+        std::vector<const char *> exts;
+
+        uint32_t glfw_required_exts_count;
+        const auto glfw_required_exts = glfwGetRequiredInstanceExtensions(&glfw_required_exts_count);
+        for (const auto ext : std::span{glfw_required_exts, glfw_required_exts_count})
+            exts.push_back(ext);
+
+        return exts;
     }
 };
 
