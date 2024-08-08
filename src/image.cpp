@@ -1,22 +1,27 @@
+#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #include "interfaces/graphics.hpp"
+#include "system.hpp"
 #include <brightcpp/image.hpp>
 
 namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
+using g_tex_factory = global_module<texture_factory_backend>;
+
 class image_impl {
-    texture_backend tex;
+    std::unique_ptr<texture_backend> tex;
 
   public:
     image_impl(const char *path) {
         int w, h, ch;
         const auto data = stbi_load(path, &w, &h, &ch, STBI_rgb_alpha);
+        if(data == nullptr)
+            throw std::runtime_error(std::string("failed to load image file: ") + path);
 
-        // TODO
-        // tex = factory->create_texture(data, w, h);
+        tex = g_tex_factory::get().make(data, w, h);
 
         stbi_image_free(data);
     }

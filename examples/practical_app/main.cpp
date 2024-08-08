@@ -13,7 +13,7 @@ int main() {
                 .title = "Sample App Window 1",
             },
         };
-        
+
         bgt::window wnd2{
             bgt::window::settings{
                 .size = {
@@ -24,6 +24,8 @@ int main() {
                 .title = "Sample App Window 2",
             },
         };
+
+        bgt::image img{"examples/assets/test.png"};
 
         while (bgt::frame_update()) {
         }
