@@ -1,5 +1,3 @@
-#define GLFW_INCLUDE_VULKAN
-#include <glfw/glfw3.h>
 #include "vulkan.hpp"
 #include "render_proc.hpp"
 #include "render_target.hpp"
@@ -26,14 +24,9 @@ auto instance_layer_required() {
 }
 
 auto instance_extension_required() {
-    std::vector<const char *> exts;
+    os_util_backend *os_util = nullptr; // TODO;
 
-    uint32_t glfw_required_exts_count;
-    const auto glfw_required_exts = glfwGetRequiredInstanceExtensions(&glfw_required_exts_count);
-    for (const auto ext : std::span{glfw_required_exts, glfw_required_exts_count})
-        exts.push_back(ext);
-
-    return exts;
+    return os_util->get_vulkan_required_instance_extensions();
 }
 
 auto device_layer_required() {
