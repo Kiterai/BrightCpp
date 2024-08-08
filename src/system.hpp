@@ -7,23 +7,19 @@ namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
-class system_container {
-    std::unordered_map<size_t, void*> objs;
+template <class T>
+class global_module {
+    static inline T* ref;
+
   public:
-    template<class T>
-    T& get() { return *static_cast<T*>(objs.at(typeid(T).hash_code())); }
-    template<class T>
-    void _reg(T& obj) { objs.at(typeid(T).hash_code()) = &obj; }
-    template<class T>
-    void _unreg() { objs.erase(typeid(T).hash_code()); }
+    static void set(T &r) { ref = &r; }
+    static T &get() { return *ref; };
 };
 
 class system_initializer {
   public:
     system_initializer();
     ~system_initializer();
-    
-    static system_container& global_container();
 };
 
 } // namespace internal
