@@ -16,9 +16,7 @@
         }                                                                                                     \
     }
 
-namespace BRIGHTCPP_NAMESPACE {
-
-namespace internal {
+BRIGHTCPP_OSUTIL_GLFW_START
 
 class window_backend_glfw : public window_backend {
     GLFWwindow *window_handle;
@@ -74,6 +72,4 @@ class os_util_backend_glfw : public os_util_backend {
     }
 };
 
-} // namespace internal
-
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_OSUTIL_GLFW_END

@@ -6,12 +6,18 @@
 #include <memory>
 #include <stdexcept>
 
-namespace BRIGHTCPP_NAMESPACE {
+#define BRIGHTCPP_OSUTIL_GLFW_START \
+    namespace BRIGHTCPP_NAMESPACE { \
+    namespace internal {            \
+    namespace glfw {
 
-namespace internal {
+#define BRIGHTCPP_OSUTIL_GLFW_END \
+    }                             \
+    }                             \
+    }
+
+BRIGHTCPP_OSUTIL_GLFW_START
 
 std::unique_ptr<os_util_backend> make_glfw_manager();
 
-} // namespace internal
-
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_OSUTIL_GLFW_END
