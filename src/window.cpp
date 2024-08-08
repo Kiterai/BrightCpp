@@ -1,3 +1,5 @@
+#include "interfaces/graphics.hpp"
+#include "interfaces/os_util.hpp"
 #include "system.hpp"
 #include <brightcpp/window.hpp>
 #include <stdexcept>
@@ -5,18 +7,31 @@
 
 namespace BRIGHTCPP_NAMESPACE {
 
-static size_t initialized_count = 0;
+static std::list<std::reference_wrapper<internal::window_backend>> available_windows;
+
+using g_os_util = internal::global_module<internal::os_util_backend>;
+using g_graphics = internal::global_module<internal::graphics_backend>;
 
 class window::_impl {
     [[no_unique_address]] internal::system_initializer _sys;
     settings current_settings;
+    std::unique_ptr<internal::window_backend> window;
+    std::unique_ptr<internal::render_target_backend> render_target;
+
+    decltype(available_windows.begin()) wndlist_it;
 
   public:
     friend bool frame_update();
 
-    _impl(const settings &initial_settings) : current_settings(initial_settings) {
+    _impl(const settings &initial_settings)
+        : current_settings(initial_settings),
+          window{g_os_util::get().create_window(current_settings)},
+          render_target{g_graphics::get().create_render_target(*window.get())} {
+        available_windows.push_front(*window.get());
+        wndlist_it = available_windows.begin();
     }
     ~_impl() {
+        available_windows.erase(wndlist_it);
     }
 
     void resize(window_size size) {
@@ -70,17 +85,14 @@ std::string window::title() const { return pimpl->title(); }
 
 bool frame_update() {
     // internal::apply_render();
-    // for (const auto glfw_window : glfw_windows) {
-    //     glfwSwapBuffers(glfw_window);
-    // }
-    // glfwPollEvents();
+    g_os_util::get().poll_events();
 
-    // // one of windows closed, to finish application
-    // for (const auto glfw_window : glfw_windows) {
-    //     if (glfwWindowShouldClose(glfw_window)) {
-    //         return false;
-    //     }
-    // }
+    // one of windows closed, to finish application
+    for (const auto &available_window : available_windows) {
+        if (available_window.get().is_close_requested()) {
+            return false;
+        }
+    }
     return true;
 }
 

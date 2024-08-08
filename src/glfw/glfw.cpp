@@ -60,7 +60,7 @@ class os_util_backend_glfw : public os_util_backend {
         return std::make_unique<window_backend_glfw>(settings);
     }
 
-    virtual std::vector<const char *> get_vulkan_required_instance_extensions() override {
+    std::vector<const char *> get_vulkan_required_instance_extensions() override {
         std::vector<const char *> exts;
 
         uint32_t glfw_required_exts_count;
@@ -69,6 +69,10 @@ class os_util_backend_glfw : public os_util_backend {
             exts.push_back(ext);
 
         return exts;
+    }
+
+    void poll_events() override {
+        glfwPollEvents();
     }
 };
 

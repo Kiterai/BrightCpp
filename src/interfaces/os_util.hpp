@@ -29,6 +29,8 @@ class os_util_backend {
     virtual std::vector<const char *> get_vulkan_required_instance_extensions() {
         throw std::exception("not implemented get_vulkan_required_instance_extensions()");
     }
+
+    virtual void poll_events() = 0;
 };
 
 } // namespace internal
