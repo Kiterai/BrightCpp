@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../interfaces/graphics.hpp"
-#include "vulkan.hpp"
+#include "vulkan_common.hpp"
 #include "vulkan_util.hpp"
 #include <brightcpp/common.hpp>
 

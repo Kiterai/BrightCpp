@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vulkan.hpp"
+#include "vulkan_common.hpp"
 #include <brightcpp/common.hpp>
 #include <span>
 #include <vector>

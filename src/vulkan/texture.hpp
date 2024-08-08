@@ -1,7 +1,6 @@
 #pragma once
 
 #include "vma.hpp"
-#include "vulkan.hpp"
 #include "vulkan_util.hpp"
 #include <brightcpp/common.hpp>
 

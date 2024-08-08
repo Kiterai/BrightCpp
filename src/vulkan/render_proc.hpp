@@ -1,7 +1,7 @@
 #pragma once
 
 #include "render_target.hpp"
-#include "vulkan.hpp"
+#include "vulkan_common.hpp"
 #include <brightcpp/common.hpp>
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
