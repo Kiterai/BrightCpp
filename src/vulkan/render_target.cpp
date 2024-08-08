@@ -9,10 +9,6 @@ render_target::render_target(vk::Instance instance, vk::PhysicalDevice phys_devi
       swapchain_imageviews{create_image_views(device, swapchain_images, swapchain.format.format)},
       image_acquire_semaphore{create_semaphore(device)} {}
 
-[[noreturn]] render_target::render_target() {
-    throw std::runtime_error("empty render target created");
-}
-
 uint32_t render_target::acquire_frame(vk::Device device) const {
     vk::ResultValue result = device.acquireNextImageKHR(swapchain.swapchain.get(), 1'000'000'000, image_acquire_semaphore.get(), {});
     if (result.result != vk::Result::eSuccess) {

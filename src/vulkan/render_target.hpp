@@ -18,9 +18,6 @@ class render_target : public render_target_backend {
     // this handles ownership of surface
     render_target(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, vk::UniqueSurfaceKHR &&surface);
 
-    // for suppress error on create_render_target(GLFWwindow)
-    [[noreturn]] render_target();
-
     const auto &image_views() const { return swapchain_imageviews; }
     auto format() const { return swapchain.format.format; }
     auto extent() const { return swapchain.extent; }
