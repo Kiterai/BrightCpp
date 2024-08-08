@@ -72,4 +72,8 @@ class os_util_backend_glfw : public os_util_backend {
     }
 };
 
+std::unique_ptr<os_util_backend> make_glfw_manager() {
+    return std::make_unique<os_util_backend_glfw>();
+}
+
 BRIGHTCPP_OSUTIL_GLFW_END
