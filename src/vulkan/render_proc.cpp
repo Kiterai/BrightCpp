@@ -1,6 +1,5 @@
 #include "render_proc.hpp"
 #include "../linear_algebra.hpp"
-#include "render_target.hpp"
 #include "util.hpp"
 
 #include <battery/embed.hpp>

@@ -1,5 +1,4 @@
 #include "texture.hpp"
-#include "util.hpp"
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
