@@ -164,6 +164,16 @@ static auto create_descriptor_pool(vk::Device device) {
     return device.createDescriptorPoolUnique(create_info);
 }
 
+texture_resource::texture_resource(
+    vma::UniqueImage &&_image,
+    vma::UniqueAllocation &&_allocation,
+    vk::UniqueImageView &&_image_view,
+    vk::UniqueDescriptorSet &&_desc_set)
+    : image{std::move(_image)},
+      allocation{std::move(_allocation)},
+      image_view{std::move(_image_view)},
+      desc_set{std::move(_desc_set)} {}
+
 texture_factory::texture_factory(vk::Device device, vma::Allocator allocator, const queue_index_set &queue_indices)
     : device{device},
       allocator{allocator},
@@ -205,7 +215,7 @@ vk::UniqueDescriptorSet texture_factory::create_texture_descriptor_set(vk::Image
     return desc_set;
 }
 
-texture_resource texture_factory::create_texture(const uint8_t *data, uint32_t w, uint32_t h) {
+std::unique_ptr<texture_backend> texture_factory::make(const uint8_t *data, uint32_t w, uint32_t h) {
     auto [tmp_buf, buf_allocation] =
         create_filled_buffer(
             allocator, data, w * h * 4,
@@ -243,12 +253,14 @@ texture_resource texture_factory::create_texture(const uint8_t *data, uint32_t w
     device.waitForFences({texture_creating_fence.get()}, VK_TRUE, UINT64_MAX);
     device.resetFences({texture_creating_fence.get()});
 
-    return {
-        .image = std::move(image),
-        .allocation = std::move(image_allocation),
-        .image_view = std::move(image_view),
-        .desc_set = std::move(desc_set),
-    };
+    return std::make_unique<texture_resource>(
+        std::move(image),
+        std::move(image_allocation),
+        std::move(image_view),
+        std::move(desc_set));
+}
+
+void texture_factory::destroy(texture_backend &image) noexcept {
 }
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

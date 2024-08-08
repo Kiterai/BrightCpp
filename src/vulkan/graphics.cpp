@@ -41,7 +41,7 @@ auto device_extension_required() {
     return exts;
 }
 
-static auto create_vulkan_instance(os_util_backend& os_util) {
+static auto create_vulkan_instance(os_util_backend &os_util) {
     auto layers = instance_layer_required();
     auto exts = os_util.get_vulkan_required_instance_extensions();
 
@@ -154,9 +154,6 @@ class vulkan_manager : public graphics_backend {
     vk::Queue graphics_queue, presentation_queue;
     vma::UniqueAllocator allocator;
 
-    texture_factory tex_factory;
-    std::list<texture_resource> textures;
-
     std::vector<vk::SurfaceKHR> surface_needed_support;
 
   public:
@@ -168,20 +165,13 @@ class vulkan_manager : public graphics_backend {
           device{create_device(phys_device, queue_indices)},
           graphics_queue{device->getQueue(queue_indices.graphics_queue, 0)},
           presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
-          allocator{create_allocator(instance.get(), phys_device, device.get())},
-          tex_factory{device.get(), allocator.get(), queue_indices} {}
+          allocator{create_allocator(instance.get(), phys_device, device.get())} {}
     ~vulkan_manager() {
         wait_idle();
     }
 
     auto create_render_proc(const render_target &rt) {
         return render_proc(device.get(), rt, queue_indices);
-    }
-
-    auto create_texture(const uint8_t *data, uint32_t w, uint32_t h) {
-        textures.emplace_front(tex_factory.create_texture(data, w, h));
-
-        return textures.begin();
     }
 
     void wait_idle() {
@@ -198,6 +188,11 @@ class vulkan_manager : public graphics_backend {
     }
     void set_current_render_target(render_target_backend &rt) override {
     }
+
+    std::unique_ptr<texture_factory_backend> create_texture_factory() override {
+        return std::make_unique<texture_factory>(device.get(), allocator.get(), queue_indices);
+    }
+
     void draw(texture_backend texture, render_rect_info &info) override {
     };
 };
