@@ -1,14 +1,12 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
+#include "vulkan.hpp"
 #include <brightcpp/common.hpp>
 #include <span>
 #include <vector>
 #include <vulkan/vulkan.hpp>
 
-namespace BRIGHTCPP_NAMESPACE {
-
-namespace internal {
+BRIGHTCPP_GRAPHICS_VULKAN_START
 
 struct queue_index_set {
     uint32_t graphics_queue, presentation_queue;
@@ -37,6 +35,4 @@ std::vector<vk::UniqueFence> create_fences(vk::Device device, bool signaled, uin
 vk::UniqueSemaphore create_semaphore(vk::Device device);
 std::vector<vk::UniqueSemaphore> create_semaphores(vk::Device device, uint32_t num);
 
-} // namespace internal
-
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_GRAPHICS_VULKAN_END

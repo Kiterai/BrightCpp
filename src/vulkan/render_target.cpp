@@ -1,8 +1,6 @@
 #include "render_target.hpp"
 
-namespace BRIGHTCPP_NAMESPACE {
-
-namespace internal {
+BRIGHTCPP_GRAPHICS_VULKAN_START
 
 render_target::render_target(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, vk::UniqueSurfaceKHR &&_surface)
     : surface{std::move(_surface)},
@@ -41,6 +39,4 @@ void render_target::present(vk::Queue presentation_queue, uint32_t img_index, st
     }
 }
 
-} // namespace internal
-
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_GRAPHICS_VULKAN_END

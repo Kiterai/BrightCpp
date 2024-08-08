@@ -1,11 +1,10 @@
 #pragma once
 
 #include "render_target.hpp"
+#include "vulkan.hpp"
 #include <brightcpp/common.hpp>
 
-namespace BRIGHTCPP_NAMESPACE {
-
-namespace internal {
+BRIGHTCPP_GRAPHICS_VULKAN_START
 
 class render_proc {
     vk::Device device;
@@ -32,6 +31,4 @@ class render_proc {
     void draw_rect(const render_target &rt, render_rect_info rect_info);
 };
 
-} // namespace internal
-
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_GRAPHICS_VULKAN_END

@@ -1,9 +1,7 @@
 #include "texture.hpp"
 #include "vulkan_util.hpp"
 
-namespace BRIGHTCPP_NAMESPACE {
-
-namespace internal {
+BRIGHTCPP_GRAPHICS_VULKAN_START
 
 static auto create_sampler(vk::Device device) {
     vk::SamplerCreateInfo create_info;
@@ -253,6 +251,4 @@ texture_resource texture_factory::create_texture(const uint8_t *data, uint32_t w
     };
 }
 
-} // namespace internal
-
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_GRAPHICS_VULKAN_END

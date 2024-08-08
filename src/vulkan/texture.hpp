@@ -1,12 +1,11 @@
 #pragma once
 
-#include "vulkan_util.hpp"
 #include "vma.hpp"
+#include "vulkan.hpp"
+#include "vulkan_util.hpp"
 #include <brightcpp/common.hpp>
 
-namespace BRIGHTCPP_NAMESPACE {
-
-namespace internal {
+BRIGHTCPP_GRAPHICS_VULKAN_START
 
 struct texture_resource {
     vma::UniqueImage image;
@@ -33,6 +32,4 @@ class texture_factory {
     texture_resource create_texture(const uint8_t *data, uint32_t w, uint32_t h);
 };
 
-} // namespace internal
-
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_GRAPHICS_VULKAN_END

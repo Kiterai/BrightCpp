@@ -1,9 +1,7 @@
 #include "vulkan_util.hpp"
 #include <map>
 
-namespace BRIGHTCPP_NAMESPACE {
-
-namespace internal {
+BRIGHTCPP_GRAPHICS_VULKAN_START
 
 vk::UniqueCommandPool create_cmd_pool(vk::Device device, const queue_index_set &queue_indices, vk::CommandPoolCreateFlags flags) {
     vk::CommandPoolCreateInfo create_info;
@@ -159,6 +157,4 @@ std::vector<vk::UniqueSemaphore> create_semaphores(vk::Device device, uint32_t n
     return semaphores;
 }
 
-} // namespace internal
-
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_GRAPHICS_VULKAN_END

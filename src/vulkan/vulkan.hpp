@@ -1,15 +1,21 @@
 #pragma once
 
-#include <brightcpp/common.hpp>
 #include "../interfaces/graphics.hpp"
+#include <brightcpp/common.hpp>
 #include <memory>
 
-namespace BRIGHTCPP_NAMESPACE {
+#define BRIGHTCPP_GRAPHICS_VULKAN_START \
+    namespace BRIGHTCPP_NAMESPACE {     \
+    namespace internal {                \
+    namespace vulkan {
 
-namespace internal {
+#define BRIGHTCPP_GRAPHICS_VULKAN_END \
+    }                                 \
+    }                                 \
+    }
+
+BRIGHTCPP_GRAPHICS_VULKAN_START
 
 std::unique_ptr<graphics_backend> make_graphics_vulkan();
 
-} // namespace internal
-
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_GRAPHICS_VULKAN_END

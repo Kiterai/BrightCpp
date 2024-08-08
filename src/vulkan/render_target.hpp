@@ -1,12 +1,11 @@
 #pragma once
 
+#include "../interfaces/graphics.hpp"
+#include "vulkan.hpp"
 #include "vulkan_util.hpp"
 #include <brightcpp/common.hpp>
-#include "../interfaces/graphics.hpp"
 
-namespace BRIGHTCPP_NAMESPACE {
-
-namespace internal {
+BRIGHTCPP_GRAPHICS_VULKAN_START
 
 class render_target : public render_target_backend {
     vk::UniqueSurfaceKHR surface;
@@ -31,6 +30,4 @@ class render_target : public render_target_backend {
     void present(vk::Queue presentation_queue, uint32_t img_index, std::span<const vk::Semaphore> wait_semaphore) const;
 };
 
-} // namespace internal
-
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_GRAPHICS_VULKAN_END

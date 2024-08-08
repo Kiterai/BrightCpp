@@ -1,4 +1,5 @@
 #define GLFW_INCLUDE_VULKAN
+#include <glfw/glfw3.h>
 #include "vulkan.hpp"
 #include "render_proc.hpp"
 #include "render_target.hpp"
@@ -12,9 +13,7 @@
 
 #include <battery/embed.hpp>
 
-namespace BRIGHTCPP_NAMESPACE {
-
-namespace internal {
+BRIGHTCPP_GRAPHICS_VULKAN_START
 
 auto instance_layer_required() {
     std::vector<const char *> layers;
@@ -217,6 +216,4 @@ std::unique_ptr<graphics_backend> make_graphics_vulkan() {
     return std::make_unique<vulkan_manager>();
 }
 
-} // namespace internal
-
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_GRAPHICS_VULKAN_END

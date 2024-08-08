@@ -9,7 +9,7 @@ namespace BRIGHTCPP_NAMESPACE {
 namespace internal {
 
 class image_impl {
-  texture_resource tex;
+  vulkan::texture_resource tex;
 
  public:
   image_impl(const char *path) {

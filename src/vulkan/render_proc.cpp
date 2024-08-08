@@ -5,9 +5,7 @@
 
 #include <battery/embed.hpp>
 
-namespace BRIGHTCPP_NAMESPACE {
-
-namespace internal {
+BRIGHTCPP_GRAPHICS_VULKAN_START
 
 constexpr uint32_t frames_inflight = 2;
 
@@ -300,6 +298,4 @@ void render_proc::draw_rect(const render_target &rt, render_rect_info rect_info)
     cmd_buf.draw(4, 1, 0, 0);
 }
 
-} // namespace internal
-
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_GRAPHICS_VULKAN_END
