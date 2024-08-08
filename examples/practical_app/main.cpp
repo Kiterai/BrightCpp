@@ -3,9 +3,25 @@
 
 int main() {
     try {
-        bgt::window wnd{
+        bgt::window wnd1{
             bgt::window::settings{
-                .title = "BrightCpp Sample App",
+                .size = {
+                    .w = 600,
+                    .h = 400,
+                },
+                .is_resizable = true,
+                .title = "Sample App Window 1",
+            },
+        };
+        
+        bgt::window wnd2{
+            bgt::window::settings{
+                .size = {
+                    .w = 300,
+                    .h = 400,
+                },
+                .is_resizable = false,
+                .title = "Sample App Window 2",
             },
         };
 
