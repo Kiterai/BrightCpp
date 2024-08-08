@@ -1,7 +1,7 @@
 #pragma once
 
 #include "vma.hpp"
-#include "vulkan_util.hpp"
+#include "util.hpp"
 #include <brightcpp/common.hpp>
 
 BRIGHTCPP_GRAPHICS_VULKAN_START

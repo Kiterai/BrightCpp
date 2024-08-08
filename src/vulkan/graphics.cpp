@@ -1,9 +1,9 @@
-#include "vulkan.hpp"
+#include "graphics.hpp"
 #include "render_proc.hpp"
 #include "render_target.hpp"
 #include "texture.hpp"
 #include "vma.hpp"
-#include "vulkan_util.hpp"
+#include "util.hpp"
 #include <iostream>
 #include <list>
 #include <optional>
