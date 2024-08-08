@@ -18,6 +18,18 @@ class window_backend {
         throw std::exception("not implemented get_vulkan_surface()");
     }
     virtual bool is_close_requested() = 0;
+
+    virtual void set_size(int w, int h) = 0;
+    virtual std::tuple<int, int> get_size() const = 0;
+
+    virtual void set_resizable(bool is_resizable) = 0;
+    virtual bool is_resizable() const = 0;
+
+    virtual void set_fullscreen(bool is_fullscreen) = 0;
+    virtual bool is_fullscreen() const = 0;
+
+    virtual void set_title(const std::string &title) = 0;
+    virtual std::string get_title() const = 0;
 };
 
 class os_util_backend {

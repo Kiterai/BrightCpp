@@ -39,6 +39,41 @@ class window_backend_glfw : public window_backend {
     bool is_close_requested() override {
         return glfwWindowShouldClose(window_handle) != GLFW_FALSE;
     }
+
+    void set_size(int w, int h) override {
+        BRIGHTCPP_GLFW_CHK_ERR(glfwSetWindowSize(window_handle, w, h));
+    }
+    std::tuple<int, int> get_size() const override {
+        int w, h;
+        BRIGHTCPP_GLFW_CHK_ERR(glfwGetWindowSize(window_handle, &w, &h));
+        return {w, h};
+    }
+
+    void set_resizable(bool is_resizable) override {
+        BRIGHTCPP_GLFW_CHK_ERR(glfwSetWindowAttrib(window_handle, GLFW_RESIZABLE, is_resizable ? GLFW_TRUE : GLFW_FALSE));
+    }
+    bool is_resizable() const override {
+        int res;
+        BRIGHTCPP_GLFW_CHK_ERR(res = glfwGetWindowAttrib(window_handle, GLFW_RESIZABLE));
+        return res;
+    }
+
+    void set_fullscreen(bool is_fullscreen) override {
+        throw std::exception("not implemented set_fullscreen() with GLFW");
+    }
+    bool is_fullscreen() const override {
+        throw std::exception("not implemented is_fullscreen() with GLFW");
+        return false;
+    }
+
+    void set_title(const std::string &title) override {
+        BRIGHTCPP_GLFW_CHK_ERR(glfwSetWindowTitle(window_handle, title.c_str()));
+    }
+    std::string get_title() const override {
+        const char *p;
+        BRIGHTCPP_GLFW_CHK_ERR(p = glfwGetWindowTitle(window_handle));
+        return std::string(p);
+    }
 };
 
 class os_util_backend_glfw : public os_util_backend {

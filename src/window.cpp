@@ -14,7 +14,6 @@ using g_graphics = internal::global_module<internal::graphics_backend>;
 
 class window::_impl {
     [[no_unique_address]] internal::system_initializer _sys;
-    settings current_settings;
     std::unique_ptr<internal::window_backend> window;
     std::unique_ptr<internal::render_target_backend> render_target;
 
@@ -24,8 +23,7 @@ class window::_impl {
     friend bool frame_update();
 
     _impl(const settings &initial_settings)
-        : current_settings(initial_settings),
-          window{g_os_util::get().create_window(current_settings)},
+        : window{g_os_util::get().create_window(initial_settings)},
           render_target{g_graphics::get().create_render_target(*window.get())} {
         available_windows.push_front(*window.get());
         wndlist_it = available_windows.begin();
@@ -35,33 +33,35 @@ class window::_impl {
     }
 
     void resize(window_size size) {
-        // BRIGHTCPP_GLFW_CHK_ERR(glfwSetWindowSize(glfw_window, size.w, size.h));
-        current_settings.size = size;
+        window->set_size(size.w, size.h);
     }
     window_size size() const {
-        return current_settings.size;
+        auto res = window->get_size();
+        return window_size{
+            .w = std::get<0>(res),
+            .h = std::get<1>(res),
+        };
     }
 
     void set_resizable(bool is_resizable) {
-        // BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_RESIZABLE, current_settings.is_resizable ? GLFW_TRUE : GLFW_FALSE));
-        current_settings.is_resizable = is_resizable;
+        window->set_resizable(is_resizable);
     }
     bool is_resizable() const {
-        return current_settings.is_resizable;
+        return window->is_resizable();
     }
 
     void set_fullscreen(bool is_fullscreen) {
+        window->set_fullscreen(is_fullscreen);
     }
     bool is_fullscreen() const {
-        return current_settings.is_fullscreen;
+        return window->is_fullscreen();
     }
 
     void set_title(const std::string &title) {
-        // BRIGHTCPP_GLFW_CHK_ERR(glfwSetWindowTitle(glfw_window, title.c_str()));
-        current_settings.title = title;
+        window->set_title(title);
     }
     std::string title() const {
-        return current_settings.title;
+        return window->get_title();
     }
 };
 
