@@ -2,8 +2,8 @@
 #include "render_proc.hpp"
 #include "render_target.hpp"
 #include "texture.hpp"
-#include "vma.hpp"
 #include "util.hpp"
+#include "vma.hpp"
 #include <iostream>
 #include <list>
 #include <optional>
@@ -21,12 +21,6 @@ auto instance_layer_required() {
 #endif
 
     return layers;
-}
-
-auto instance_extension_required() {
-    os_util_backend *os_util = nullptr; // TODO;
-
-    return os_util->get_vulkan_required_instance_extensions();
 }
 
 auto device_layer_required() {
@@ -47,9 +41,9 @@ auto device_extension_required() {
     return exts;
 }
 
-static auto create_vulkan_instance() {
+static auto create_vulkan_instance(os_util_backend& os_util) {
     auto layers = instance_layer_required();
-    auto exts = instance_extension_required();
+    auto exts = os_util.get_vulkan_required_instance_extensions();
 
     vk::ApplicationInfo app_info;
     app_info.pApplicationName = "BrightCpp App";
@@ -151,6 +145,8 @@ static auto create_allocator(vk::Instance instance, vk::PhysicalDevice phys_devi
 }
 
 class vulkan_manager : public graphics_backend {
+    std::shared_ptr<os_util_backend> os_util;
+
     vk::UniqueInstance instance;
     vk::PhysicalDevice phys_device;
     queue_index_set queue_indices;
@@ -164,8 +160,9 @@ class vulkan_manager : public graphics_backend {
     std::vector<vk::SurfaceKHR> surface_needed_support;
 
   public:
-    vulkan_manager()
-        : instance{create_vulkan_instance()},
+    vulkan_manager(const std::shared_ptr<os_util_backend> &_os_util)
+        : os_util{_os_util},
+          instance{create_vulkan_instance(*os_util)},
           phys_device{choose_phys_device(instance.get(), {})},
           queue_indices{choose_queue(phys_device, {}).value()},
           device{create_device(phys_device, queue_indices)},
@@ -205,8 +202,8 @@ class vulkan_manager : public graphics_backend {
     };
 };
 
-std::unique_ptr<graphics_backend> make_graphics_vulkan() {
-    return std::make_unique<vulkan_manager>();
+std::unique_ptr<graphics_backend> make_graphics_vulkan(const std::shared_ptr<os_util_backend> &os_util) {
+    return std::make_unique<vulkan_manager>(os_util);
 }
 
 BRIGHTCPP_GRAPHICS_VULKAN_END
