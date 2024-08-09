@@ -72,8 +72,6 @@ class image {
     image(const char *path);
     ~image();
 
-    void draw(int x, int y);
-
     image_clip clip(int x, int y, int w, int h);
 };
 
