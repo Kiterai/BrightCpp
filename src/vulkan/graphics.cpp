@@ -1,5 +1,5 @@
 #include "graphics.hpp"
-#include "render_proc.hpp"
+#include "render_proc_2d.hpp"
 #include "render_target.hpp"
 #include "texture.hpp"
 #include "util.hpp"
@@ -171,7 +171,7 @@ class vulkan_manager : public graphics_backend {
     }
 
     auto create_render_proc(const render_target &rt) {
-        return render_proc(device.get(), rt, queue_indices);
+        return render_proc_2d(device.get(), rt, queue_indices);
     }
 
     void wait_idle() {

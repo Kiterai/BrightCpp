@@ -6,7 +6,7 @@
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
-class render_proc {
+class render_proc_2d {
     vk::Device device;
     vk::UniqueRenderPass renderpass;
     vk::UniqueShaderModule vert_shader;
@@ -24,7 +24,7 @@ class render_proc {
     uint32_t current_img_index, current_frame_flight_index = 0;
 
   public:
-    render_proc(vk::Device device, const render_target &rt, const queue_index_set &queue_indices);
+    render_proc_2d(vk::Device device, const render_target &rt, const queue_index_set &queue_indices);
 
     void render_begin(const render_target &rt);
     void render_end(const render_target &rt);

@@ -1,4 +1,4 @@
-#include "render_proc.hpp"
+#include "render_proc_2d.hpp"
 #include "../linear_algebra.hpp"
 #include "util.hpp"
 
@@ -174,7 +174,7 @@ static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Ex
     return device.createGraphicsPipelineUnique(nullptr, pipelineCreateInfo).value;
 }
 
-render_proc::render_proc(vk::Device device, const render_target &rt, const queue_index_set &queue_indices)
+render_proc_2d::render_proc_2d(vk::Device device, const render_target &rt, const queue_index_set &queue_indices)
     : device{device},
       renderpass{create_render_pass(device, rt.format())},
       vert_shader{create_vert_shader(device)},
@@ -189,7 +189,7 @@ render_proc::render_proc(vk::Device device, const render_target &rt, const queue
       presentation_queue{device.getQueue(queue_indices.presentation_queue, 0)},
       rendered_fences{create_fences(device, true, frames_inflight)} {}
 
-void render_proc::render_begin(const render_target &rt) {
+void render_proc_2d::render_begin(const render_target &rt) {
     device.waitForFences({rendered_fences[current_frame_flight_index].get()}, VK_TRUE, UINT64_MAX);
     current_frame_flight_index++;
     current_frame_flight_index %= frames_inflight;
@@ -221,7 +221,7 @@ void render_proc::render_begin(const render_target &rt) {
 
     cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get());
 }
-void render_proc::render_end(const render_target &rt) {
+void render_proc_2d::render_end(const render_target &rt) {
     const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
     const auto &rendered_semaphore = rendered_semaphores[current_img_index].get();
 
@@ -251,7 +251,7 @@ void render_proc::render_end(const render_target &rt) {
     rt.present(presentation_queue, current_img_index, std::array{rendered_semaphore});
 }
 
-void render_proc::draw_rect(const render_target &rt, render_rect_info rect_info) {
+void render_proc_2d::draw_rect(const render_target &rt, render_rect_info rect_info) {
     const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
 
     const auto
