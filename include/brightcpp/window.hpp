@@ -1,6 +1,7 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
+#include <brightcpp/render_target.hpp>
 #include <memory>
 #include <string>
 
@@ -24,6 +25,8 @@ class window {
     window();
     window(const settings &initial_settings);
     ~window();
+
+    render_target get_render_target() const;
 
     void resize(window_size size);
     window_size size() const;

@@ -16,7 +16,7 @@ using g_graphics = internal::global_module<internal::graphics_backend>;
 class window::_impl {
     [[no_unique_address]] internal::system_initializer _sys;
     std::unique_ptr<internal::window_backend> window;
-    std::unique_ptr<internal::render_target_backend> render_target;
+    std::unique_ptr<internal::render_target_backend> p_render_target;
 
     decltype(available_windows.begin()) wndlist_it;
 
@@ -25,12 +25,15 @@ class window::_impl {
 
     _impl(const settings &initial_settings)
         : window{g_os_util::get().create_window(initial_settings)},
-          render_target{g_graphics::get().create_render_target(*window.get())} {
+          p_render_target{g_graphics::get().create_render_target(*window.get())} {
         available_windows.push_front(*window.get());
         wndlist_it = available_windows.begin();
     }
     ~_impl() {
         available_windows.erase(wndlist_it);
+    }
+
+    render_target get_render_target() {
     }
 
     void resize(window_size size) {
