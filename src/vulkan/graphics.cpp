@@ -176,6 +176,7 @@ class graphics_vulkan : public graphics_backend {
           allocator{create_allocator(instance.get(), phys_device, device.get())},
           tex_factory{std::make_unique<texture_factory_vulkan>(device.get(), allocator.get(), queue_indices)},
           renderer2d_factory{std::make_unique<renderer2d_factory_vulkan>(device.get(), queue_indices)} {
+        global_module<graphics_vulkan>::set(*this);
         global_module<texture_factory_backend>::set(*tex_factory.get());
         global_module<renderer2d_factory_backend>::set(*renderer2d_factory.get());
     }
@@ -204,10 +205,18 @@ class graphics_vulkan : public graphics_backend {
     void destroy_render_target(handle_holder<render_target> &rt) noexcept override {
         rendertarget_db.erase(rt.handle());
     }
+
+    render_target_vulkan &get_render_target_vulkan(handle_holder<render_target> handle) {
+        return rendertarget_db.at(handle.handle());
+    }
 };
 
 std::unique_ptr<graphics_backend> make_graphics_vulkan(const std::shared_ptr<os_util_backend> &os_util) {
     return std::make_unique<graphics_vulkan>(os_util);
+}
+
+render_target_vulkan &get_render_target_vulkan(handle_holder<render_target> handle) {
+    return global_module<graphics_vulkan>::get().get_render_target_vulkan(handle);
 }
 
 BRIGHTCPP_GRAPHICS_VULKAN_END
