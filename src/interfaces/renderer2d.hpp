@@ -15,13 +15,13 @@ struct render_texture_info {
     float theta;
 };
 
-class render2d_backend {
+class renderer2d_backend {
     virtual void draw_texture(handle_holder<image_impl> image, render_texture_info &info) = 0;
 };
 
 class renderer2d_factory_backend {
     virtual handle_holder<renderer>::handle_value_t make(handle_holder<render_target> rt) = 0;
-    virtual render2d_backend &get(handle_holder<renderer> handle) = 0;
+    virtual renderer2d_backend &get(handle_holder<renderer> handle) = 0;
 };
 
 } // namespace internal

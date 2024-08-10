@@ -8,7 +8,7 @@
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
-class renderer2d_vulkan : public render2d_backend {
+class renderer2d_vulkan : public renderer2d_backend {
     std::reference_wrapper<const render_target_vulkan> rt;
 
     vk::Device device;
@@ -43,7 +43,7 @@ class renderer2d_factory_vulkan : public renderer2d_factory_backend {
   public:
     renderer2d_factory_vulkan(vk::Device _device, queue_index_set &_queue_indices);
     handle_holder<renderer>::handle_value_t make(handle_holder<render_target> rt_handle) override;
-    render2d_backend &get(handle_holder<renderer> handle) override;
+    renderer2d_backend &get(handle_holder<renderer> handle) override;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

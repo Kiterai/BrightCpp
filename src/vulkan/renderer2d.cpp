@@ -316,7 +316,7 @@ handle_holder<renderer>::handle_value_t renderer2d_factory_vulkan::make(handle_h
 
     return handle;
 }
-render2d_backend &renderer2d_factory_vulkan::get(handle_holder<renderer> handle) {
+renderer2d_backend &renderer2d_factory_vulkan::get(handle_holder<renderer> handle) {
     return renderer_db.at(handle.handle());
 }
 
