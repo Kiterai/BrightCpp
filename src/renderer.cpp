@@ -1,10 +1,11 @@
+#include "global_module.hpp"
+#include "interfaces/graphics.hpp"
 #include <brightcpp/renderer.hpp>
 
 namespace BRIGHTCPP_NAMESPACE {
 
-render_target &renderer::target() const {
-}
-render_target &renderer::target(render_target &new_target, render_mode mode = render_mode::graphics2d) {
+renderer::renderer(render_target rt) : handle_holder(0) // TODO
+{
 }
 
 renderer &renderer::draw(image image, int x, int y) {
