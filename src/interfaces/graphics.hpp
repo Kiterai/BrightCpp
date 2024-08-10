@@ -24,8 +24,6 @@ class graphics_backend {
 
     virtual handle_holder<render_target>::handle_value_t create_render_target(window_backend &screen) = 0;
     virtual void destroy_render_target(handle_holder<render_target> &rt) noexcept = 0;
-
-    virtual std::unique_ptr<texture_factory_backend> create_texture_factory() = 0;
 };
 
 } // namespace internal

@@ -1,4 +1,5 @@
 #include "graphics.hpp"
+#include "../global_module.hpp"
 #include "render_proc_2d.hpp"
 #include "render_target.hpp"
 #include "texture.hpp"
@@ -160,6 +161,8 @@ class vulkan_manager : public graphics_backend {
     using handle_value_t = handle_t::handle_value_t;
     std::unordered_map<handle_value_t, vulkan::render_target_vulkan> rendertarget_db;
 
+    std::unique_ptr<texture_factory_backend> tex_factory;
+
   public:
     vulkan_manager(const std::shared_ptr<os_util_backend> &_os_util)
         : os_util{_os_util},
@@ -169,7 +172,10 @@ class vulkan_manager : public graphics_backend {
           device{create_device(phys_device, queue_indices)},
           graphics_queue{device->getQueue(queue_indices.graphics_queue, 0)},
           presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
-          allocator{create_allocator(instance.get(), phys_device, device.get())} {}
+          allocator{create_allocator(instance.get(), phys_device, device.get())},
+          tex_factory{std::make_unique<texture_factory>(device.get(), allocator.get(), queue_indices)} {
+        global_module<texture_factory_backend>::set(*tex_factory.get());
+    }
     ~vulkan_manager() {
         wait_idle();
     }
@@ -198,10 +204,6 @@ class vulkan_manager : public graphics_backend {
     }
     void destroy_render_target(handle_holder<render_target> &rt) noexcept override {
         rendertarget_db.erase(rt.handle());
-    }
-
-    std::unique_ptr<texture_factory_backend> create_texture_factory() override {
-        return std::make_unique<texture_factory>(device.get(), allocator.get(), queue_indices);
     }
 };
 
