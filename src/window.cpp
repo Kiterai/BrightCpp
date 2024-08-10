@@ -1,3 +1,4 @@
+#include "global_module.hpp"
 #include "interfaces/graphics.hpp"
 #include "interfaces/os_util.hpp"
 #include "system.hpp"

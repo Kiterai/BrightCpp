@@ -3,6 +3,7 @@
 #include <optional>
 
 #include "glfw/glfw.hpp"
+#include "global_module.hpp"
 #include "vulkan/graphics.hpp"
 
 namespace BRIGHTCPP_NAMESPACE {
@@ -28,7 +29,7 @@ system_initializer::system_initializer() {
 
         global_objects->graphics = vulkan::make_graphics_vulkan(global_objects->os_util);
         global_module<graphics_backend>::set(*global_objects->graphics);
-        
+
         global_objects->tex_factory = global_module<graphics_backend>::get().create_texture_factory();
         global_module<texture_factory_backend>::set(*global_objects->tex_factory);
 

@@ -2,7 +2,7 @@
 #include <stb_image.h>
 
 #include "interfaces/graphics.hpp"
-#include "system.hpp"
+#include "global_module.hpp"
 #include <brightcpp/image.hpp>
 
 namespace BRIGHTCPP_NAMESPACE {
