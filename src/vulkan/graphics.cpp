@@ -1,8 +1,6 @@
 #include "graphics.hpp"
 #include "../global_module.hpp"
 #include "render_target.hpp"
-#include "renderer2d.hpp"
-#include "texture.hpp"
 #include "util.hpp"
 #include "vma.hpp"
 #include <iostream>
@@ -145,71 +143,50 @@ static auto create_allocator(vk::Instance instance, vk::PhysicalDevice phys_devi
     return vma::createAllocatorUnique(create_info);
 }
 
-class graphics_vulkan : public graphics_backend {
-    std::shared_ptr<os_util_backend> os_util;
+graphics_vulkan::graphics_vulkan(const std::shared_ptr<os_util_backend> &_os_util)
+    : os_util{_os_util},
+      instance{create_vulkan_instance(*os_util)},
+      phys_device{choose_phys_device(instance.get(), {})},
+      queue_indices{choose_queue(phys_device, {}).value()},
+      device{create_device(phys_device, queue_indices)},
+      graphics_queue{device->getQueue(queue_indices.graphics_queue, 0)},
+      presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
+      allocator{create_allocator(instance.get(), phys_device, device.get())},
+      tex_factory{std::make_unique<texture_factory_vulkan>(device.get(), allocator.get(), queue_indices)},
+      renderer2d_factory{std::make_unique<renderer2d_factory_vulkan>(device.get(), queue_indices)} {
+    global_module<graphics_vulkan>::set(*this);
+    global_module<texture_factory_backend>::set(*tex_factory.get());
+    global_module<renderer2d_factory_backend>::set(*renderer2d_factory.get());
+}
+graphics_vulkan::~graphics_vulkan() {
+    wait_idle();
+}
 
-    vk::UniqueInstance instance;
-    vk::PhysicalDevice phys_device;
-    queue_index_set queue_indices;
-    vk::UniqueDevice device;
-    vk::Queue graphics_queue, presentation_queue;
-    vma::UniqueAllocator allocator;
+void graphics_vulkan::wait_idle() {
+    presentation_queue.waitIdle();
+    graphics_queue.waitIdle();
+}
 
-    std::vector<vk::SurfaceKHR> surface_needed_support;
+handle_holder<render_target>::handle_value_t graphics_vulkan::create_render_target(window_backend &window) {
+    const auto handle = rendertarget_db.size();
 
-    using handle_t = handle_holder<render_target>;
-    using handle_value_t = handle_t::handle_value_t;
-    std::unordered_map<handle_value_t, vulkan::render_target_vulkan> rendertarget_db;
+    rendertarget_db.insert({
+        handle,
+        render_target_vulkan(
+            instance.get(),
+            phys_device,
+            device.get(),
+            window.get_vulkan_surface(instance.get())),
+    });
+    return handle;
+}
+void graphics_vulkan::destroy_render_target(handle_holder<render_target> &rt) noexcept {
+    rendertarget_db.erase(rt.handle());
+}
 
-    std::unique_ptr<texture_factory_backend> tex_factory;
-    std::unique_ptr<renderer2d_factory_backend> renderer2d_factory;
-
-  public:
-    graphics_vulkan(const std::shared_ptr<os_util_backend> &_os_util)
-        : os_util{_os_util},
-          instance{create_vulkan_instance(*os_util)},
-          phys_device{choose_phys_device(instance.get(), {})},
-          queue_indices{choose_queue(phys_device, {}).value()},
-          device{create_device(phys_device, queue_indices)},
-          graphics_queue{device->getQueue(queue_indices.graphics_queue, 0)},
-          presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
-          allocator{create_allocator(instance.get(), phys_device, device.get())},
-          tex_factory{std::make_unique<texture_factory_vulkan>(device.get(), allocator.get(), queue_indices)},
-          renderer2d_factory{std::make_unique<renderer2d_factory_vulkan>(device.get(), queue_indices)} {
-        global_module<graphics_vulkan>::set(*this);
-        global_module<texture_factory_backend>::set(*tex_factory.get());
-        global_module<renderer2d_factory_backend>::set(*renderer2d_factory.get());
-    }
-    ~graphics_vulkan() {
-        wait_idle();
-    }
-
-    void wait_idle() {
-        presentation_queue.waitIdle();
-        graphics_queue.waitIdle();
-    }
-
-    handle_holder<render_target>::handle_value_t create_render_target(window_backend &window) override {
-        const auto handle = rendertarget_db.size();
-
-        rendertarget_db.insert({
-            handle,
-            render_target_vulkan(
-                instance.get(),
-                phys_device,
-                device.get(),
-                window.get_vulkan_surface(instance.get())),
-        });
-        return handle;
-    }
-    void destroy_render_target(handle_holder<render_target> &rt) noexcept override {
-        rendertarget_db.erase(rt.handle());
-    }
-
-    render_target_vulkan &get_render_target_vulkan(handle_holder<render_target> handle) {
-        return rendertarget_db.at(handle.handle());
-    }
-};
+render_target_vulkan &graphics_vulkan::get_render_target_vulkan(handle_holder<render_target> handle) {
+    return rendertarget_db.at(handle.handle());
+}
 
 std::unique_ptr<graphics_backend> make_graphics_vulkan(const std::shared_ptr<os_util_backend> &os_util) {
     return std::make_unique<graphics_vulkan>(os_util);
