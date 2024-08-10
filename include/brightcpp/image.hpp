@@ -56,7 +56,6 @@ class image_clip : handle_holder<image_impl> {
     image_clip(handle_holder<image_impl>, int cx, int cy, int cw, int ch);
     ~image_clip();
 
-    void draw(int x, int y);
     image_clip clip(int x, int y, int w, int h);
 };
 
