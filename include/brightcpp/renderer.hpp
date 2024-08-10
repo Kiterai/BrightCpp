@@ -3,7 +3,6 @@
 #include <brightcpp/common.hpp>
 #include <brightcpp/image.hpp>
 #include <brightcpp/render_target.hpp>
-#include <functional>
 
 namespace BRIGHTCPP_NAMESPACE {
 

@@ -2,7 +2,7 @@
 
 #include "../linear_algebra.hpp"
 #include <brightcpp/image.hpp>
-#include <brightcpp/render_target.hpp>
+#include <brightcpp/renderer.hpp>
 #include <memory>
 
 namespace BRIGHTCPP_NAMESPACE {
@@ -20,7 +20,8 @@ class render2d_backend {
 };
 
 class renderer2d_factory_backend {
-    virtual std::unique_ptr<render2d_backend> make(handle_holder<render_target> rt) = 0;
+    virtual handle_holder<renderer>::handle_value_t make(handle_holder<render_target> rt) = 0;
+    virtual render2d_backend &get(handle_holder<renderer> handle) = 0;
 };
 
 } // namespace internal

@@ -301,8 +301,23 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, render_tex
 
 renderer2d_factory_vulkan::renderer2d_factory_vulkan(vk::Device _device, queue_index_set &_queue_indices)
     : device{_device}, queue_indices{_queue_indices} {}
-std::unique_ptr<render2d_backend> renderer2d_factory_vulkan::make(handle_holder<render_target> handle) {
-    return std::make_unique<renderer2d_vulkan>(device, get_render_target_vulkan(handle), queue_indices);
+handle_holder<renderer>::handle_value_t renderer2d_factory_vulkan::make(handle_holder<render_target> rt_handle) {
+    const auto handle = renderer_db.size();
+
+    renderer_db.insert(
+        {
+            handle,
+            renderer2d_vulkan{
+                device,
+                get_render_target_vulkan(rt_handle),
+                queue_indices,
+            },
+        });
+
+    return handle;
+}
+render2d_backend &renderer2d_factory_vulkan::get(handle_holder<renderer> handle) {
+    return renderer_db.at(handle.handle());
 }
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

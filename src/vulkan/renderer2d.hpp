@@ -4,6 +4,7 @@
 #include "render_target.hpp"
 #include "vulkan_common.hpp"
 #include <brightcpp/common.hpp>
+#include <unordered_map>
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
@@ -37,10 +38,12 @@ class renderer2d_vulkan : public render2d_backend {
 class renderer2d_factory_vulkan : public renderer2d_factory_backend {
     vk::Device device;
     queue_index_set queue_indices;
+    std::unordered_map<handle_holder<renderer>::handle_value_t, renderer2d_vulkan> renderer_db;
 
   public:
     renderer2d_factory_vulkan(vk::Device _device, queue_index_set &_queue_indices);
-    std::unique_ptr<render2d_backend> make(handle_holder<render_target> rt);
+    handle_holder<renderer>::handle_value_t make(handle_holder<render_target> rt_handle) override;
+    render2d_backend &get(handle_holder<renderer> handle) override;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END
