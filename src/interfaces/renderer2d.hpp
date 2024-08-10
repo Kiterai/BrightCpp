@@ -2,6 +2,7 @@
 
 #include "../linear_algebra.hpp"
 #include <brightcpp/image.hpp>
+#include <memory>
 
 namespace BRIGHTCPP_NAMESPACE {
 
@@ -15,6 +16,10 @@ struct render_texture_info {
 
 class render2d_backend {
     virtual void draw_texture(handle_holder<image_impl> image, render_texture_info &info) = 0;
+};
+
+class renderer2d_factory_backend {
+    virtual std::unique_ptr<render2d_backend> make(handle_holder<render_target> rt) = 0;
 };
 
 } // namespace internal

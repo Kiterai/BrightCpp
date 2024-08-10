@@ -34,4 +34,13 @@ class render_proc_2d : public render2d_backend {
     void draw_texture(handle_holder<image_impl> image, render_texture_info &rect_info) override;
 };
 
+class renderer2d_factory_vulkan : public renderer2d_factory_backend {
+    vk::Device device;
+    queue_index_set queue_indices;
+
+  public:
+    renderer2d_factory_vulkan(vk::Device _device, queue_index_set &_queue_indices);
+    std::unique_ptr<render2d_backend> make(handle_holder<render_target> rt);
+};
+
 BRIGHTCPP_GRAPHICS_VULKAN_END
