@@ -192,8 +192,4 @@ std::unique_ptr<graphics_backend> make_graphics_vulkan(const std::shared_ptr<os_
     return std::make_unique<graphics_vulkan>(os_util);
 }
 
-render_target_vulkan &get_render_target_vulkan(handle_holder<render_target> handle) {
-    return global_module<graphics_vulkan>::get().get_render_target_vulkan(handle);
-}
-
 BRIGHTCPP_GRAPHICS_VULKAN_END

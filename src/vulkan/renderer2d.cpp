@@ -1,4 +1,5 @@
 #include "renderer2d.hpp"
+#include "../global_module.hpp"
 #include "../linear_algebra.hpp"
 #include "graphics.hpp"
 #include "util.hpp"
@@ -309,7 +310,7 @@ handle_holder<renderer>::handle_value_t renderer2d_factory_vulkan::make(render_t
             handle,
             renderer2d_vulkan{
                 device,
-                get_render_target_vulkan(rt),
+                global_module<graphics_vulkan>::get().get_render_target_vulkan(rt),
                 queue_indices,
             },
         });
