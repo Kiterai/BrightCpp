@@ -29,7 +29,7 @@ system_initializer::system_initializer() {
         global_objects->os_util = glfw::make_glfw_manager();
         global_module<os_util_backend>::set(*global_objects->os_util);
 
-        global_objects->graphics = vulkan::make_graphics_vulkan(global_objects->os_util);
+        global_objects->graphics = std::make_unique<vulkan::graphics_vulkan>();
         global_module<graphics_backend>::set(*global_objects->graphics);
 
         global_objects->tex_factory = std::make_unique<vulkan::texture_factory_vulkan>();

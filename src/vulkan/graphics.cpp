@@ -143,9 +143,9 @@ static auto create_allocator(vk::Instance instance, vk::PhysicalDevice phys_devi
     return vma::createAllocatorUnique(create_info);
 }
 
-graphics_vulkan::graphics_vulkan(const std::shared_ptr<os_util_backend> &_os_util)
-    : os_util{_os_util},
-      instance{create_vulkan_instance(*os_util)},
+graphics_vulkan::graphics_vulkan()
+    : os_util{global_module<os_util_backend>().get()},
+      instance{create_vulkan_instance(os_util)},
       phys_device{choose_phys_device(instance.get(), {})},
       queue_indices{choose_queue(phys_device, {}).value()},
       device{create_device(phys_device, queue_indices)},
@@ -182,10 +182,6 @@ void graphics_vulkan::destroy_render_target(handle_holder<render_target> &rt) no
 
 render_target_vulkan &graphics_vulkan::get_render_target_vulkan(handle_holder<render_target> handle) {
     return rendertarget_db.at(handle.handle());
-}
-
-std::unique_ptr<graphics_backend> make_graphics_vulkan(const std::shared_ptr<os_util_backend> &os_util) {
-    return std::make_unique<graphics_vulkan>(os_util);
 }
 
 BRIGHTCPP_GRAPHICS_VULKAN_END
