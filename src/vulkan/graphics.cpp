@@ -156,9 +156,9 @@ class vulkan_manager : public graphics_backend {
 
     std::vector<vk::SurfaceKHR> surface_needed_support;
 
-    using handle_t = handle_holder<BRIGHTCPP_NAMESPACE::render_target>;
+    using handle_t = handle_holder<render_target>;
     using handle_value_t = handle_t::handle_value_t;
-    std::unordered_map<handle_value_t, vulkan::render_target> rendertarget_db;
+    std::unordered_map<handle_value_t, vulkan::render_target_vulkan> rendertarget_db;
 
   public:
     vulkan_manager(const std::shared_ptr<os_util_backend> &_os_util)
@@ -174,7 +174,7 @@ class vulkan_manager : public graphics_backend {
         wait_idle();
     }
 
-    auto create_render_proc(const render_target &rt) {
+    auto create_render_proc(const render_target_vulkan &rt) {
         return render_proc_2d(device.get(), rt, queue_indices);
     }
 
@@ -183,12 +183,12 @@ class vulkan_manager : public graphics_backend {
         graphics_queue.waitIdle();
     }
 
-    handle_holder<render_target>::handle_value_t create_render_target(window_backend &window) {
+    handle_holder<render_target_vulkan>::handle_value_t create_render_target(window_backend &window) {
         const auto handle = rendertarget_db.size();
 
         rendertarget_db.insert({
             handle,
-            render_target(
+            render_target_vulkan(
                 instance.get(),
                 phys_device,
                 device.get(),
@@ -196,7 +196,7 @@ class vulkan_manager : public graphics_backend {
         });
         return handle;
     }
-    void destroy_render_target(handle_holder<BRIGHTCPP_NAMESPACE::render_target> &rt) noexcept override {
+    void destroy_render_target(handle_holder<render_target> &rt) noexcept override {
         rendertarget_db.erase(rt.handle());
     }
 

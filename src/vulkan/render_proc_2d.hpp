@@ -24,11 +24,11 @@ class render_proc_2d {
     uint32_t current_img_index, current_frame_flight_index = 0;
 
   public:
-    render_proc_2d(vk::Device device, const render_target &rt, const queue_index_set &queue_indices);
+    render_proc_2d(vk::Device device, const render_target_vulkan &rt, const queue_index_set &queue_indices);
 
-    void render_begin(const render_target &rt);
-    void render_end(const render_target &rt);
-    void draw_rect(const render_target &rt, render_rect_info rect_info);
+    void render_begin(const render_target_vulkan &rt);
+    void render_end(const render_target_vulkan &rt);
+    void draw_rect(const render_target_vulkan &rt, render_rect_info rect_info);
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

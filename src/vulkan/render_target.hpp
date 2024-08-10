@@ -7,7 +7,7 @@
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
-class render_target : public render_target_backend {
+class render_target_vulkan : public render_target_backend {
     vk::UniqueSurfaceKHR surface;
     SwapchainWithInfo swapchain;
     std::vector<vk::Image> swapchain_images;
@@ -16,7 +16,7 @@ class render_target : public render_target_backend {
 
   public:
     // this handles ownership of surface
-    render_target(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, vk::UniqueSurfaceKHR &&surface);
+    render_target_vulkan(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, vk::UniqueSurfaceKHR &&surface);
 
     const auto &image_views() const { return swapchain_imageviews; }
     auto format() const { return swapchain.format.format; }
