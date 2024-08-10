@@ -145,7 +145,7 @@ static auto create_allocator(vk::Instance instance, vk::PhysicalDevice phys_devi
     return vma::createAllocatorUnique(create_info);
 }
 
-class vulkan_manager : public graphics_backend {
+class graphics_vulkan : public graphics_backend {
     std::shared_ptr<os_util_backend> os_util;
 
     vk::UniqueInstance instance;
@@ -165,7 +165,7 @@ class vulkan_manager : public graphics_backend {
     std::unique_ptr<renderer2d_factory_backend> renderer2d_factory;
 
   public:
-    vulkan_manager(const std::shared_ptr<os_util_backend> &_os_util)
+    graphics_vulkan(const std::shared_ptr<os_util_backend> &_os_util)
         : os_util{_os_util},
           instance{create_vulkan_instance(*os_util)},
           phys_device{choose_phys_device(instance.get(), {})},
@@ -179,12 +179,8 @@ class vulkan_manager : public graphics_backend {
         global_module<texture_factory_backend>::set(*tex_factory.get());
         global_module<renderer2d_factory_backend>::set(*renderer2d_factory.get());
     }
-    ~vulkan_manager() {
+    ~graphics_vulkan() {
         wait_idle();
-    }
-
-    auto create_render_proc(const render_target_vulkan &rt) {
-        return renderer2d_vulkan(device.get(), rt, queue_indices);
     }
 
     void wait_idle() {
@@ -211,7 +207,7 @@ class vulkan_manager : public graphics_backend {
 };
 
 std::unique_ptr<graphics_backend> make_graphics_vulkan(const std::shared_ptr<os_util_backend> &os_util) {
-    return std::make_unique<vulkan_manager>(os_util);
+    return std::make_unique<graphics_vulkan>(os_util);
 }
 
 BRIGHTCPP_GRAPHICS_VULKAN_END
