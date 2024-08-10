@@ -17,11 +17,15 @@ struct render_texture_info {
 
 class renderer2d_backend {
   public:
+    virtual ~renderer2d_backend() = default;
+
     virtual void draw_texture(handle_holder<image_impl> image, const render_texture_info &info) = 0;
 };
 
 class renderer2d_factory_backend {
   public:
+    virtual ~renderer2d_factory_backend() = default;
+
     virtual handle_holder<renderer2d>::handle_value_t make(render_target rt) = 0;
     virtual renderer2d_backend &get(handle_holder<renderer2d> handle) = 0;
 };
