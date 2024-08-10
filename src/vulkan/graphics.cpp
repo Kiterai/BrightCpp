@@ -156,6 +156,10 @@ class vulkan_manager : public graphics_backend {
 
     std::vector<vk::SurfaceKHR> surface_needed_support;
 
+    using handle_t = handle_holder<BRIGHTCPP_NAMESPACE::render_target>;
+    using handle_value_t = handle_t::handle_value_t;
+    std::unordered_map<handle_value_t, vulkan::render_target> rendertarget_db;
+
   public:
     vulkan_manager(const std::shared_ptr<os_util_backend> &_os_util)
         : os_util{_os_util},
@@ -179,14 +183,21 @@ class vulkan_manager : public graphics_backend {
         graphics_queue.waitIdle();
     }
 
-    std::unique_ptr<render_target_backend> create_render_target(window_backend &window) {
-        if (true) {
-            return std::make_unique<render_target>(instance.get(), phys_device, device.get(), window.get_vulkan_surface(instance.get()));
-        }
+    handle_holder<render_target>::handle_value_t create_render_target(window_backend &window) {
+        const auto handle = rendertarget_db.size();
+
+        rendertarget_db.insert({
+            handle,
+            render_target(
+                instance.get(),
+                phys_device,
+                device.get(),
+                window.get_vulkan_surface(instance.get())),
+        });
+        return handle;
     }
-    void destroy_render_target(render_target_backend &rt) noexcept override {
-    }
-    void set_current_render_target(render_target_backend &rt) override {
+    void destroy_render_target(handle_holder<BRIGHTCPP_NAMESPACE::render_target> &rt) noexcept override {
+        rendertarget_db.erase(rt.handle());
     }
 
     std::unique_ptr<texture_factory_backend> create_texture_factory() override {

@@ -38,6 +38,7 @@ add_library(
     window.cpp
     system.cpp
     image.cpp
+    render_target.cpp
 
     glfw/glfw.cpp
 
