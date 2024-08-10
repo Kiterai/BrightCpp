@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../interfaces/graphics.hpp"
+#include "../interfaces/texture_factory.hpp"
 #include "util.hpp"
 #include "vma.hpp"
 #include <brightcpp/common.hpp>

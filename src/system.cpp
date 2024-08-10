@@ -15,7 +15,6 @@ static size_t initializer_count = 0;
 struct global_objects_t {
     std::shared_ptr<os_util_backend> os_util;
     std::shared_ptr<graphics_backend> graphics;
-    std::shared_ptr<texture_factory_backend> tex_factory;
 };
 
 std::optional<global_objects_t> global_objects;
