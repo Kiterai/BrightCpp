@@ -49,6 +49,7 @@ add_library(
     vulkan/render_target.cpp
     vulkan/renderer2d.cpp
     vulkan/texture.cpp
+    vulkan/registration.cpp
 )
 target_include_directories(brightcpp PUBLIC ../include)
 b_embed(brightcpp shaders/shader.vert.spv)

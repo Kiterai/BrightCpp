@@ -151,9 +151,7 @@ graphics_vulkan::graphics_vulkan()
       device{create_device(phys_device, queue_indices)},
       graphics_queue{device->getQueue(queue_indices.graphics_queue, 0)},
       presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
-      allocator{create_allocator(instance.get(), phys_device, device.get())} {
-    global_module<graphics_vulkan>::set(*this);
-}
+      allocator{create_allocator(instance.get(), phys_device, device.get())} {}
 graphics_vulkan::~graphics_vulkan() {
     wait_idle();
 }
