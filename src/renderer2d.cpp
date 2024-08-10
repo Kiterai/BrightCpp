@@ -10,8 +10,10 @@ renderer2d::renderer2d(render_target rt)
 }
 
 renderer2d &renderer2d::draw(image image, int x, int y) {
+    return *this;
 }
 renderer2d &renderer2d::draw(image_clip clip, int x, int y) {
+    return *this;
 }
 
 } // namespace BRIGHTCPP_NAMESPACE

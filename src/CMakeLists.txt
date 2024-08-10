@@ -39,6 +39,7 @@ add_library(
     system.cpp
     image.cpp
     render_target.cpp
+    renderer2d.cpp
 
     glfw/glfw.cpp
 
