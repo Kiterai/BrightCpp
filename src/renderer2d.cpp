@@ -5,11 +5,18 @@
 
 namespace BRIGHTCPP_NAMESPACE {
 
+using g_rendererfactory_t = internal::global_module<internal::renderer2d_factory_backend>;
+
 renderer2d::renderer2d(render_target rt)
-    : handle_holder(internal::global_module<internal::renderer2d_factory_backend>::get().make(rt)) {
+    : handle_holder(g_rendererfactory_t::get().make(rt)) {
 }
 
 renderer2d &renderer2d::draw(image image, int x, int y) {
+    g_rendererfactory_t::get().get(*this).draw_texture(
+        image,
+        {
+            // TODO
+        });
     return *this;
 }
 renderer2d &renderer2d::draw(image_clip clip, int x, int y) {
