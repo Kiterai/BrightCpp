@@ -7,7 +7,7 @@
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
-class render_target_vulkan : public render_target_backend {
+class render_target_vulkan {
     vk::UniqueSurfaceKHR surface;
     SwapchainWithInfo swapchain;
     std::vector<vk::Image> swapchain_images;

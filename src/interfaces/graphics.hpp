@@ -11,16 +11,6 @@ namespace BRIGHTCPP_NAMESPACE {
 
 namespace internal {
 
-class texture_backend {
-  public:
-    virtual ~texture_backend() = default;
-};
-
-class render_target_backend {
-  public:
-    virtual ~render_target_backend() = default;
-};
-
 class texture_factory_backend {
   public:
     virtual ~texture_factory_backend() = default;
