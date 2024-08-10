@@ -1,4 +1,5 @@
 #include <brightcpp/brightcpp.hpp>
+#include <brightcpp/renderer2d.hpp>
 #include <iostream>
 
 int main() {
@@ -24,6 +25,8 @@ int main() {
                 .title = "Sample App Window 2",
             },
         };
+
+        bgt::renderer2d r(wnd1);
 
         bgt::image img{"examples/assets/test.png"};
 
