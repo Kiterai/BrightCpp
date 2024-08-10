@@ -7,7 +7,7 @@
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
-class render_proc_2d : public render2d_backend {
+class renderer2d_vulkan : public render2d_backend {
     std::reference_wrapper<const render_target_vulkan> rt;
 
     vk::Device device;
@@ -27,7 +27,7 @@ class render_proc_2d : public render2d_backend {
     uint32_t current_img_index, current_frame_flight_index = 0;
 
   public:
-    render_proc_2d(vk::Device device, const render_target_vulkan &rt, const queue_index_set &queue_indices);
+    renderer2d_vulkan(vk::Device device, const render_target_vulkan &rt, const queue_index_set &queue_indices);
 
     void render_begin();
     void render_end();

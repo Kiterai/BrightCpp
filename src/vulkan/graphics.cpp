@@ -1,6 +1,6 @@
 #include "graphics.hpp"
 #include "../global_module.hpp"
-#include "render_proc_2d.hpp"
+#include "renderer2d.hpp"
 #include "render_target.hpp"
 #include "texture.hpp"
 #include "util.hpp"
@@ -181,7 +181,7 @@ class vulkan_manager : public graphics_backend {
     }
 
     auto create_render_proc(const render_target_vulkan &rt) {
-        return render_proc_2d(device.get(), rt, queue_indices);
+        return renderer2d_vulkan(device.get(), rt, queue_indices);
     }
 
     void wait_idle() {

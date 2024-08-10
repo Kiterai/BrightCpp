@@ -1,4 +1,4 @@
-#include "render_proc_2d.hpp"
+#include "renderer2d.hpp"
 #include "../linear_algebra.hpp"
 #include "util.hpp"
 
@@ -174,7 +174,7 @@ static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Ex
     return device.createGraphicsPipelineUnique(nullptr, pipelineCreateInfo).value;
 }
 
-render_proc_2d::render_proc_2d(vk::Device device, const render_target_vulkan &_rt, const queue_index_set &queue_indices)
+renderer2d_vulkan::renderer2d_vulkan(vk::Device device, const render_target_vulkan &_rt, const queue_index_set &queue_indices)
     : rt{_rt},
       device{device},
       renderpass{create_render_pass(device, rt.get().format())},
@@ -190,7 +190,7 @@ render_proc_2d::render_proc_2d(vk::Device device, const render_target_vulkan &_r
       presentation_queue{device.getQueue(queue_indices.presentation_queue, 0)},
       rendered_fences{create_fences(device, true, frames_inflight)} {}
 
-void render_proc_2d::render_begin() {
+void renderer2d_vulkan::render_begin() {
     device.waitForFences({rendered_fences[current_frame_flight_index].get()}, VK_TRUE, UINT64_MAX);
     current_frame_flight_index++;
     current_frame_flight_index %= frames_inflight;
@@ -222,7 +222,7 @@ void render_proc_2d::render_begin() {
 
     cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get());
 }
-void render_proc_2d::render_end() {
+void renderer2d_vulkan::render_end() {
     const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
     const auto &rendered_semaphore = rendered_semaphores[current_img_index].get();
 
@@ -252,7 +252,7 @@ void render_proc_2d::render_end() {
     rt.get().present(presentation_queue, current_img_index, std::array{rendered_semaphore});
 }
 
-void render_proc_2d::draw_texture(handle_holder<image_impl> image, render_texture_info &rect_info) {
+void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, render_texture_info &rect_info) {
     const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
 
     const auto
@@ -301,7 +301,8 @@ void render_proc_2d::draw_texture(handle_holder<image_impl> image, render_textur
 renderer2d_factory_vulkan::renderer2d_factory_vulkan(vk::Device _device, queue_index_set &_queue_indices)
     : device{_device}, queue_indices{_queue_indices} {}
 std::unique_ptr<render2d_backend> renderer2d_factory_vulkan::make(handle_holder<render_target> rt) {
-    return std::make_unique<render_proc_2d>(device, rt, queue_indices);
+    throw std::exception("not implemented");
+    // return std::make_unique<renderer2d_vulkan>(device, {}, queue_indices);
 }
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

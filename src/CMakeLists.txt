@@ -46,7 +46,7 @@ add_library(
     vulkan/util.cpp
     vulkan/vma_impl.cpp
     vulkan/render_target.cpp
-    vulkan/render_proc_2d.cpp
+    vulkan/renderer2d.cpp
     vulkan/texture.cpp
 )
 target_include_directories(brightcpp PUBLIC ../include)
