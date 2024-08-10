@@ -6,7 +6,7 @@
 
 namespace BRIGHTCPP_NAMESPACE {
 
-class renderer : handle_holder<renderer> {
+class renderer : public handle_holder<renderer> {
   public:
     renderer(render_target render_to);
 
