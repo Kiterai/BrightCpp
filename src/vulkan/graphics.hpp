@@ -28,9 +28,6 @@ class graphics_vulkan : public graphics_backend {
     using handle_value_t = handle_t::handle_value_t;
     std::unordered_map<handle_value_t, vulkan::render_target_vulkan> rendertarget_db;
 
-    std::unique_ptr<texture_factory_backend> tex_factory;
-    std::unique_ptr<renderer2d_factory_backend> renderer2d_factory;
-
   public:
     graphics_vulkan(const std::shared_ptr<os_util_backend> &_os_util);
     ~graphics_vulkan();

@@ -3,6 +3,7 @@
 #include "../linear_algebra.hpp"
 #include "graphics.hpp"
 #include "util.hpp"
+#include <iostream>
 
 #include <battery/embed.hpp>
 
@@ -300,8 +301,9 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
     cmd_buf.draw(4, 1, 0, 0);
 }
 
-renderer2d_factory_vulkan::renderer2d_factory_vulkan(vk::Device _device, queue_index_set &_queue_indices)
-    : device{_device}, queue_indices{_queue_indices} {}
+renderer2d_factory_vulkan::renderer2d_factory_vulkan()
+    : device{global_module<graphics_vulkan>::get().get_device()},
+      queue_indices{global_module<graphics_vulkan>::get().get_queue_indices()} {}
 handle_holder<renderer2d>::handle_value_t renderer2d_factory_vulkan::make(render_target rt) {
     const auto handle = renderer_db.size();
 

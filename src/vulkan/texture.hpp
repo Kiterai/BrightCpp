@@ -34,7 +34,7 @@ class texture_factory_vulkan : public texture_factory_backend {
     std::unordered_map<handle_value_t, texture_vulkan> texture_db;
 
   public:
-    texture_factory_vulkan(vk::Device device, vma::Allocator allocator, const queue_index_set &queue_indices);
+    texture_factory_vulkan();
 
     handle_holder<image_impl>::handle_value_t make(const uint8_t *data, uint32_t w, uint32_t h) override;
     void destroy(handle_holder<image_impl>& image) noexcept override;

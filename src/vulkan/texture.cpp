@@ -1,4 +1,7 @@
 #include "texture.hpp"
+#include "../global_module.hpp"
+#include "graphics.hpp"
+#include <iostream>
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
@@ -163,14 +166,14 @@ static auto create_descriptor_pool(vk::Device device) {
     return device.createDescriptorPoolUnique(create_info);
 }
 
-texture_factory_vulkan::texture_factory_vulkan(vk::Device device, vma::Allocator allocator, const queue_index_set &queue_indices)
-    : device{device},
-      allocator{allocator},
+texture_factory_vulkan::texture_factory_vulkan()
+    : device{global_module<graphics_vulkan>::get().get_device()},
+      allocator{global_module<graphics_vulkan>::get().get_allocator()},
       sampler{create_sampler(device)},
       desc_layout{create_descriptorset_layout(device)},
       desc_pool{create_descriptor_pool(device)},
-      queue{device.getQueue(queue_indices.graphics_queue, 0)},
-      cmd_pool{create_cmd_pool(device, queue_indices, vk::CommandPoolCreateFlagBits::eTransient | vk::CommandPoolCreateFlagBits::eResetCommandBuffer)},
+      queue{device.getQueue(global_module<graphics_vulkan>::get().get_queue_indices().graphics_queue, 0)},
+      cmd_pool{create_cmd_pool(device, global_module<graphics_vulkan>::get().get_queue_indices(), vk::CommandPoolCreateFlagBits::eTransient | vk::CommandPoolCreateFlagBits::eResetCommandBuffer)},
       cmd_buf{std::move(create_cmd_bufs(device, cmd_pool.get(), 1)[0])},
       texture_creating_fence{create_fence(device, false)} {}
 

@@ -151,12 +151,8 @@ graphics_vulkan::graphics_vulkan(const std::shared_ptr<os_util_backend> &_os_uti
       device{create_device(phys_device, queue_indices)},
       graphics_queue{device->getQueue(queue_indices.graphics_queue, 0)},
       presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
-      allocator{create_allocator(instance.get(), phys_device, device.get())},
-      tex_factory{std::make_unique<texture_factory_vulkan>(device.get(), allocator.get(), queue_indices)},
-      renderer2d_factory{std::make_unique<renderer2d_factory_vulkan>(device.get(), queue_indices)} {
+      allocator{create_allocator(instance.get(), phys_device, device.get())} {
     global_module<graphics_vulkan>::set(*this);
-    global_module<texture_factory_backend>::set(*tex_factory.get());
-    global_module<renderer2d_factory_backend>::set(*renderer2d_factory.get());
 }
 graphics_vulkan::~graphics_vulkan() {
     wait_idle();

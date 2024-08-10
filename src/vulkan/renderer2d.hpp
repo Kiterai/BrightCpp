@@ -41,7 +41,7 @@ class renderer2d_factory_vulkan : public renderer2d_factory_backend {
     std::unordered_map<handle_holder<renderer2d>::handle_value_t, renderer2d_vulkan> renderer_db;
 
   public:
-    renderer2d_factory_vulkan(vk::Device _device, queue_index_set &_queue_indices);
+    renderer2d_factory_vulkan();
     handle_holder<renderer2d>::handle_value_t make(render_target rt_handle) override;
     renderer2d_backend &get(handle_holder<renderer2d> handle) override;
 };
