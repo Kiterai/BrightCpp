@@ -1,5 +1,6 @@
 #include "renderer2d.hpp"
 #include "../linear_algebra.hpp"
+#include "graphics.hpp"
 #include "util.hpp"
 
 #include <battery/embed.hpp>
@@ -300,9 +301,8 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, render_tex
 
 renderer2d_factory_vulkan::renderer2d_factory_vulkan(vk::Device _device, queue_index_set &_queue_indices)
     : device{_device}, queue_indices{_queue_indices} {}
-std::unique_ptr<render2d_backend> renderer2d_factory_vulkan::make(handle_holder<render_target> rt) {
-    throw std::exception("not implemented");
-    // return std::make_unique<renderer2d_vulkan>(device, {}, queue_indices);
+std::unique_ptr<render2d_backend> renderer2d_factory_vulkan::make(handle_holder<render_target> handle) {
+    return std::make_unique<renderer2d_vulkan>(device, get_render_target_vulkan(handle), queue_indices);
 }
 
 BRIGHTCPP_GRAPHICS_VULKAN_END
