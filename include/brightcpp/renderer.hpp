@@ -6,12 +6,12 @@
 
 namespace BRIGHTCPP_NAMESPACE {
 
-class renderer : public handle_holder<renderer> {
+class renderer2d : public handle_holder<renderer2d> {
   public:
-    renderer(render_target render_to);
+    renderer2d(render_target render_to);
 
-    renderer &draw(image image, int x, int y);
-    renderer &draw(image_clip clip, int x, int y);
+    renderer2d &draw(image image, int x, int y);
+    renderer2d &draw(image_clip clip, int x, int y);
 };
 
 } // namespace BRIGHTCPP_NAMESPACE
