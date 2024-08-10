@@ -1,7 +1,7 @@
 #include "graphics.hpp"
 #include "../global_module.hpp"
-#include "renderer2d.hpp"
 #include "render_target.hpp"
+#include "renderer2d.hpp"
 #include "texture.hpp"
 #include "util.hpp"
 #include "vma.hpp"
@@ -162,6 +162,7 @@ class vulkan_manager : public graphics_backend {
     std::unordered_map<handle_value_t, vulkan::render_target_vulkan> rendertarget_db;
 
     std::unique_ptr<texture_factory_backend> tex_factory;
+    std::unique_ptr<renderer2d_factory_backend> renderer2d_factory;
 
   public:
     vulkan_manager(const std::shared_ptr<os_util_backend> &_os_util)
@@ -173,8 +174,10 @@ class vulkan_manager : public graphics_backend {
           graphics_queue{device->getQueue(queue_indices.graphics_queue, 0)},
           presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
           allocator{create_allocator(instance.get(), phys_device, device.get())},
-          tex_factory{std::make_unique<texture_factory>(device.get(), allocator.get(), queue_indices)} {
+          tex_factory{std::make_unique<texture_factory>(device.get(), allocator.get(), queue_indices)},
+          renderer2d_factory{std::make_unique<renderer2d_factory_vulkan>(device.get(), queue_indices)} {
         global_module<texture_factory_backend>::set(*tex_factory.get());
+        global_module<renderer2d_factory_backend>::set(*renderer2d_factory.get());
     }
     ~vulkan_manager() {
         wait_idle();
