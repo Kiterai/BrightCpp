@@ -32,7 +32,7 @@ class renderer2d_vulkan : public renderer2d_backend {
 
     void render_begin();
     void render_end();
-    void draw_texture(handle_holder<image_impl> image, render_texture_info &rect_info) override;
+    void draw_texture(handle_holder<image_impl> image, const render_texture_info &rect_info) override;
 };
 
 class renderer2d_factory_vulkan : public renderer2d_factory_backend {

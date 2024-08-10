@@ -17,7 +17,7 @@ struct render_texture_info {
 
 class renderer2d_backend {
   public:
-    virtual void draw_texture(handle_holder<image_impl> image, render_texture_info &info) = 0;
+    virtual void draw_texture(handle_holder<image_impl> image, const render_texture_info &info) = 0;
 };
 
 class renderer2d_factory_backend {

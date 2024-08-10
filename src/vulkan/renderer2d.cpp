@@ -254,7 +254,7 @@ void renderer2d_vulkan::render_end() {
     rt.get().present(presentation_queue, current_img_index, std::array{rendered_semaphore});
 }
 
-void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, render_texture_info &rect_info) {
+void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const render_texture_info &rect_info) {
     const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
 
     const auto
