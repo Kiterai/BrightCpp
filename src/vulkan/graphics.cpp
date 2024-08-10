@@ -183,7 +183,7 @@ class vulkan_manager : public graphics_backend {
         graphics_queue.waitIdle();
     }
 
-    handle_holder<render_target_vulkan>::handle_value_t create_render_target(window_backend &window) {
+    handle_holder<render_target>::handle_value_t create_render_target(window_backend &window) override {
         const auto handle = rendertarget_db.size();
 
         rendertarget_db.insert({
