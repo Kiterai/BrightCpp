@@ -1,12 +1,15 @@
 #pragma once
 
+#include "../interfaces/renderer2d.hpp"
 #include "render_target.hpp"
 #include "vulkan_common.hpp"
 #include <brightcpp/common.hpp>
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
-class render_proc_2d {
+class render_proc_2d : public render2d_backend {
+    std::reference_wrapper<const render_target_vulkan> rt;
+
     vk::Device device;
     vk::UniqueRenderPass renderpass;
     vk::UniqueShaderModule vert_shader;
@@ -26,9 +29,9 @@ class render_proc_2d {
   public:
     render_proc_2d(vk::Device device, const render_target_vulkan &rt, const queue_index_set &queue_indices);
 
-    void render_begin(const render_target_vulkan &rt);
-    void render_end(const render_target_vulkan &rt);
-    void draw_rect(const render_target_vulkan &rt, render_rect_info rect_info);
+    void render_begin();
+    void render_end();
+    void draw_texture(handle_holder<image_impl> rt, render_texture_info &rect_info) override;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

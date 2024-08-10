@@ -174,14 +174,15 @@ static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Ex
     return device.createGraphicsPipelineUnique(nullptr, pipelineCreateInfo).value;
 }
 
-render_proc_2d::render_proc_2d(vk::Device device, const render_target_vulkan &rt, const queue_index_set &queue_indices)
-    : device{device},
-      renderpass{create_render_pass(device, rt.format())},
+render_proc_2d::render_proc_2d(vk::Device device, const render_target_vulkan &_rt, const queue_index_set &queue_indices)
+    : rt{_rt},
+      device{device},
+      renderpass{create_render_pass(device, rt.get().format())},
       vert_shader{create_vert_shader(device)},
       frag_shader{create_frag_shader(device)},
       pipeline_layout{create_pipeline_layout(device)},
-      pipeline{create_pipeline(device, renderpass.get(), rt.extent(), pipeline_layout.get(), vert_shader.get(), frag_shader.get())},
-      framebufs{create_frame_bufs(device, rt.image_views(), rt.extent(), renderpass.get())},
+      pipeline{create_pipeline(device, renderpass.get(), rt.get().extent(), pipeline_layout.get(), vert_shader.get(), frag_shader.get())},
+      framebufs{create_frame_bufs(device, rt.get().image_views(), rt.get().extent(), renderpass.get())},
       draw_cmd_pool{create_draw_cmd_pool(device, queue_indices)},
       draw_cmd_buf{create_cmd_bufs(device, draw_cmd_pool.get(), uint32_t(framebufs.size()))},
       graphics_queue{device.getQueue(queue_indices.graphics_queue, 0)},
@@ -189,12 +190,12 @@ render_proc_2d::render_proc_2d(vk::Device device, const render_target_vulkan &rt
       presentation_queue{device.getQueue(queue_indices.presentation_queue, 0)},
       rendered_fences{create_fences(device, true, frames_inflight)} {}
 
-void render_proc_2d::render_begin(const render_target_vulkan &rt) {
+void render_proc_2d::render_begin() {
     device.waitForFences({rendered_fences[current_frame_flight_index].get()}, VK_TRUE, UINT64_MAX);
     current_frame_flight_index++;
     current_frame_flight_index %= frames_inflight;
 
-    current_img_index = rt.acquire_frame(device);
+    current_img_index = rt.get().acquire_frame(device);
     const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
     const auto &fence = rendered_fences[current_frame_flight_index].get();
 
@@ -207,7 +208,7 @@ void render_proc_2d::render_begin(const render_target_vulkan &rt) {
     vk::RenderPassBeginInfo renderpassBeginInfo;
     renderpassBeginInfo.renderPass = renderpass.get();
     renderpassBeginInfo.framebuffer = framebufs[current_img_index].get();
-    renderpassBeginInfo.renderArea = vk::Rect2D({0, 0}, rt.extent());
+    renderpassBeginInfo.renderArea = vk::Rect2D({0, 0}, rt.get().extent());
 
     auto clearVal = {
         vk::ClearValue{}
@@ -221,7 +222,7 @@ void render_proc_2d::render_begin(const render_target_vulkan &rt) {
 
     cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get());
 }
-void render_proc_2d::render_end(const render_target_vulkan &rt) {
+void render_proc_2d::render_end() {
     const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
     const auto &rendered_semaphore = rendered_semaphores[current_img_index].get();
 
@@ -239,7 +240,7 @@ void render_proc_2d::render_end(const render_target_vulkan &rt) {
         submitInfo.signalSemaphoreCount = uint32_t(render_signal_semaphores.size());
         submitInfo.pSignalSemaphores = render_signal_semaphores.begin();
 
-        vk::Semaphore renderwaitSemaphores[] = {rt.image_prepared_semaphore()};
+        vk::Semaphore renderwaitSemaphores[] = {rt.get().image_prepared_semaphore()};
         vk::PipelineStageFlags renderwaitStages[] = {vk::PipelineStageFlagBits::eColorAttachmentOutput};
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = renderwaitSemaphores;
@@ -248,10 +249,10 @@ void render_proc_2d::render_end(const render_target_vulkan &rt) {
         graphics_queue.submit({submitInfo}, rendered_fences[current_frame_flight_index].get());
     }
 
-    rt.present(presentation_queue, current_img_index, std::array{rendered_semaphore});
+    rt.get().present(presentation_queue, current_img_index, std::array{rendered_semaphore});
 }
 
-void render_proc_2d::draw_rect(const render_target_vulkan &rt, render_rect_info rect_info) {
+void render_proc_2d::draw_texture(handle_holder<image_impl> image, render_texture_info &rect_info) {
     const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
 
     const auto
@@ -289,7 +290,7 @@ void render_proc_2d::draw_rect(const render_target_vulkan &rt, render_rect_info 
     const shader_pushconstant data{
         .draw_matrix{move_mat * rotate_mat * scale_mat * pivot_mat},
         .screen_size{
-            .v{float(rt.extent().width), float(rt.extent().height)},
+            .v{float(rt.get().extent().width), float(rt.get().extent().height)},
         },
         .color{rect_info.color},
     };
