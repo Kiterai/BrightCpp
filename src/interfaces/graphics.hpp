@@ -37,8 +37,6 @@ class graphics_backend {
     virtual void destroy_render_target(handle_holder<render_target> &rt) noexcept = 0;
 
     virtual std::unique_ptr<texture_factory_backend> create_texture_factory() = 0;
-
-    virtual void draw(texture_backend texture, render_rect_info &info) = 0;
 };
 
 } // namespace internal

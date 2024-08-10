@@ -203,9 +203,6 @@ class vulkan_manager : public graphics_backend {
     std::unique_ptr<texture_factory_backend> create_texture_factory() override {
         return std::make_unique<texture_factory>(device.get(), allocator.get(), queue_indices);
     }
-
-    void draw(texture_backend texture, render_rect_info &info) override {
-    };
 };
 
 std::unique_ptr<graphics_backend> make_graphics_vulkan(const std::shared_ptr<os_util_backend> &os_util) {
