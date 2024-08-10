@@ -2,7 +2,7 @@
 
 #include "../linear_algebra.hpp"
 #include <brightcpp/image.hpp>
-#include <brightcpp/renderer.hpp>
+#include <brightcpp/renderer2d.hpp>
 #include <memory>
 
 namespace BRIGHTCPP_NAMESPACE {

@@ -1,7 +1,7 @@
+#include "interfaces/renderer2d.hpp"
 #include "global_module.hpp"
 #include "interfaces/graphics.hpp"
-#include "interfaces/renderer2d.hpp"
-#include <brightcpp/renderer.hpp>
+#include <brightcpp/renderer2d.hpp>
 
 namespace BRIGHTCPP_NAMESPACE {
 
