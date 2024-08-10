@@ -163,7 +163,7 @@ static auto create_descriptor_pool(vk::Device device) {
     return device.createDescriptorPoolUnique(create_info);
 }
 
-texture_factory::texture_factory(vk::Device device, vma::Allocator allocator, const queue_index_set &queue_indices)
+texture_factory_vulkan::texture_factory_vulkan(vk::Device device, vma::Allocator allocator, const queue_index_set &queue_indices)
     : device{device},
       allocator{allocator},
       sampler{create_sampler(device)},
@@ -174,7 +174,7 @@ texture_factory::texture_factory(vk::Device device, vma::Allocator allocator, co
       cmd_buf{std::move(create_cmd_bufs(device, cmd_pool.get(), 1)[0])},
       texture_creating_fence{create_fence(device, false)} {}
 
-vk::UniqueDescriptorSet texture_factory::create_texture_descriptor_set(vk::ImageView image_view) {
+vk::UniqueDescriptorSet texture_factory_vulkan::create_texture_descriptor_set(vk::ImageView image_view) {
     auto layouts = {desc_layout.get()};
 
     vk::DescriptorSetAllocateInfo allocate_info;
@@ -204,7 +204,7 @@ vk::UniqueDescriptorSet texture_factory::create_texture_descriptor_set(vk::Image
     return desc_set;
 }
 
-handle_holder<image_impl>::handle_value_t texture_factory::make(const uint8_t *data, uint32_t w, uint32_t h) {
+handle_holder<image_impl>::handle_value_t texture_factory_vulkan::make(const uint8_t *data, uint32_t w, uint32_t h) {
     auto [tmp_buf, buf_allocation] =
         create_filled_buffer(
             allocator, data, w * h * 4,
@@ -247,7 +247,7 @@ handle_holder<image_impl>::handle_value_t texture_factory::make(const uint8_t *d
     texture_db.insert(
         {
             handle_value,
-            texture_resource{
+            texture_vulkan{
                 std::move(image),
                 std::move(image_allocation),
                 std::move(image_view),
@@ -258,7 +258,7 @@ handle_holder<image_impl>::handle_value_t texture_factory::make(const uint8_t *d
     return handle_value;
 }
 
-void texture_factory::destroy(handle_holder<image_impl> &image) noexcept {
+void texture_factory_vulkan::destroy(handle_holder<image_impl> &image) noexcept {
     texture_db.erase(image.handle());
 }
 

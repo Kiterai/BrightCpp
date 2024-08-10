@@ -8,7 +8,7 @@
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
-struct texture_resource {
+struct texture_vulkan {
   public:
     vma::UniqueImage image;
     vma::UniqueAllocation allocation;
@@ -16,7 +16,7 @@ struct texture_resource {
     vk::UniqueDescriptorSet desc_set;
 };
 
-class texture_factory : public texture_factory_backend {
+class texture_factory_vulkan : public texture_factory_backend {
     vk::Device device;
     vma::Allocator allocator;
     vk::UniqueSampler sampler;
@@ -31,10 +31,10 @@ class texture_factory : public texture_factory_backend {
 
     using handle_t = handle_holder<image_impl>;
     using handle_value_t = handle_t::handle_value_t;
-    std::unordered_map<handle_value_t, texture_resource> texture_db;
+    std::unordered_map<handle_value_t, texture_vulkan> texture_db;
 
   public:
-    texture_factory(vk::Device device, vma::Allocator allocator, const queue_index_set &queue_indices);
+    texture_factory_vulkan(vk::Device device, vma::Allocator allocator, const queue_index_set &queue_indices);
 
     handle_holder<image_impl>::handle_value_t make(const uint8_t *data, uint32_t w, uint32_t h) override;
     void destroy(handle_holder<image_impl>& image) noexcept override;
