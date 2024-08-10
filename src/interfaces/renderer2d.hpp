@@ -20,7 +20,7 @@ class renderer2d_backend {
 };
 
 class renderer2d_factory_backend {
-    virtual handle_holder<renderer>::handle_value_t make(handle_holder<render_target> rt) = 0;
+    virtual handle_holder<renderer>::handle_value_t make(render_target rt) = 0;
     virtual renderer2d_backend &get(handle_holder<renderer> handle) = 0;
 };
 

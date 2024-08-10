@@ -301,7 +301,7 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, render_tex
 
 renderer2d_factory_vulkan::renderer2d_factory_vulkan(vk::Device _device, queue_index_set &_queue_indices)
     : device{_device}, queue_indices{_queue_indices} {}
-handle_holder<renderer>::handle_value_t renderer2d_factory_vulkan::make(handle_holder<render_target> rt_handle) {
+handle_holder<renderer>::handle_value_t renderer2d_factory_vulkan::make(render_target rt) {
     const auto handle = renderer_db.size();
 
     renderer_db.insert(
@@ -309,7 +309,7 @@ handle_holder<renderer>::handle_value_t renderer2d_factory_vulkan::make(handle_h
             handle,
             renderer2d_vulkan{
                 device,
-                get_render_target_vulkan(rt_handle),
+                get_render_target_vulkan(rt),
                 queue_indices,
             },
         });

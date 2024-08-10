@@ -42,7 +42,7 @@ class renderer2d_factory_vulkan : public renderer2d_factory_backend {
 
   public:
     renderer2d_factory_vulkan(vk::Device _device, queue_index_set &_queue_indices);
-    handle_holder<renderer>::handle_value_t make(handle_holder<render_target> rt_handle) override;
+    handle_holder<renderer>::handle_value_t make(render_target rt_handle) override;
     renderer2d_backend &get(handle_holder<renderer> handle) override;
 };
 
