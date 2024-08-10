@@ -1,7 +1,7 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
-#include <memory>
+#include <brightcpp/handle_holder.hpp>
 #include <string>
 
 namespace BRIGHTCPP_NAMESPACE {
@@ -47,27 +47,20 @@ constexpr pivot right_bottom =
 
 } // namespace pivot_pos
 
-namespace internal {
-
 class image_impl;
 
-}
-
-class image_clip {
-    std::weak_ptr<internal::image_impl> p_impl;
+class image_clip : handle_holder<image_impl> {
     int cx, cy, cw, ch;
 
   public:
-    image_clip(const std::weak_ptr<internal::image_impl> &p, int cx, int cy, int cw, int ch);
+    image_clip(handle_holder<image_impl>, int cx, int cy, int cw, int ch);
     ~image_clip();
 
     void draw(int x, int y);
     image_clip clip(int x, int y, int w, int h);
 };
 
-class image {
-    std::shared_ptr<internal::image_impl> p_impl;
-
+class image : public handle_holder<image_impl> {
   public:
     image(const char *path);
     ~image();
