@@ -31,7 +31,7 @@ class render_proc_2d : public render2d_backend {
 
     void render_begin();
     void render_end();
-    void draw_texture(handle_holder<image_impl> rt, render_texture_info &rect_info) override;
+    void draw_texture(handle_holder<image_impl> image, render_texture_info &rect_info) override;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END
