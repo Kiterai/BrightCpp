@@ -39,6 +39,11 @@ class graphics_vulkan : public graphics_backend {
 
     handle_holder<render_target>::handle_value_t create_render_target(window_backend &window) override;
     void destroy_render_target(handle_holder<render_target> &rt) noexcept override;
+
+    vk::Device get_device() const { return device.get(); }
+    vma::Allocator get_allocator() const { return allocator.get(); }
+    const queue_index_set &get_queue_indices() const { return queue_indices; }
+
     render_target_vulkan &get_render_target_vulkan(handle_holder<render_target> handle);
 };
 
