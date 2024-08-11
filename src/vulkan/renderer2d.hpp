@@ -30,8 +30,8 @@ class renderer2d_vulkan : public renderer2d_backend {
   public:
     renderer2d_vulkan(vk::Device device, const render_target_vulkan &rt, const queue_index_set &queue_indices);
 
-    void render_begin();
-    void render_end();
+    void render_begin() override;
+    void render_end() override;
     void draw_texture(handle_holder<image_impl> image, const render_texture_info &rect_info) override;
 };
 

@@ -19,6 +19,9 @@ class renderer2d_backend {
   public:
     virtual ~renderer2d_backend() = default;
 
+    virtual void render_begin() = 0;
+    virtual void render_end() = 0;
+
     virtual void draw_texture(handle_holder<image_impl> image, const render_texture_info &info) = 0;
 };
 
