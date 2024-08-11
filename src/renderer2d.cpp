@@ -12,7 +12,7 @@ renderer2d::renderer2d(render_target rt)
     g_rendererfactory_t::get().get(*this).render_begin();
 }
 
-renderer2d &renderer2d::draw(image image, int x, int y) {
+renderer2d &renderer2d::draw(image &image, int x, int y) {
     g_rendererfactory_t::get().get(*this).draw_texture(
         image,
         {
@@ -23,7 +23,7 @@ renderer2d &renderer2d::draw(image image, int x, int y) {
         });
     return *this;
 }
-renderer2d &renderer2d::draw(image_clip clip, int x, int y) {
+renderer2d &renderer2d::draw(image_clip &clip, int x, int y) {
     g_rendererfactory_t::get().get(*this).draw_texture(
         clip,
         {

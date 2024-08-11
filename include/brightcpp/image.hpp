@@ -62,6 +62,7 @@ class image_clip : public handle_holder<image_impl> {
 class image : public handle_holder<image_impl> {
   public:
     image(const char *path);
+    image(image&) = delete;
     ~image();
 
     image_clip clip(int x, int y, int w, int h);
