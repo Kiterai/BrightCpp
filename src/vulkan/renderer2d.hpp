@@ -38,12 +38,10 @@ class renderer2d_vulkan : public renderer2d_backend {
 class renderer2d_factory_vulkan : public renderer2d_factory_backend {
     vk::Device device;
     queue_index_set queue_indices;
-    std::unordered_map<handle_holder<renderer2d>::handle_value_t, renderer2d_vulkan> renderer_db;
 
   public:
     renderer2d_factory_vulkan();
-    handle_holder<renderer2d>::handle_value_t make(render_target rt_handle) override;
-    renderer2d_backend &get(handle_holder<renderer2d> handle) override;
+    std::unique_ptr<renderer2d_backend> make(render_target rt_handle) override;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

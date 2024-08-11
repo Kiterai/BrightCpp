@@ -3,10 +3,17 @@
 #include <brightcpp/common.hpp>
 #include <brightcpp/image.hpp>
 #include <brightcpp/render_target.hpp>
+#include <memory>
 
 namespace BRIGHTCPP_NAMESPACE {
 
-class renderer2d : public handle_holder<renderer2d> {
+namespace internal {
+class renderer2d_backend;
+}
+
+class renderer2d {
+    std::unique_ptr<internal::renderer2d_backend> p_renderer;
+
   public:
     renderer2d(render_target render_to);
 
