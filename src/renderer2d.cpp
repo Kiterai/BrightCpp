@@ -15,11 +15,20 @@ renderer2d &renderer2d::draw(image image, int x, int y) {
     g_rendererfactory_t::get().get(*this).draw_texture(
         image,
         {
-            // TODO
+            .pos{float(x), float(y)},
+            .size{100, 100}, // TODO
+            .apos{0, 0},
         });
     return *this;
 }
 renderer2d &renderer2d::draw(image_clip clip, int x, int y) {
+    g_rendererfactory_t::get().get(*this).draw_texture(
+        clip,
+        {
+            .pos{float(x), float(y)},
+            .size{100, 100}, // TODO
+            .apos{0, 0},
+        });
     return *this;
 }
 
