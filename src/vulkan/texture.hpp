@@ -4,6 +4,7 @@
 #include "util.hpp"
 #include "vma.hpp"
 #include <brightcpp/common.hpp>
+#include <brightcpp/image.hpp>
 #include <unordered_map>
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
@@ -37,7 +38,9 @@ class texture_factory_vulkan : public texture_factory_backend {
     texture_factory_vulkan();
 
     handle_holder<image_impl>::handle_value_t make(const uint8_t *data, uint32_t w, uint32_t h) override;
-    void destroy(handle_holder<image_impl>& image) noexcept override;
+    void destroy(handle_holder<image_impl> &image) noexcept override;
+
+    const texture_vulkan &get(handle_holder<image_impl> &image) const;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

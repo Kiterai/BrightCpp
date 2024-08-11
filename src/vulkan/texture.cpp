@@ -265,4 +265,8 @@ void texture_factory_vulkan::destroy(handle_holder<image_impl> &image) noexcept 
     texture_db.erase(image.handle());
 }
 
+const texture_vulkan &texture_factory_vulkan::get(handle_holder<image_impl> &image) const {
+    return texture_db.at(image.handle());
+}
+
 BRIGHTCPP_GRAPHICS_VULKAN_END
