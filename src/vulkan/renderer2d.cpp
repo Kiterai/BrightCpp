@@ -2,6 +2,7 @@
 #include "../global_module.hpp"
 #include "../linear_algebra.hpp"
 #include "graphics.hpp"
+#include "texture.hpp"
 #include "util.hpp"
 #include <iostream>
 
@@ -86,9 +87,13 @@ static auto create_pipeline_layout(vk::Device device) {
             .setStageFlags(vk::ShaderStageFlagBits::eVertex),
     };
 
+    auto setLayouts = {
+        global_module<texture_factory_vulkan>::get().get_descriptor_set_layout(),
+    };
+
     vk::PipelineLayoutCreateInfo layoutCreateInfo;
-    layoutCreateInfo.setLayoutCount = 0;
-    layoutCreateInfo.pSetLayouts = nullptr;
+    layoutCreateInfo.setLayoutCount = setLayouts.size();
+    layoutCreateInfo.pSetLayouts = setLayouts.begin();
     layoutCreateInfo.pPushConstantRanges = pushConstantRanges.begin();
     layoutCreateInfo.pushConstantRangeCount = uint32_t(pushConstantRanges.size());
 
@@ -257,6 +262,15 @@ void renderer2d_vulkan::render_end() {
 
 void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const render_texture_info &rect_info) {
     const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
+
+    const auto &texture = global_module<texture_factory_vulkan>::get().get(image);
+
+    cmd_buf.bindDescriptorSets(
+        vk::PipelineBindPoint::eGraphics,
+        pipeline_layout.get(),
+        0,
+        {texture.desc_set.get()},
+        {});
 
     const auto
         cos_th = cosf(rect_info.theta),
