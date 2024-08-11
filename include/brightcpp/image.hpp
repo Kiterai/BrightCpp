@@ -49,7 +49,7 @@ constexpr pivot right_bottom =
 
 class image_impl;
 
-class image_clip : handle_holder<image_impl> {
+class image_clip : public handle_holder<image_impl> {
     int cx, cy, cw, ch;
 
   public:
