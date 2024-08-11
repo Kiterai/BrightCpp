@@ -68,6 +68,10 @@ class window::_impl {
     std::string title() const {
         return window->get_title();
     }
+
+    bool close_requested() const {
+        return window->is_close_requested();
+    }
 };
 
 window::window()
@@ -89,6 +93,8 @@ bool window::is_fullscreen() const { return pimpl->is_fullscreen(); }
 
 void window::set_title(std::string title) { pimpl->set_title(title); }
 std::string window::title() const { return pimpl->title(); }
+
+bool window::close_requested() const { return pimpl->close_requested(); }
 
 bool frame_update() {
     // internal::apply_render();

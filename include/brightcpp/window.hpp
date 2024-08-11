@@ -39,6 +39,8 @@ class window {
 
     void set_title(std::string title);
     std::string title() const;
+
+    bool close_requested() const;
 };
 
 bool frame_update();
