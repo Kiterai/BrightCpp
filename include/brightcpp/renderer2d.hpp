@@ -15,6 +15,8 @@ class renderer2d : public handle_holder<renderer2d> {
 
     renderer2d &draw(image image, int x, int y);
     renderer2d &draw(image_clip clip, int x, int y);
+
+    renderer2d &flush();
 };
 
 } // namespace BRIGHTCPP_NAMESPACE

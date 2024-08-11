@@ -31,6 +31,8 @@ int main() {
         bgt::image img{"examples/assets/test.png"};
 
         while (bgt::frame_update()) {
+            r.draw(img, 50, 50);
+            r.flush();
         }
     } catch (std::exception &e) {
         std::cerr << "error: " << e.what() << std::endl;
