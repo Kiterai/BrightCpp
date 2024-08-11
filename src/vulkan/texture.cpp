@@ -269,4 +269,8 @@ const texture_vulkan &texture_factory_vulkan::get(handle_holder<image_impl> &ima
     return texture_db.at(image.handle());
 }
 
+vk::DescriptorSetLayout texture_factory_vulkan::get_descriptor_set_layout() const {
+    return desc_layout.get();
+}
+
 BRIGHTCPP_GRAPHICS_VULKAN_END

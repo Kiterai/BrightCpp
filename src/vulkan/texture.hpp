@@ -41,6 +41,8 @@ class texture_factory_vulkan : public texture_factory_backend {
     void destroy(handle_holder<image_impl> &image) noexcept override;
 
     const texture_vulkan &get(handle_holder<image_impl> &image) const;
+
+    vk::DescriptorSetLayout get_descriptor_set_layout() const;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END
