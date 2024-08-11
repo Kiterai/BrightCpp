@@ -19,6 +19,7 @@ renderer2d &renderer2d::draw(image image, int x, int y) {
             .pos{float(x), float(y)},
             .size{100, 100}, // TODO
             .apos{0, 0},
+            .color{1.0f, 0.0f, 0.0f, 1.0f},
         });
     return *this;
 }
@@ -29,6 +30,7 @@ renderer2d &renderer2d::draw(image_clip clip, int x, int y) {
             .pos{float(x), float(y)},
             .size{100, 100}, // TODO
             .apos{0, 0},
+            .color{1.0f, 0.0f, 0.0f, 1.0f},
         });
     return *this;
 }
