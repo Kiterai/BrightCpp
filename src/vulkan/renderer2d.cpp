@@ -284,16 +284,16 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
         cos_th = cosf(rect_info.theta),
         sin_th = sinf(rect_info.theta);
 
-    const auto ax = rect_info.apos.v[0];
-    const auto ay = rect_info.apos.v[1];
-    const auto w = rect_info.size.v[0];
-    const auto h = rect_info.size.v[1];
+    const auto anchor_x = rect_info.anchor_pos.v[0];
+    const auto anchor_y = rect_info.anchor_pos.v[1];
+    const auto w = texture.w;
+    const auto h = texture.h;
     const auto x = rect_info.pos.v[0];
     const auto y = rect_info.pos.v[1];
 
     mat3 pivot_mat{.m{
-        {1.0f, 0.0f, -ax},
-        {0.0f, 1.0f, -ay},
+        {1.0f, 0.0f, -anchor_x},
+        {0.0f, 1.0f, -anchor_y},
         {0.0f, 0.0f, 1.0f},
     }};
     mat3 scale_mat{.m{
