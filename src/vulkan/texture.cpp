@@ -1,7 +1,7 @@
 #include "texture.hpp"
 #include "../global_module.hpp"
 #include "graphics.hpp"
-#include <iostream>
+#include <iostream>d
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
@@ -251,10 +251,12 @@ handle_holder<image_impl>::handle_value_t texture_factory_vulkan::make(const uin
         {
             handle_value,
             texture_vulkan{
-                std::move(image),
-                std::move(image_allocation),
-                std::move(image_view),
-                std::move(desc_set),
+                .image = std::move(image),
+                .allocation = std::move(image_allocation),
+                .image_view = std::move(image_view),
+                .desc_set = std::move(desc_set),
+                .w = w,
+                .h = h,
             },
         });
 

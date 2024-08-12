@@ -15,6 +15,7 @@ struct texture_vulkan {
     vma::UniqueAllocation allocation;
     vk::UniqueImageView image_view;
     vk::UniqueDescriptorSet desc_set;
+    uint32_t w, h;
 };
 
 class texture_factory_vulkan : public texture_factory_backend {
