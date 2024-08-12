@@ -2,6 +2,7 @@
 
 #include <brightcpp/common.hpp>
 #include <brightcpp/handle_holder.hpp>
+#include <brightcpp/image_decl.hpp>
 #include <string>
 
 namespace BRIGHTCPP_NAMESPACE {
@@ -47,8 +48,6 @@ constexpr pivot right_bottom =
 
 } // namespace pivot_pos
 
-class image_impl;
-
 class image_clip : public handle_holder<image_impl> {
     int cx, cy, cw, ch;
 
@@ -62,7 +61,7 @@ class image_clip : public handle_holder<image_impl> {
 class image : public handle_holder<image_impl> {
   public:
     image(const char *path);
-    image(image&) = delete;
+    image(image &) = delete;
     ~image();
 
     image_clip clip(int x, int y, int w, int h);

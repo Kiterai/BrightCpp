@@ -2,7 +2,7 @@
 
 #include "os_util.hpp"
 #include <brightcpp/common.hpp>
-#include <brightcpp/image.hpp>
+#include <brightcpp/image_decl.hpp>
 #include <cstdint>
 
 namespace BRIGHTCPP_NAMESPACE {

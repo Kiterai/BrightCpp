@@ -4,7 +4,7 @@
 #include "util.hpp"
 #include "vma.hpp"
 #include <brightcpp/common.hpp>
-#include <brightcpp/image.hpp>
+#include <brightcpp/image_decl.hpp>
 #include <unordered_map>
 
 BRIGHTCPP_GRAPHICS_VULKAN_START

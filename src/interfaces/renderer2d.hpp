@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../linear_algebra.hpp"
-#include <brightcpp/image.hpp>
+#include <brightcpp/image_decl.hpp>
 #include <brightcpp/renderer2d.hpp>
 #include <memory>
 
