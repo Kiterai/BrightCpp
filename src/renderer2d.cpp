@@ -8,12 +8,10 @@ namespace BRIGHTCPP_NAMESPACE {
 using g_rendererfactory_t = internal::global_module<internal::renderer2d_factory_backend>;
 
 renderer2d::renderer2d(render_target rt)
-    : p_renderer(g_rendererfactory_t::get().make(rt).release()) {
+    : p_renderer(g_rendererfactory_t::get().make(rt)) {
     p_renderer->render_begin();
 }
-renderer2d::~renderer2d() {
-    delete p_renderer;
-}
+renderer2d::~renderer2d() = default;
 
 renderer2d &renderer2d::draw(image &image, int x, int y) {
     p_renderer->draw_texture(

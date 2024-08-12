@@ -12,7 +12,7 @@ class renderer2d_backend;
 }
 
 class renderer2d {
-    internal::renderer2d_backend *p_renderer;
+    std::unique_ptr<internal::renderer2d_backend> p_renderer;
 
   public:
     renderer2d(render_target render_to);
