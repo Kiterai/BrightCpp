@@ -100,7 +100,7 @@ static auto create_pipeline_layout(vk::Device device) {
     return device.createPipelineLayoutUnique(layoutCreateInfo);
 }
 
-static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D extent, vk::PipelineLayout pipeline_layout, vk::ShaderModule vert_shader, vk::ShaderModule frag_shader) {
+static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D extent, vk::PipelineLayout pipeline_layout, vk::ShaderModule vert_shader, vk::ShaderModule frag_shader, bool alpha = true) {
     vk::Viewport viewports[1];
     viewports[0].x = 0.0;
     viewports[0].y = 0.0;
@@ -148,7 +148,15 @@ static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Ex
         vk::ColorComponentFlagBits::eR |
         vk::ColorComponentFlagBits::eG |
         vk::ColorComponentFlagBits::eB;
-    blendattachment[0].blendEnable = false;
+    blendattachment[0].blendEnable = alpha;
+    if (alpha) {
+        blendattachment[0].srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
+        blendattachment[0].dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+        blendattachment[0].colorBlendOp = vk::BlendOp::eAdd;
+        blendattachment[0].srcAlphaBlendFactor = vk::BlendFactor::eOne;
+        blendattachment[0].dstAlphaBlendFactor = vk::BlendFactor::eZero;
+        blendattachment[0].alphaBlendOp = vk::BlendOp::eAdd;
+    }
 
     vk::PipelineColorBlendStateCreateInfo blend;
     blend.logicOpEnable = false;

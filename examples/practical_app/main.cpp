@@ -32,6 +32,8 @@ int main() {
 
         while (bgt::frame_update()) {
             r.draw(img, 50, 50);
+            r.draw(img, 100, 100);
+            r.draw(img, 150, 150);
             r.flush();
         }
     } catch (std::exception &e) {
