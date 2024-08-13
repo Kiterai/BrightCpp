@@ -19,16 +19,22 @@ renderer2d &renderer2d::draw(image &image, int x, int y) {
         {
             .pos{float(x), float(y)},
             .anchor_pos{0, 0},
+            .clip_pos{0.0f, 0.0f},
+            .clip_size{}, // TODO
             .color{1.0f, 0.0f, 0.0f, 1.0f},
         });
     return *this;
 }
 renderer2d &renderer2d::draw(image_clip &clip, int x, int y) {
+    const auto clip_rect = clip.clipping_area();
+
     p_renderer->draw_texture(
         clip,
         {
             .pos{float(x), float(y)},
             .anchor_pos{0, 0},
+            .clip_pos{float(clip_rect.left()), float(clip_rect.top())},
+            .clip_size{float(clip_rect.width()), float(clip_rect.height())},
             .color{1.0f, 0.0f, 0.0f, 1.0f},
         });
     return *this;
