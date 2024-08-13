@@ -255,6 +255,8 @@ handle_holder<image_impl>::handle_value_t texture_factory_vulkan::make(const uin
                 .allocation = std::move(image_allocation),
                 .image_view = std::move(image_view),
                 .desc_set = std::move(desc_set),
+                .w_int = int(w),
+                .h_int = int(h),
                 .w = float(w),
                 .h = float(h),
             },
@@ -263,16 +265,16 @@ handle_holder<image_impl>::handle_value_t texture_factory_vulkan::make(const uin
     return handle_value;
 }
 
-void texture_factory_vulkan::destroy(handle_holder<image_impl> &image) noexcept {
+void texture_factory_vulkan::destroy(const handle_holder<image_impl> &image) noexcept {
     texture_db.erase(image.handle());
 }
 
-rect_size texture_factory_vulkan::texture_size(handle_holder<image_impl> &image) {
+rect_size texture_factory_vulkan::texture_size(const handle_holder<image_impl> &image) const {
     const auto &dat = this->get(image);
-    return rect_size{dat.w, dat.h};
+    return rect_size{dat.w_int, dat.h_int};
 };
 
-const texture_vulkan &texture_factory_vulkan::get(handle_holder<image_impl> &image) const {
+const texture_vulkan &texture_factory_vulkan::get(const handle_holder<image_impl> &image) const {
     return texture_db.at(image.handle());
 }
 

@@ -15,6 +15,7 @@ struct texture_vulkan {
     vma::UniqueAllocation allocation;
     vk::UniqueImageView image_view;
     vk::UniqueDescriptorSet desc_set;
+    int w_int, h_int;
     float w, h;
 };
 
@@ -39,11 +40,11 @@ class texture_factory_vulkan : public texture_factory_backend {
     texture_factory_vulkan();
 
     handle_holder<image_impl>::handle_value_t make(const uint8_t *data, uint32_t w, uint32_t h) override;
-    void destroy(handle_holder<image_impl> &image) noexcept override;
+    void destroy(const handle_holder<image_impl> &image) noexcept override;
 
-    rect_size texture_size(handle_holder<image_impl> &) override;
+    rect_size texture_size(const handle_holder<image_impl> &) const override;
 
-    const texture_vulkan &get(handle_holder<image_impl> &image) const;
+    const texture_vulkan &get(const handle_holder<image_impl> &image) const;
 
     vk::DescriptorSetLayout get_descriptor_set_layout() const;
 };
