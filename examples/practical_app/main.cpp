@@ -32,9 +32,12 @@ int main() {
         auto imgclip = img.clip(0, 0, 32, 32);
 
         while (bgt::frame_update()) {
-            r.draw(img, 50, 50);
-            r.draw(img, 70, 70);
-            r.draw(img, 90, 90);
+            r.draw(img, 0, 100);
+            r.draw(img, 100, 100, 1.57f);
+            r.draw(img, 200, 100, 3.14f);
+            r.draw(img, 0, 200, bgt::pivot_pos::center);
+            r.draw(img, 100, 200, 1.57f, bgt::pivot_pos::center);
+            r.draw(img, 200, 200, 3.14f, bgt::pivot_pos::center);
             r.draw(imgclip, 0, 0);
             r.flush();
         }

@@ -21,8 +21,11 @@ class renderer2d {
     template <class T>
     renderer2d(T &renderable) : renderer2d(renderable.get_render_target()) {}
 
-    renderer2d &draw(image &image, int x, int y);
-    renderer2d &draw(image_clip &clip, int x, int y);
+    renderer2d &draw(image &image, int x, int y, pivot image_pivot = pivot_pos::left_top);
+    renderer2d &draw(image_clip &clip, int x, int y, pivot clip_pivot = pivot_pos::left_top);
+
+    renderer2d &draw(image &image, int x, int y, float rotation, pivot image_pivot = pivot_pos::left_top);
+    renderer2d &draw(image_clip &clip, int x, int y, float rotation, pivot clip_pivot = pivot_pos::left_top);
 
     renderer2d &flush();
 };
