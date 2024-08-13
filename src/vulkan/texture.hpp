@@ -41,6 +41,8 @@ class texture_factory_vulkan : public texture_factory_backend {
     handle_holder<image_impl>::handle_value_t make(const uint8_t *data, uint32_t w, uint32_t h) override;
     void destroy(handle_holder<image_impl> &image) noexcept override;
 
+    rect_size texture_size(handle_holder<image_impl> &) override;
+
     const texture_vulkan &get(handle_holder<image_impl> &image) const;
 
     vk::DescriptorSetLayout get_descriptor_set_layout() const;

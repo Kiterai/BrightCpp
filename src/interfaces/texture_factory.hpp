@@ -15,6 +15,8 @@ class texture_factory_backend {
 
     virtual handle_holder<image_impl>::handle_value_t make(const uint8_t *data, uint32_t w, uint32_t h) = 0;
     virtual void destroy(handle_holder<image_impl> &) noexcept = 0;
+
+    virtual rect_size texture_size(handle_holder<image_impl> &) = 0;
 };
 
 } // namespace internal
