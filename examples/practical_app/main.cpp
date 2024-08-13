@@ -29,11 +29,13 @@ int main() {
         bgt::renderer2d r(wnd1);
 
         bgt::image img{"examples/assets/test.png"};
+        auto imgclip = img.clip(0, 0, 32, 32);
 
         while (bgt::frame_update()) {
             r.draw(img, 50, 50);
             r.draw(img, 70, 70);
             r.draw(img, 90, 90);
+            r.draw(imgclip, 0, 0);
             r.flush();
         }
     } catch (std::exception &e) {

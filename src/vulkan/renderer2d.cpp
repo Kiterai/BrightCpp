@@ -284,6 +284,9 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
         cos_th = cosf(rect_info.theta),
         sin_th = sinf(rect_info.theta);
 
+    const auto tex_w = texture.w;
+    const auto tex_h = texture.h;
+
     const auto anchor_x = rect_info.anchor_pos.v[0];
     const auto anchor_y = rect_info.anchor_pos.v[1];
     const auto w = rect_info.clip_size.v[0];
@@ -316,6 +319,12 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
         .draw_matrix{move_mat * rotate_mat * scale_mat * pivot_mat},
         .screen_size{
             .v{float(rt.get().extent().width), float(rt.get().extent().height)},
+        },
+        .tex_clip_pos{
+            .v{rect_info.clip_pos.v[0] / tex_w, rect_info.clip_pos.v[1] / tex_h},
+        },
+        .tex_clip_size{
+            .v{rect_info.clip_size.v[0] / tex_w, rect_info.clip_size.v[1] / tex_h},
         },
         .color{rect_info.color},
     };
