@@ -11,6 +11,7 @@
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
 constexpr uint32_t frames_inflight = 2;
+constexpr handle_holder<image_impl>::handle_value_t no_bind_texture = std::numeric_limits<size_t>::max();
 
 struct shader_pushconstant {
     mat3 draw_matrix;
@@ -237,6 +238,8 @@ void renderer2d_vulkan::render_begin() {
     cmd_buf.beginRenderPass(renderpassBeginInfo, vk::SubpassContents::eInline);
 
     cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get());
+
+    last_binded_texture = no_bind_texture;
 }
 void renderer2d_vulkan::render_end() {
     const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
@@ -273,12 +276,15 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
 
     const auto &texture = global_module<texture_factory_vulkan>::get().get(image);
 
-    cmd_buf.bindDescriptorSets(
-        vk::PipelineBindPoint::eGraphics,
-        pipeline_layout.get(),
-        0,
-        {texture.desc_set.get()},
-        {});
+    if (last_binded_texture != image.handle()) {
+        cmd_buf.bindDescriptorSets(
+            vk::PipelineBindPoint::eGraphics,
+            pipeline_layout.get(),
+            0,
+            {texture.desc_set.get()},
+            {});
+        last_binded_texture = image.handle();
+    }
 
     const auto
         cos_th = cosf(rect_info.theta),

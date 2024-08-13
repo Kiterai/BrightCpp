@@ -27,6 +27,8 @@ class renderer2d_vulkan : public renderer2d_backend {
     std::vector<vk::UniqueFence> rendered_fences;
     uint32_t current_img_index, current_frame_flight_index = 0;
 
+    handle_holder<image_impl>::handle_value_t last_binded_texture;
+
   public:
     renderer2d_vulkan(vk::Device device, const render_target_vulkan &rt, const queue_index_set &queue_indices);
 
