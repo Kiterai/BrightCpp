@@ -3,51 +3,10 @@
 #include <brightcpp/common.hpp>
 #include <brightcpp/handle_holder.hpp>
 #include <brightcpp/image_decl.hpp>
-#include <brightcpp/rect.hpp>
+#include <brightcpp/geometry.hpp>
 #include <string>
 
 namespace BRIGHTCPP_NAMESPACE {
-
-struct ratio {
-    float value;
-
-    template <class T>
-    auto absolute(T whole) { return whole * this->value; }
-};
-constexpr ratio operator""_unit(long double value) {
-    return ratio{static_cast<decltype(ratio::value)>(value)};
-}
-constexpr ratio operator""_percent(long double value) {
-    return ratio{static_cast<decltype(ratio::value)>(value / 100.0l)};
-}
-
-struct pivot {
-    ratio x, y;
-};
-namespace pivot_pos {
-
-constexpr pivot left_top =
-    {0.0_unit, 0.0_unit};
-constexpr pivot left_center =
-    {0.0_unit, 0.5_unit};
-constexpr pivot left_bottom =
-    {0.0_unit, 1.0_unit};
-
-constexpr pivot center_top =
-    {0.5_unit, 0.0_unit};
-constexpr pivot center =
-    {0.5_unit, 0.5_unit};
-constexpr pivot center_bottom =
-    {0.5_unit, 1.0_unit};
-
-constexpr pivot right_top =
-    {1.0_unit, 0.0_unit};
-constexpr pivot right_center =
-    {1.0_unit, 0.5_unit};
-constexpr pivot right_bottom =
-    {1.0_unit, 1.0_unit};
-
-} // namespace pivot_pos
 
 class image_clip : public handle_holder<image_impl> {
     int cx, cy, cw, ch;
@@ -61,11 +20,14 @@ class image_clip : public handle_holder<image_impl> {
 };
 
 class image : public handle_holder<image_impl> {
+    int w, h;
+
   public:
     image(const char *path);
     image(image &) = delete;
     ~image();
 
+    rect_size size() const;
     image_clip clip(int x, int y, int w, int h) const;
 };
 

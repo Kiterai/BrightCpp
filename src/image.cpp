@@ -44,6 +44,9 @@ image::~image() {
     g_tex_factory::get().destroy(*this);
 };
 
+rect_size image::size() const {
+    return {0, 0}; // TODO
+}
 image_clip image::clip(int x, int y, int w, int h) const {
     return image_clip{
         *this,
