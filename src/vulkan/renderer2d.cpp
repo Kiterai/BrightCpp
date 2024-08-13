@@ -290,13 +290,10 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
         cos_th = cosf(rect_info.theta),
         sin_th = sinf(rect_info.theta);
 
-    const auto tex_w = texture.w;
-    const auto tex_h = texture.h;
-
     const auto anchor_x = rect_info.anchor_pos.v[0];
     const auto anchor_y = rect_info.anchor_pos.v[1];
-    const auto w = rect_info.clip_size.v[0];
-    const auto h = rect_info.clip_size.v[1];
+    const auto w = rect_info.clip_size.v[0] * rect_info.scale.v[0];
+    const auto h = rect_info.clip_size.v[1] * rect_info.scale.v[1];
     const auto x = rect_info.pos.v[0];
     const auto y = rect_info.pos.v[1];
 
@@ -321,6 +318,8 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
         {0.0f, 0.0f, 1.0f},
     }};
 
+    const auto tex_w = texture.w;
+    const auto tex_h = texture.h;
     const shader_pushconstant data{
         .draw_matrix{move_mat * rotate_mat * scale_mat * pivot_mat},
         .screen_size{
