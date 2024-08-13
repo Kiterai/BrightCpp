@@ -45,7 +45,7 @@ image::~image() {
 };
 
 rect_size image::size() const {
-    return {0, 0}; // TODO
+    return g_tex_factory::get().texture_size(*this);
 }
 image_clip image::clip(int x, int y, int w, int h) const {
     return image_clip{
