@@ -13,6 +13,19 @@ renderer2d::renderer2d(render_target rt)
 }
 renderer2d::~renderer2d() = default;
 
+renderer2d &renderer2d::draw(image &image, int x, int y) {
+    return draw(image, x, y, 0.0f, pivot_pos::left_top);
+}
+renderer2d &renderer2d::draw(image_clip &clip, int x, int y) {
+    return draw(clip, x, y, 0.0f, pivot_pos::left_top);
+}
+renderer2d &renderer2d::draw(image &image, int x, int y, float rotation) {
+    return draw(image, x, y, rotation, pivot_pos::left_top);
+}
+renderer2d &renderer2d::draw(image_clip &clip, int x, int y, float rotation) {
+    return draw(clip, x, y, rotation, pivot_pos::left_top);
+}
+
 renderer2d &renderer2d::draw(image &image, int x, int y, pivot image_pivot) {
     return draw(image, x, y, 0.0f, image_pivot);
 }
