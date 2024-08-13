@@ -10,7 +10,7 @@ namespace BRIGHTCPP_NAMESPACE {
 namespace internal {
 
 struct render_texture_info {
-    vec2 pos, anchor_pos, clip_pos, clip_size;
+    vec2 pos, anchor_pos, clip_pos, clip_size, scale;
     vec4 color;
     float theta;
 };
