@@ -3,6 +3,7 @@
 #include <brightcpp/common.hpp>
 #include <brightcpp/handle_holder.hpp>
 #include <brightcpp/image_decl.hpp>
+#include <brightcpp/rect.hpp>
 #include <string>
 
 namespace BRIGHTCPP_NAMESPACE {
@@ -55,7 +56,8 @@ class image_clip : public handle_holder<image_impl> {
     image_clip(handle_holder<image_impl>, int cx, int cy, int cw, int ch);
     ~image_clip();
 
-    image_clip clip(int x, int y, int w, int h);
+    rect clipping_area() const;
+    image_clip clip(int x, int y, int w, int h) const;
 };
 
 class image : public handle_holder<image_impl> {
@@ -64,7 +66,7 @@ class image : public handle_holder<image_impl> {
     image(image &) = delete;
     ~image();
 
-    image_clip clip(int x, int y, int w, int h);
+    image_clip clip(int x, int y, int w, int h) const;
 };
 
 } // namespace BRIGHTCPP_NAMESPACE

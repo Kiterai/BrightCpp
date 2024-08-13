@@ -26,7 +26,10 @@ image_clip::image_clip(handle_holder<image_impl> _handle, int cx, int cy, int cw
     : handle_holder(_handle), cx{cx}, cy{cy}, cw{cw}, ch{ch} {}
 image_clip::~image_clip() = default;
 
-image_clip image_clip::clip(int x, int y, int w, int h) {
+rect image_clip::clipping_area() const {
+    return rect(cx, cy, cw, ch);
+}
+image_clip image_clip::clip(int x, int y, int w, int h) const {
     return image_clip{
         *this,
         cx + x,
@@ -41,7 +44,7 @@ image::~image() {
     g_tex_factory::get().destroy(*this);
 };
 
-image_clip image::clip(int x, int y, int w, int h) {
+image_clip image::clip(int x, int y, int w, int h) const {
     return image_clip{
         *this,
         x,
