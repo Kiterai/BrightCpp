@@ -14,13 +14,15 @@ renderer2d::renderer2d(render_target rt)
 renderer2d::~renderer2d() = default;
 
 renderer2d &renderer2d::draw(image &image, int x, int y) {
+    const auto size = image.size();
+
     p_renderer->draw_texture(
         image,
         {
             .pos{float(x), float(y)},
             .anchor_pos{0, 0},
             .clip_pos{0.0f, 0.0f},
-            .clip_size{}, // TODO
+            .clip_size{float(size.width()), float(size.height())},
             .color{1.0f, 0.0f, 0.0f, 1.0f},
         });
     return *this;

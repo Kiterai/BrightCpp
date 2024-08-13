@@ -286,8 +286,8 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
 
     const auto anchor_x = rect_info.anchor_pos.v[0];
     const auto anchor_y = rect_info.anchor_pos.v[1];
-    const auto w = texture.w;
-    const auto h = texture.h;
+    const auto w = rect_info.clip_size.v[0];
+    const auto h = rect_info.clip_size.v[1];
     const auto x = rect_info.pos.v[0];
     const auto y = rect_info.pos.v[1];
 
