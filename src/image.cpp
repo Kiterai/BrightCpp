@@ -47,14 +47,12 @@ image::~image() {
 rect_size image::size() const {
     return g_tex_factory::get().texture_size(*this);
 }
+image_clip image::clip() const {
+    const auto _size = size();
+    return image_clip{*this, 0, 0, _size.width(), _size.height()};
+}
 image_clip image::clip(int x, int y, int w, int h) const {
-    return image_clip{
-        *this,
-        x,
-        y,
-        w,
-        h,
-    };
+    return image_clip{*this, x, y, w, h};
 }
 
 } // namespace BRIGHTCPP_NAMESPACE

@@ -28,6 +28,7 @@ class image : public handle_holder<image_impl> {
     ~image();
 
     rect_size size() const;
+    image_clip clip() const;
     image_clip clip(int x, int y, int w, int h) const;
 };
 
