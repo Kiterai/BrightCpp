@@ -16,11 +16,41 @@ FetchContent_Declare(
   GIT_TAG 3.4)
 
 FetchContent_Declare(
+  libsoundio
+  GIT_REPOSITORY https://github.com/andrewrk/libsoundio.git
+  GIT_TAG 2.0.0)
+
+FetchContent_Declare(
+  muFFT
+  GIT_REPOSITORY https://github.com/Themaister/muFFT.git)
+
+FetchContent_Declare(
   VulkanMemoryAllocator
   GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
   GIT_TAG v3.1.0)
 
-FetchContent_MakeAvailable(glfw VulkanMemoryAllocator)
+  
+if(MSVC)
+set(CMAKE_C_FLAGS_BU "${CMAKE_C_FLAGS}")
+set(BUILD_EXAMPLE_PROGRAMS_BU "${BUILD_EXAMPLE_PROGRAMS}")
+set(BUILD_TESTS_BU "${BUILD_TESTS}")
+set(BUILD_DYNAMIC_LIBS_BU "${BUILD_DYNAMIC_LIBS}")
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /experimental:c11atomics")
+set(CMAKE_C_STANDARD 11)
+set(BUILD_EXAMPLE_PROGRAMS OFF)
+set(BUILD_TESTS OFF)
+set(BUILD_DYNAMIC_LIBS OFF)
+endif()
+FetchContent_MakeAvailable(libsoundio)
+if(MSVC)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_BU}")
+set(BUILD_EXAMPLE_PROGRAMS "${BUILD_EXAMPLE_PROGRAMS_BU}")
+set(BUILD_TESTS "${BUILD_TESTS_BU}")
+set(BUILD_DYNAMIC_LIBS "${BUILD_DYNAMIC_LIBS_BU}")
+endif()
+
+FetchContent_MakeAvailable(glfw VulkanMemoryAllocator muFFT)
 
 FetchContent_Populate(
   VulkanMemoryAllocator-Hpp
@@ -37,6 +67,7 @@ add_library(
     brightcpp
     window.cpp
     system.cpp
+
     image.cpp
     render_target.cpp
     renderer2d.cpp
@@ -50,6 +81,11 @@ add_library(
     vulkan/renderer2d.cpp
     vulkan/texture.cpp
     vulkan/registration.cpp
+
+    audio.cpp
+    audio/loader/audio_loader.cpp
+    audio/loader/wav.cpp
+    audio/loader/ogg.cpp
 )
 target_include_directories(brightcpp PUBLIC ../include)
 b_embed(brightcpp shaders/shader.vert.spv)
