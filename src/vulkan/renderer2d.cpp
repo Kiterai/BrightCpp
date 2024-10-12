@@ -229,7 +229,7 @@ void renderer2d_vulkan::render_begin() {
 
     auto clearVal = {
         vk::ClearValue{}
-            .setColor(vk::ClearColorValue({0.0f, 0.0f, 0.0f, 1.0f})),
+            .setColor(vk::ClearColorValue(0.0f, 0.0f, 0.0f, 1.0f)),
     };
 
     renderpassBeginInfo.clearValueCount = uint32_t(clearVal.size());
