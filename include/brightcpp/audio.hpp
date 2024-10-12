@@ -3,6 +3,7 @@
 #include <brightcpp/common.hpp>
 #include <brightcpp/handle_holder.hpp>
 #include <chrono>
+#include <vector>
 
 namespace BRIGHTCPP_NAMESPACE {
 
