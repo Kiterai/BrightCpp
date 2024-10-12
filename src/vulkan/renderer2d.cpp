@@ -5,6 +5,7 @@
 #include "texture.hpp"
 #include "util.hpp"
 #include <iostream>
+#include <cmath>
 
 #include <battery/embed.hpp>
 
@@ -287,8 +288,8 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
     }
 
     const auto
-        cos_th = cosf(rect_info.theta),
-        sin_th = sinf(rect_info.theta);
+        cos_th = std::cosf(rect_info.theta),
+        sin_th = std::sinf(rect_info.theta);
 
     const auto anchor_x = rect_info.anchor_pos.v[0];
     const auto anchor_y = rect_info.anchor_pos.v[1];
