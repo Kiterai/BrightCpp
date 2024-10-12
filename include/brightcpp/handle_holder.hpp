@@ -1,13 +1,14 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
+#include <cstddef>
 
 namespace BRIGHTCPP_NAMESPACE {
 
 template <class T>
 class handle_holder {
   public:
-    using handle_value_t = size_t;
+    using handle_value_t = std::size_t;
     handle_value_t handle() const { return handle_value; }
 
   private:
