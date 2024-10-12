@@ -78,7 +78,7 @@ jobs:
       shell: bash
       run: |
         sudo apt-get update
-        sudo apt-get install libxkbcommon-x11-dev
+        sudo apt-get install libxkbcommon-x11-dev libxinerama-dev
 
     - name: Install dependency (linux-aarch64)
       if: matrix.c_compiler == 'aarch64-linux-gnu-gcc'
