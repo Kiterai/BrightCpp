@@ -287,9 +287,10 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
         last_binded_texture = image.handle();
     }
 
+    // gcc not supports cosf, sinf
     const auto
-        cos_th = std::cosf(rect_info.theta),
-        sin_th = std::sinf(rect_info.theta);
+        cos_th = std::cos(rect_info.theta),
+        sin_th = std::sin(rect_info.theta);
 
     const auto anchor_x = rect_info.anchor_pos.v[0];
     const auto anchor_y = rect_info.anchor_pos.v[1];
