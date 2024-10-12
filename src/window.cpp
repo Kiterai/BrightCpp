@@ -5,6 +5,7 @@
 #include <brightcpp/window.hpp>
 #include <stdexcept>
 #include <unordered_set>
+#include <list>
 
 namespace BRIGHTCPP_NAMESPACE {
 

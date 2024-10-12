@@ -59,10 +59,10 @@ class window_backend_glfw : public window_backend {
     }
 
     void set_fullscreen(bool is_fullscreen) override {
-        throw std::exception("not implemented set_fullscreen() with GLFW");
+        throw std::runtime_error("not implemented set_fullscreen() with GLFW");
     }
     bool is_fullscreen() const override {
-        throw std::exception("not implemented is_fullscreen() with GLFW");
+        throw std::runtime_error("not implemented is_fullscreen() with GLFW");
         return false;
     }
 

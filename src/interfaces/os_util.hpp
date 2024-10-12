@@ -15,7 +15,7 @@ class window_backend {
     virtual ~window_backend() = default;
 
     virtual vk::UniqueSurfaceKHR get_vulkan_surface(vk::Instance instance) {
-        throw std::exception("not implemented get_vulkan_surface()");
+        throw std::runtime_error("not implemented get_vulkan_surface()");
     }
     virtual bool is_close_requested() = 0;
 
@@ -39,7 +39,7 @@ class os_util_backend {
     virtual std::unique_ptr<window_backend> create_window(const window::settings &settings) = 0;
 
     virtual std::vector<const char *> get_vulkan_required_instance_extensions() {
-        throw std::exception("not implemented get_vulkan_required_instance_extensions()");
+        throw std::runtime_error("not implemented get_vulkan_required_instance_extensions()");
     }
 
     virtual void poll_events() = 0;
