@@ -94,7 +94,7 @@ static auto create_pipeline_layout(vk::Device device) {
     };
 
     vk::PipelineLayoutCreateInfo layoutCreateInfo;
-    layoutCreateInfo.setLayoutCount = setLayouts.size();
+    layoutCreateInfo.setLayoutCount = uint32_t(setLayouts.size());
     layoutCreateInfo.pSetLayouts = setLayouts.begin();
     layoutCreateInfo.pPushConstantRanges = pushConstantRanges.begin();
     layoutCreateInfo.pushConstantRangeCount = uint32_t(pushConstantRanges.size());

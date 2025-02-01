@@ -70,7 +70,7 @@ static auto choose_queue(vk::PhysicalDevice device, std::vector<vk::SurfaceKHR> 
 
     queue_index_set queues;
 
-    for (int i = queue_props.size() - 1; i >= 0; i--) {
+    for (int i = int(queue_props.size() - 1); i >= 0; i--) {
         bool graphics_ok = false, presentation_ok = true;
 
         const auto flags = queue_props[i].queueFlags;
