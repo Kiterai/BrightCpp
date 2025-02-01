@@ -6,7 +6,7 @@
 #include "global_module.hpp"
 #include "vulkan/registration.hpp"
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 namespace internal {
 
@@ -47,4 +47,4 @@ system_initializer::~system_initializer() {
 
 } // namespace internal
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

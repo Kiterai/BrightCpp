@@ -2,8 +2,8 @@
 
 #include <brightcpp/common.hpp>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 class image_impl;
 
-}
+BRIGHTCPP_END

@@ -5,7 +5,7 @@
 #include "interfaces/texture_factory.hpp"
 #include <brightcpp/image.hpp>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 using g_tex_factory = internal::global_module<internal::texture_factory_backend>;
 
@@ -55,4 +55,4 @@ image_clip image::clip(int x, int y, int w, int h) const {
     return image_clip{*this, x, y, w, h};
 }
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

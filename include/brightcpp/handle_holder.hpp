@@ -3,7 +3,7 @@
 #include <brightcpp/common.hpp>
 #include <cstddef>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 template <class T>
 class handle_holder {
@@ -18,4 +18,4 @@ class handle_holder {
     handle_holder(handle_value_t _handle) : handle_value(_handle) {}
 };
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

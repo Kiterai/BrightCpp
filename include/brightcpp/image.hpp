@@ -6,7 +6,7 @@
 #include <brightcpp/geometry.hpp>
 #include <string>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 class image_clip : public handle_holder<image_impl> {
     int cx, cy, cw, ch;
@@ -32,4 +32,4 @@ class image : public handle_holder<image_impl> {
     image_clip clip(int x, int y, int w, int h) const;
 };
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

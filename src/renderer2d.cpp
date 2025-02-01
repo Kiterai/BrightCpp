@@ -3,7 +3,7 @@
 #include "interfaces/graphics.hpp"
 #include <brightcpp/renderer2d.hpp>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 using g_rendererfactory_t = internal::global_module<internal::renderer2d_factory_backend>;
 
@@ -91,4 +91,4 @@ renderer2d &renderer2d::flush() {
     return *this;
 }
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

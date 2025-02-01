@@ -1,7 +1,5 @@
 #include <brightcpp/audio.hpp>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
-
-
-}
+BRIGHTCPP_END

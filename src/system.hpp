@@ -3,7 +3,7 @@
 #include <brightcpp/common.hpp>
 #include <unordered_map>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 namespace internal {
 
@@ -15,4 +15,4 @@ class system_initializer {
 
 } // namespace internal
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

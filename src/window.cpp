@@ -7,7 +7,7 @@
 #include <unordered_set>
 #include <list>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 static std::list<std::reference_wrapper<internal::window_backend>> available_windows;
 
@@ -110,4 +110,4 @@ bool frame_update() {
     return true;
 }
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

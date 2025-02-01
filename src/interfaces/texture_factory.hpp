@@ -6,7 +6,7 @@
 #include <brightcpp/image_decl.hpp>
 #include <cstdint>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 namespace internal {
 
@@ -22,4 +22,4 @@ class texture_factory_backend {
 
 } // namespace internal
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

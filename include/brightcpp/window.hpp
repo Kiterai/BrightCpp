@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 class window {
     class _impl;
@@ -45,4 +45,4 @@ class window {
 
 bool frame_update();
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

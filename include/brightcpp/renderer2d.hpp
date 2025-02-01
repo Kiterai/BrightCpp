@@ -5,7 +5,7 @@
 #include <brightcpp/render_target.hpp>
 #include <memory>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 namespace internal {
 class renderer2d_backend;
@@ -42,4 +42,4 @@ class renderer2d {
     renderer2d &flush();
 };
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

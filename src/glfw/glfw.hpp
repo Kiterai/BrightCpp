@@ -7,14 +7,14 @@
 #include <stdexcept>
 
 #define BRIGHTCPP_OSUTIL_GLFW_START \
-    namespace BRIGHTCPP_NAMESPACE { \
+    BRIGHTCPP_START                 \
     namespace internal {            \
     namespace glfw {
 
 #define BRIGHTCPP_OSUTIL_GLFW_END \
     }                             \
     }                             \
-    }
+    BRIGHTCPP_END
 
 BRIGHTCPP_OSUTIL_GLFW_START
 

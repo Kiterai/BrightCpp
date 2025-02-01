@@ -3,10 +3,10 @@
 #include <brightcpp/common.hpp>
 #include <memory>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 struct object_container {
     virtual ~object_container() = default;
 };
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

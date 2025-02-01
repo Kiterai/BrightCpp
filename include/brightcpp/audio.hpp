@@ -5,7 +5,7 @@
 #include <chrono>
 #include <vector>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 struct audio_sample {
 }; 
@@ -103,4 +103,4 @@ class audio_player_multi {
     bool busy_any() const;
 };
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

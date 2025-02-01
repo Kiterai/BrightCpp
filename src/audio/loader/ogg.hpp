@@ -1,7 +1,7 @@
 #include <brightcpp/common.hpp>
 #include <cstddef>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 class ogg_loader {
   public:
@@ -10,4 +10,4 @@ class ogg_loader {
     }
 };
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

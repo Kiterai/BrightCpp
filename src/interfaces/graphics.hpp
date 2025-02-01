@@ -5,7 +5,7 @@
 #include <brightcpp/render_target.hpp>
 #include <cstdint>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 namespace internal {
 
@@ -19,4 +19,4 @@ class graphics_backend {
 
 } // namespace internal
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

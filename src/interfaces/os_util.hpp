@@ -6,7 +6,7 @@
 #include <vector>
 #include <vulkan/vulkan.hpp>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 namespace internal {
 
@@ -47,4 +47,4 @@ class os_util_backend {
 
 } // namespace internal
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

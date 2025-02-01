@@ -2,7 +2,7 @@
 
 #include <brightcpp/common.hpp>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 namespace internal {
 
@@ -37,4 +37,4 @@ struct alignas(16) mat4 {
 
 } // namespace internal
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END

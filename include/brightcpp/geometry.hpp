@@ -2,7 +2,7 @@
 
 #include <brightcpp/common.hpp>
 
-namespace BRIGHTCPP_NAMESPACE {
+BRIGHTCPP_START
 
 struct ratio {
     float value;
@@ -82,4 +82,4 @@ class rect {
     int height() const { return m_h; }
 };
 
-} // namespace BRIGHTCPP_NAMESPACE
+BRIGHTCPP_END
