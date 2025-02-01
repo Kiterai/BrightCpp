@@ -22,8 +22,6 @@ class graphics_vulkan : public graphics_backend {
     vk::Queue graphics_queue, presentation_queue;
     vma::UniqueAllocator allocator;
 
-    std::vector<vk::SurfaceKHR> surface_needed_support;
-
     using handle_t = handle_holder<render_target>;
     using handle_value_t = handle_t::handle_value_t;
     std::unordered_map<handle_value_t, vulkan::render_target_vulkan> rendertarget_db;

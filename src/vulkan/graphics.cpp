@@ -7,6 +7,11 @@
 #include <list>
 #include <optional>
 #include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan_wayland.h>
+#ifdef _WIN32
+#include <Windows.h>
+#include <vulkan/vulkan_win32.h>
+#endif
 
 #include <battery/embed.hpp>
 
@@ -63,10 +68,27 @@ static auto create_vulkan_instance(os_util_backend &os_util) {
 static auto choose_queue(vk::PhysicalDevice device, std::vector<vk::SurfaceKHR> surfaces_needed_support) {
     const auto queue_props = device.getQueueFamilyProperties();
 
-    return std::optional(queue_index_set{
-        .graphics_queue = 0,
-        .presentation_queue = 0,
-    });
+    queue_index_set queues;
+
+    for (int i = queue_props.size() - 1; i >= 0; i--) {
+        bool graphics_ok = false, presentation_ok = true;
+
+        const auto flags = queue_props[i].queueFlags;
+        if (flags & vk::QueueFlagBits::eGraphics)
+            graphics_ok = true;
+
+#ifdef _WIN32
+        if (vkGetPhysicalDeviceWin32PresentationSupportKHR(device, i) == VK_FALSE)
+            presentation_ok = false;
+#endif
+
+        if (graphics_ok)
+            queues.graphics_queue = i;
+        if (presentation_ok)
+            queues.presentation_queue = i;
+    }
+
+    return std::optional(queues);
 }
 
 static auto choose_phys_device(vk::Instance instance, const std::vector<vk::SurfaceKHR> &surfaces_needed_support) {
