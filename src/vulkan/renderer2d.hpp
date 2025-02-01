@@ -23,7 +23,6 @@ class renderer2d_vulkan : public renderer2d_backend {
 
     vk::Queue graphics_queue;
     std::vector<vk::UniqueSemaphore> rendered_semaphores;
-    vk::Queue presentation_queue;
     std::vector<vk::UniqueFence> rendered_fences;
     uint32_t current_img_index, current_frame_flight_index = 0;
 

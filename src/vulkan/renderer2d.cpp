@@ -205,7 +205,6 @@ renderer2d_vulkan::renderer2d_vulkan(vk::Device device, const render_target_vulk
       draw_cmd_buf{create_cmd_bufs(device, draw_cmd_pool.get(), uint32_t(framebufs.size()))},
       graphics_queue{device.getQueue(queue_indices.graphics_queue, 0)},
       rendered_semaphores{create_semaphores(device, uint32_t(framebufs.size()))},
-      presentation_queue{device.getQueue(queue_indices.presentation_queue, 0)},
       rendered_fences{create_fences(device, true, frames_inflight)} {}
 
 void renderer2d_vulkan::render_begin() {
@@ -269,7 +268,7 @@ void renderer2d_vulkan::render_end() {
         graphics_queue.submit({submitInfo}, rendered_fences[current_frame_flight_index].get());
     }
 
-    rt.get().present(presentation_queue, current_img_index, std::array{rendered_semaphore});
+    rt.get().present(current_img_index, std::array{rendered_semaphore});
 }
 
 void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const render_texture_info &rect_info) {
