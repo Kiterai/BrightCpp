@@ -3,6 +3,8 @@
 
 int main() {
     try {
+        bgt::system_initializer sys;
+
         bgt::window wnd;
 
         while (bgt::frame_update()) {

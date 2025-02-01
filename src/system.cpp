@@ -1,4 +1,3 @@
-#include "system.hpp"
 #include <iostream>
 #include <optional>
 
@@ -18,6 +17,10 @@ struct global_objects_t {
 };
 
 std::optional<global_objects_t> global_objects;
+
+} // namespace internal
+
+using namespace internal;
 
 system_initializer::system_initializer() {
     if (initializer_count == 0) {
@@ -44,7 +47,5 @@ system_initializer::~system_initializer() {
         global_objects.reset();
     }
 }
-
-} // namespace internal
 
 BRIGHTCPP_END

@@ -4,6 +4,8 @@
 
 int main() {
     try {
+        bgt::system_initializer sys;
+
         bgt::window wnd1{
             bgt::window::settings{
                 .size = {

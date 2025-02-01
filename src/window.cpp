@@ -1,7 +1,6 @@
 #include "global_module.hpp"
 #include "interfaces/graphics.hpp"
 #include "interfaces/os_util.hpp"
-#include "system.hpp"
 #include <brightcpp/window.hpp>
 #include <stdexcept>
 #include <unordered_set>
@@ -15,7 +14,6 @@ using g_os_util = internal::global_module<internal::os_util_backend>;
 using g_graphics = internal::global_module<internal::graphics_backend>;
 
 class window::_impl {
-    [[no_unique_address]] internal::system_initializer _sys;
     std::unique_ptr<internal::window_backend> window;
     render_target self_render_target;
 
