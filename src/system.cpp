@@ -14,7 +14,7 @@ static size_t initializer_count = 0;
 
 struct global_objects_t {
     std::shared_ptr<os_util_backend> os_util;
-    std::unique_ptr<vulkan::object_container> graphics;
+    std::unique_ptr<object_container> graphics;
 };
 
 std::optional<global_objects_t> global_objects;
