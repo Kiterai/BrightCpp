@@ -28,15 +28,15 @@ render_target_vulkan::render_target_vulkan(vk::Instance instance, vk::PhysicalDe
       rendered_fences{create_fences(device, true, frames_inflight)} {}
 
 render_target_vulkan::~render_target_vulkan() {
-    if (rendered_fences.empty())
-        return;
-    std::array<vk::Fence, frames_inflight> fences;
-    for (uint32_t i = 0; i < rendered_fences.size(); i++)
-        fences[i] = rendered_fences[i].get();
-    device.waitForFences(fences, VK_TRUE, UINT64_MAX);
+    if (rendering)
+        render_end();
+    wait_idle();
 }
 
 render_begin_info render_target_vulkan::render_begin() {
+    assert(!rendering);
+    rendering = true;
+
     device.waitForFences({rendered_fences[current_frame_flight_index].get()}, VK_TRUE, UINT64_MAX);
 
     vk::ResultValue acquire_image_result = device.acquireNextImageKHR(swapchain.swapchain.get(), 1'000'000'000, image_acquire_semaphores[current_frame_flight_index].get(), {});
@@ -61,6 +61,9 @@ render_begin_info render_target_vulkan::render_begin() {
 }
 
 void render_target_vulkan::render_end() {
+    assert(rendering);
+    rendering = false;
+
     const auto &cmd_buf = draw_cmd_buf[current_frame_flight_index].get();
     const auto &rendered_semaphore = rendered_semaphores[current_frame_flight_index].get();
 
@@ -107,6 +110,15 @@ void render_target_vulkan::render_end() {
 
     current_frame_flight_index++;
     current_frame_flight_index %= frames_inflight;
+}
+
+void render_target_vulkan::wait_idle() {
+    if (rendered_fences.empty())
+        return;
+    std::array<vk::Fence, frames_inflight> fences;
+    for (uint32_t i = 0; i < rendered_fences.size(); i++)
+        fences[i] = rendered_fences[i].get();
+    device.waitForFences(fences, VK_TRUE, UINT64_MAX);
 }
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

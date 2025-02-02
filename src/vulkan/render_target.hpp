@@ -28,6 +28,8 @@ class render_target_vulkan {
     std::vector<vk::UniqueFence> rendered_fences;
     uint32_t current_img_index, current_frame_flight_index = 0;
 
+    bool rendering = false;
+
   public:
     // this handles ownership of surface
     render_target_vulkan(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, const queue_index_set &queue_indices, vk::UniqueSurfaceKHR &&surface);
@@ -41,6 +43,7 @@ class render_target_vulkan {
 
     render_begin_info render_begin();
     void render_end();
+    void wait_idle();
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

@@ -4,8 +4,8 @@
 #include "graphics.hpp"
 #include "texture.hpp"
 #include "util.hpp"
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 #include <battery/embed.hpp>
 
@@ -202,7 +202,18 @@ renderer2d_vulkan::renderer2d_vulkan(vk::Device device, render_target_vulkan &_r
       pipeline{create_pipeline(device, renderpass.get(), rt.get().extent(), pipeline_layout.get(), vert_shader.get(), frag_shader.get())},
       framebufs{create_frame_bufs(device, rt.get().image_views(), rt.get().extent(), renderpass.get())} {}
 
+renderer2d_vulkan::~renderer2d_vulkan() {
+    if (rendering) {
+        render_end();
+        rt.get().render_end();
+    }
+    rt.get().wait_idle();
+}
+
 void renderer2d_vulkan::render_begin() {
+    assert(!rendering);
+    rendering = true;
+
     const auto begin_info = rt.get().render_begin();
     cmd_buf = begin_info.cmd_buf;
 
@@ -226,6 +237,9 @@ void renderer2d_vulkan::render_begin() {
     last_binded_texture = no_bind_texture;
 }
 void renderer2d_vulkan::render_end() {
+    assert(rendering);
+    rendering = false;
+
     cmd_buf.endRenderPass();
     rt.get().render_end();
 }

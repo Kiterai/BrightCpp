@@ -22,9 +22,11 @@ class renderer2d_vulkan : public renderer2d_backend {
     vk::CommandBuffer cmd_buf;
 
     handle_holder<image_impl>::handle_value_t last_binded_texture;
+    bool rendering = false;
 
   public:
     renderer2d_vulkan(vk::Device device, render_target_vulkan &rt, const queue_index_set &queue_indices);
+    ~renderer2d_vulkan() override;
 
     void render_begin() override;
     void render_end() override;
