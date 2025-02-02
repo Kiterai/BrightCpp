@@ -192,7 +192,7 @@ static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Ex
     return device.createGraphicsPipelineUnique(nullptr, pipelineCreateInfo).value;
 }
 
-renderer2d_vulkan::renderer2d_vulkan(vk::Device device, const render_target_vulkan &_rt, const queue_index_set &queue_indices)
+renderer2d_vulkan::renderer2d_vulkan(vk::Device device, render_target_vulkan &_rt, const queue_index_set &queue_indices)
     : rt{_rt},
       device{device},
       renderpass{create_render_pass(device, rt.get().format())},
@@ -200,31 +200,15 @@ renderer2d_vulkan::renderer2d_vulkan(vk::Device device, const render_target_vulk
       frag_shader{create_frag_shader(device)},
       pipeline_layout{create_pipeline_layout(device)},
       pipeline{create_pipeline(device, renderpass.get(), rt.get().extent(), pipeline_layout.get(), vert_shader.get(), frag_shader.get())},
-      framebufs{create_frame_bufs(device, rt.get().image_views(), rt.get().extent(), renderpass.get())},
-      draw_cmd_pool{create_draw_cmd_pool(device, queue_indices)},
-      draw_cmd_buf{create_cmd_bufs(device, draw_cmd_pool.get(), uint32_t(framebufs.size()))},
-      graphics_queue{device.getQueue(queue_indices.graphics_queue, 0)},
-      rendered_semaphores{create_semaphores(device, uint32_t(framebufs.size()))},
-      rendered_fences{create_fences(device, true, frames_inflight)} {}
+      framebufs{create_frame_bufs(device, rt.get().image_views(), rt.get().extent(), renderpass.get())} {}
 
 void renderer2d_vulkan::render_begin() {
-    device.waitForFences({rendered_fences[current_frame_flight_index].get()}, VK_TRUE, UINT64_MAX);
-    current_frame_flight_index++;
-    current_frame_flight_index %= frames_inflight;
-
-    current_img_index = rt.get().acquire_frame(device);
-    const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
-    const auto &fence = rendered_fences[current_frame_flight_index].get();
-
-    cmd_buf.reset();
-    device.resetFences({fence});
-
-    vk::CommandBufferBeginInfo cmdBeginInfo;
-    cmd_buf.begin(cmdBeginInfo);
+    const auto begin_info = rt.get().render_begin(device);
+    cmd_buf = begin_info.cmd_buf;
 
     vk::RenderPassBeginInfo renderpassBeginInfo;
     renderpassBeginInfo.renderPass = renderpass.get();
-    renderpassBeginInfo.framebuffer = framebufs[current_img_index].get();
+    renderpassBeginInfo.framebuffer = framebufs[begin_info.img_index].get();
     renderpassBeginInfo.renderArea = vk::Rect2D({0, 0}, rt.get().extent());
 
     auto clearVal = {
@@ -242,38 +226,11 @@ void renderer2d_vulkan::render_begin() {
     last_binded_texture = no_bind_texture;
 }
 void renderer2d_vulkan::render_end() {
-    const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
-    const auto &rendered_semaphore = rendered_semaphores[current_img_index].get();
-
     cmd_buf.endRenderPass();
-    cmd_buf.end();
-
-    {
-        vk::SubmitInfo submitInfo;
-
-        auto submit_cmd_buf = {cmd_buf};
-        submitInfo.commandBufferCount = uint32_t(submit_cmd_buf.size());
-        submitInfo.pCommandBuffers = submit_cmd_buf.begin();
-
-        auto render_signal_semaphores = {rendered_semaphore};
-        submitInfo.signalSemaphoreCount = uint32_t(render_signal_semaphores.size());
-        submitInfo.pSignalSemaphores = render_signal_semaphores.begin();
-
-        vk::Semaphore renderwaitSemaphores[] = {rt.get().image_prepared_semaphore()};
-        vk::PipelineStageFlags renderwaitStages[] = {vk::PipelineStageFlagBits::eColorAttachmentOutput};
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = renderwaitSemaphores;
-        submitInfo.pWaitDstStageMask = renderwaitStages;
-
-        graphics_queue.submit({submitInfo}, rendered_fences[current_frame_flight_index].get());
-    }
-
-    rt.get().present(current_img_index, std::array{rendered_semaphore});
+    rt.get().render_end();
 }
 
 void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const render_texture_info &rect_info) {
-    const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
-
     const auto &texture = global_module<texture_factory_vulkan>::get().get(image);
 
     if (last_binded_texture != image.handle()) {

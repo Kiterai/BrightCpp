@@ -9,7 +9,7 @@
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
 class renderer2d_vulkan : public renderer2d_backend {
-    std::reference_wrapper<const render_target_vulkan> rt;
+    std::reference_wrapper<render_target_vulkan> rt;
 
     vk::Device device;
     vk::UniqueRenderPass renderpass;
@@ -18,18 +18,13 @@ class renderer2d_vulkan : public renderer2d_backend {
     vk::UniquePipelineLayout pipeline_layout;
     vk::UniquePipeline pipeline;
     std::vector<vk::UniqueFramebuffer> framebufs;
-    vk::UniqueCommandPool draw_cmd_pool;
-    std::vector<vk::UniqueCommandBuffer> draw_cmd_buf;
 
-    vk::Queue graphics_queue;
-    std::vector<vk::UniqueSemaphore> rendered_semaphores;
-    std::vector<vk::UniqueFence> rendered_fences;
-    uint32_t current_img_index, current_frame_flight_index = 0;
+    vk::CommandBuffer cmd_buf;
 
     handle_holder<image_impl>::handle_value_t last_binded_texture;
 
   public:
-    renderer2d_vulkan(vk::Device device, const render_target_vulkan &rt, const queue_index_set &queue_indices);
+    renderer2d_vulkan(vk::Device device, render_target_vulkan &rt, const queue_index_set &queue_indices);
 
     void render_begin() override;
     void render_end() override;
