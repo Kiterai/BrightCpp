@@ -39,7 +39,7 @@ class render_target_vulkan {
     auto format() const { return swapchain.format.format; }
     auto extent() const { return swapchain.extent; }
 
-    render_begin_info render_begin(vk::Device device);
+    render_begin_info render_begin();
     void render_end();
 };
 

@@ -203,7 +203,7 @@ renderer2d_vulkan::renderer2d_vulkan(vk::Device device, render_target_vulkan &_r
       framebufs{create_frame_bufs(device, rt.get().image_views(), rt.get().extent(), renderpass.get())} {}
 
 void renderer2d_vulkan::render_begin() {
-    const auto begin_info = rt.get().render_begin(device);
+    const auto begin_info = rt.get().render_begin();
     cmd_buf = begin_info.cmd_buf;
 
     vk::RenderPassBeginInfo renderpassBeginInfo;

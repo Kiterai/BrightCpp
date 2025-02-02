@@ -11,7 +11,9 @@ renderer2d::renderer2d(render_target rt)
     : p_renderer(g_rendererfactory_t::get().make(rt)) {
     p_renderer->render_begin();
 }
-renderer2d::~renderer2d() = default;
+renderer2d::~renderer2d() {
+    p_renderer->render_end();
+};
 
 renderer2d &renderer2d::draw(image &image, int x, int y) {
     return draw(image, x, y, 0.0f, 1.0f, 1.0f, pivot_pos::left_top);

@@ -28,9 +28,15 @@ render_target_vulkan::render_target_vulkan(vk::Instance instance, vk::PhysicalDe
       rendered_fences{create_fences(device, true, frames_inflight)} {}
 
 render_target_vulkan::~render_target_vulkan() {
+    if (rendered_fences.empty())
+        return;
+    std::array<vk::Fence, frames_inflight> fences;
+    for (uint32_t i = 0; i < rendered_fences.size(); i++)
+        fences[i] = rendered_fences[i].get();
+    device.waitForFences(fences, VK_TRUE, UINT64_MAX);
 }
 
-render_begin_info render_target_vulkan::render_begin(vk::Device device) {
+render_begin_info render_target_vulkan::render_begin() {
     device.waitForFences({rendered_fences[current_frame_flight_index].get()}, VK_TRUE, UINT64_MAX);
 
     vk::ResultValue acquire_image_result = device.acquireNextImageKHR(swapchain.swapchain.get(), 1'000'000'000, image_acquire_semaphores[current_frame_flight_index].get(), {});
