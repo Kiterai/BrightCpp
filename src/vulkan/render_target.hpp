@@ -34,7 +34,6 @@ class render_target_vulkan {
     const auto &image_views() const { return swapchain_imageviews; }
     auto format() const { return swapchain.format.format; }
     auto extent() const { return swapchain.extent; }
-    auto image_prepared_semaphore() const { return image_acquire_semaphore.get(); }
 
     render_begin_info render_begin(vk::Device device);
     void render_end();

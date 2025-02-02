@@ -69,7 +69,7 @@ void render_target_vulkan::render_end() {
         submitInfo.signalSemaphoreCount = uint32_t(render_signal_semaphores.size());
         submitInfo.pSignalSemaphores = render_signal_semaphores.begin();
 
-        vk::Semaphore renderwaitSemaphores[] = {image_prepared_semaphore()};
+        vk::Semaphore renderwaitSemaphores[] = {image_acquire_semaphore.get()};
         vk::PipelineStageFlags renderwaitStages[] = {vk::PipelineStageFlagBits::eColorAttachmentOutput};
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = renderwaitSemaphores;
