@@ -31,6 +31,8 @@ class render_target_vulkan {
   public:
     // this handles ownership of surface
     render_target_vulkan(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, const queue_index_set &queue_indices, vk::UniqueSurfaceKHR &&surface);
+    render_target_vulkan(render_target_vulkan&&) = default;
+    render_target_vulkan& operator=(render_target_vulkan&&) = default;
     ~render_target_vulkan();
 
     const auto &image_views() const { return swapchain_imageviews; }
