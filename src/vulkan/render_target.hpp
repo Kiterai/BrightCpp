@@ -38,9 +38,6 @@ class render_target_vulkan {
 
     render_begin_info render_begin(vk::Device device);
     void render_end();
-
-    uint32_t acquire_frame(vk::Device device) const;
-    void present(uint32_t img_index, std::span<const vk::Semaphore> wait_semaphore) const;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

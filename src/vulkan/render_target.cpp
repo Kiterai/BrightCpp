@@ -31,7 +31,12 @@ render_begin_info render_target_vulkan::render_begin(vk::Device device) {
     current_frame_flight_index++;
     current_frame_flight_index %= frames_inflight;
 
-    current_img_index = acquire_frame(device);
+    vk::ResultValue acquire_image_result = device.acquireNextImageKHR(swapchain.swapchain.get(), 1'000'000'000, image_acquire_semaphore.get(), {});
+    if (acquire_image_result.result != vk::Result::eSuccess) {
+        throw std::runtime_error("error occured on acquireNextImageKHR(): " + vk::to_string(acquire_image_result.result));
+    }
+    current_img_index = acquire_image_result.value;
+
     const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
     const auto &fence = rendered_fences[current_frame_flight_index].get();
 
@@ -73,28 +78,19 @@ void render_target_vulkan::render_end() {
         graphics_queue.submit({submitInfo}, rendered_fences[current_frame_flight_index].get());
     }
 
-    present(current_img_index, std::array{rendered_semaphore});
-}
-
-uint32_t render_target_vulkan::acquire_frame(vk::Device device) const {
-    vk::ResultValue result = device.acquireNextImageKHR(swapchain.swapchain.get(), 1'000'000'000, image_acquire_semaphore.get(), {});
-    if (result.result != vk::Result::eSuccess) {
-        throw std::runtime_error("error occured on acquireNextImageKHR(): " + vk::to_string(result.result));
-    }
-    return result.value;
-}
-void render_target_vulkan::present(uint32_t img_index, std::span<const vk::Semaphore> wait_semaphore) const {
+    // presentation
     vk::PresentInfoKHR presentInfo;
 
     auto presentSwapchains = {swapchain.swapchain.get()};
-    auto imgIndices = {img_index};
+    auto imgIndices = {current_img_index};
 
     presentInfo.swapchainCount = uint32_t(presentSwapchains.size());
     presentInfo.pSwapchains = presentSwapchains.begin();
     presentInfo.pImageIndices = imgIndices.begin();
 
+    const auto wait_semaphore = {rendered_semaphore};
     presentInfo.waitSemaphoreCount = uint32_t(wait_semaphore.size());
-    presentInfo.pWaitSemaphores = wait_semaphore.data();
+    presentInfo.pWaitSemaphores = wait_semaphore.begin();
 
     auto result = presentation_queue.presentKHR(presentInfo);
     if (result != vk::Result::eSuccess) {

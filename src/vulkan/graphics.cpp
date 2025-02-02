@@ -192,7 +192,7 @@ handle_holder<render_target>::handle_value_t graphics_vulkan::create_render_targ
             instance.get(),
             phys_device,
             device.get(),
-            presentation_queue,
+            queue_indices,
             window.get_vulkan_surface(instance.get())),
     });
     return handle;
