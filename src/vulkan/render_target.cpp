@@ -14,30 +14,32 @@ static auto create_draw_cmd_pool(vk::Device device, const queue_index_set &queue
 }
 
 render_target_vulkan::render_target_vulkan(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, const queue_index_set &queue_indices, vk::UniqueSurfaceKHR &&_surface)
-    : surface{std::move(_surface)},
+    : device{device},
+      surface{std::move(_surface)},
       swapchain{create_swapchain(device, phys_device, surface.get())},
       swapchain_images{device.getSwapchainImagesKHR(swapchain.swapchain.get())},
       swapchain_imageviews{create_image_views(device, swapchain_images, swapchain.format.format)},
-      image_acquire_semaphore{create_semaphore(device)},
+      image_acquire_semaphores{create_semaphores(device, frames_inflight)},
       draw_cmd_pool{create_draw_cmd_pool(device, queue_indices)},
-      draw_cmd_buf{create_cmd_bufs(device, draw_cmd_pool.get(), uint32_t(swapchain_images.size()))},
+      draw_cmd_buf{create_cmd_bufs(device, draw_cmd_pool.get(), frames_inflight)},
       graphics_queue{device.getQueue(queue_indices.graphics_queue, 0)},
       presentation_queue{device.getQueue(queue_indices.presentation_queue, 0)},
-      rendered_semaphores{create_semaphores(device, uint32_t(swapchain_images.size()))},
+      rendered_semaphores{create_semaphores(device, frames_inflight)},
       rendered_fences{create_fences(device, true, frames_inflight)} {}
+
+render_target_vulkan::~render_target_vulkan() {
+}
 
 render_begin_info render_target_vulkan::render_begin(vk::Device device) {
     device.waitForFences({rendered_fences[current_frame_flight_index].get()}, VK_TRUE, UINT64_MAX);
-    current_frame_flight_index++;
-    current_frame_flight_index %= frames_inflight;
 
-    vk::ResultValue acquire_image_result = device.acquireNextImageKHR(swapchain.swapchain.get(), 1'000'000'000, image_acquire_semaphore.get(), {});
+    vk::ResultValue acquire_image_result = device.acquireNextImageKHR(swapchain.swapchain.get(), 1'000'000'000, image_acquire_semaphores[current_frame_flight_index].get(), {});
     if (acquire_image_result.result != vk::Result::eSuccess) {
         throw std::runtime_error("error occured on acquireNextImageKHR(): " + vk::to_string(acquire_image_result.result));
     }
     current_img_index = acquire_image_result.value;
 
-    const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
+    const auto &cmd_buf = draw_cmd_buf[current_frame_flight_index].get();
     const auto &fence = rendered_fences[current_frame_flight_index].get();
 
     cmd_buf.reset();
@@ -53,8 +55,8 @@ render_begin_info render_target_vulkan::render_begin(vk::Device device) {
 }
 
 void render_target_vulkan::render_end() {
-    const auto &cmd_buf = draw_cmd_buf[current_img_index].get();
-    const auto &rendered_semaphore = rendered_semaphores[current_img_index].get();
+    const auto &cmd_buf = draw_cmd_buf[current_frame_flight_index].get();
+    const auto &rendered_semaphore = rendered_semaphores[current_frame_flight_index].get();
 
     cmd_buf.end();
 
@@ -69,7 +71,7 @@ void render_target_vulkan::render_end() {
         submitInfo.signalSemaphoreCount = uint32_t(render_signal_semaphores.size());
         submitInfo.pSignalSemaphores = render_signal_semaphores.begin();
 
-        vk::Semaphore renderwaitSemaphores[] = {image_acquire_semaphore.get()};
+        vk::Semaphore renderwaitSemaphores[] = {image_acquire_semaphores[current_frame_flight_index].get()};
         vk::PipelineStageFlags renderwaitStages[] = {vk::PipelineStageFlagBits::eColorAttachmentOutput};
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = renderwaitSemaphores;
@@ -96,6 +98,9 @@ void render_target_vulkan::render_end() {
     if (result != vk::Result::eSuccess) {
         throw std::runtime_error("error occured on presentKHR(): " + vk::to_string(result));
     }
+
+    current_frame_flight_index++;
+    current_frame_flight_index %= frames_inflight;
 }
 
 BRIGHTCPP_GRAPHICS_VULKAN_END
