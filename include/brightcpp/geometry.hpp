@@ -8,7 +8,7 @@ struct ratio {
     float value;
 
     template <class T>
-    auto absolute(T whole) { return whole * this->value; }
+    auto absolute(T whole) -> decltype(whole * this->value) { return whole * this->value; }
 };
 constexpr ratio operator""_unit(long double value) {
     return ratio{static_cast<decltype(ratio::value)>(value)};
