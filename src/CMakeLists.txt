@@ -44,6 +44,15 @@ set_property(
   PROPERTY VS_USER_PROPS "${CMAKE_CURRENT_SOURCE_DIR}/libsoundio/CompileAsCpp.props"
 )
 endif()
+if(APPLE)
+  find_library(CORE_AUDIO CoreAudio REQUIRED)
+  find_library(AUDIO_TOOLBOX AudioToolBox REQUIRED)
+  target_link_libraries(
+    app PRIVATE
+    ${CORE_AUDIO}
+    ${AUDIO_TOOLBOX}
+  )
+endif()
 set(BUILD_EXAMPLE_PROGRAMS "${BUILD_EXAMPLE_PROGRAMS_BU}")
 set(BUILD_TESTS "${BUILD_TESTS_BU}")
 set(BUILD_DYNAMIC_LIBS "${BUILD_DYNAMIC_LIBS_BU}")
