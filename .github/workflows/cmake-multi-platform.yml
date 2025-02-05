@@ -38,6 +38,7 @@ jobs:
             c_compiler: aarch64-linux-gnu-gcc
             arch: ARM64
             option: 
+            additional_cmake_option: -DCMAKE_SYSTEM_PROCESSOR=aarch64
           - os: ubuntu-latest
             c_compiler: x86_64-linux-gnu-gcc
             arch: x86_64
@@ -105,6 +106,7 @@ jobs:
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=Release
         -S ${{ github.workspace }}
+        ${{ matrix.additional_cmake_option }}
 
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
