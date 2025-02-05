@@ -14,6 +14,9 @@ namespace internal {
 
 namespace libsoundio {
 
+using write_sample_func = void(char *, float);
+using write_samples_func = void(SoundIoChannelArea *areas, int writable_frame_count, int channels_count);
+
 static void write_sample_s16ne(char *ptr, float sample) {
     int16_t *buf = (int16_t *)ptr;
     float range = (float)INT16_MAX - (float)INT16_MIN;
@@ -46,11 +49,11 @@ static int default_buffer_length() {
 #endif
 }
 
+template <template <write_sample_func> class write_samples_callback>
 class SoundIoOutStreamWrap {
     SoundIoOutStream *outstream;
     int buffer_length = default_buffer_length();
 
-    using write_sample_func = void(char *, float);
     template <write_sample_func write_sample>
     static void write_callback(SoundIoOutStream *outstream, int frame_count_min, int frame_count_max) {
         auto const thiz = reinterpret_cast<SoundIoOutStreamWrap *>(outstream->userdata);
@@ -76,29 +79,7 @@ class SoundIoOutStreamWrap {
             if (writable_frame_count == 0)
                 break;
 
-            const auto &layout = outstream->layout;
-
-            static float seconds_offset = 0.0;
-            for (int frame = 0; frame < writable_frame_count; frame++) {
-                float sample = 0;
-                // TODO
-                // for (auto &playing : playing_list) {
-                //     if (playing.pos >= buffer[playing.index].size())
-                //         continue;
-                //     sample += buffer[playing.index][playing.pos];
-                //     playing.pos++;
-                // }
-
-                for (int channel = 0; channel < layout.channel_count; channel++) {
-                    write_sample(areas[channel].ptr, sample);
-                    areas[channel].ptr += areas[channel].step;
-                }
-            }
-
-            // TODO
-            // std::erase_if(playing_list, [](const auto &playing) {
-            //     return playing.pos >= buffer[playing.index].size();
-            // });
+            write_samples_callback<write_sample>{}(areas, writable_frame_count, outstream->layout.channel_count);
 
             if (int err = soundio_outstream_end_write(outstream); err) {
                 if (err == SoundIoErrorUnderflow)
@@ -220,8 +201,9 @@ class SoundIoOutputDeviceWrap {
         return !(*this == o);
     }
 
-    SoundIoOutStreamWrap create_outstream() {
-        return SoundIoOutStreamWrap(device);
+    template <template <write_sample_func> class F>
+    SoundIoOutStreamWrap<F> create_outstream() {
+        return SoundIoOutStreamWrap<F>(device);
     }
     auto operator->() {
         return device;
@@ -277,19 +259,46 @@ class SoundIoWrap {
 };
 
 class audio_libsoundio : public audio_backend {
+
+    template <write_sample_func write_sample>
+    struct write_callback {
+        void operator()(SoundIoChannelArea *areas, int writable_frame_count, int channels_count) {
+            for (int frame = 0; frame < writable_frame_count; frame++) {
+                float sample = 0;
+                // TODO
+                // for (auto &playing : playing_list) {
+                //     if (playing.pos >= buffer[playing.index].size())
+                //         continue;
+                //     sample += buffer[playing.index][playing.pos];
+                //     playing.pos++;
+                // }
+
+                for (int channel = 0; channel < channels_count; channel++) {
+                    write_sample(areas[channel].ptr, sample);
+                    areas[channel].ptr += areas[channel].step;
+                }
+            }
+
+            // TODO
+            // std::erase_if(playing_list, [](const auto &playing) {
+            //     return playing.pos >= buffer[playing.index].size();
+            // });
+        }
+    };
+
     std::optional<std::thread> audio_thread;
     bool running = true;
 
     SoundIoWrap soundio;
     SoundIoOutputDeviceWrap device;
-    std::optional<SoundIoOutStreamWrap> outstream;
+    std::optional<SoundIoOutStreamWrap<write_callback>> outstream;
 
   public:
     audio_libsoundio()
         : soundio{},
           device{soundio.get_default_output_device()} {
         audio_thread = std::make_optional<std::thread>([this]() {
-            outstream = device.create_outstream();
+            outstream = device.create_outstream<write_callback>();
             outstream->open();
             outstream->start();
             while (running) {
@@ -299,7 +308,7 @@ class audio_libsoundio : public audio_backend {
                     outstream.reset();
 
                     device = soundio.get_default_output_device();
-                    outstream = device.create_outstream();
+                    outstream = device.create_outstream<write_callback>();
                     outstream->open();
                     outstream->start();
                 }
