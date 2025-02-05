@@ -41,7 +41,7 @@ jobs:
           - os: ubuntu-latest
             c_compiler: x86_64-linux-gnu-gcc
             arch: x86_64
-            option: 
+            option: CMAKE_SYSTEM_PROCESSOR=aarch64
           - os: macos-latest
             c_compiler: gcc
             arch: arm64
