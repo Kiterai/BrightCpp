@@ -38,7 +38,7 @@ jobs:
             c_compiler: aarch64-linux-gnu-gcc
             arch: ARM64
             option: 
-            additional_cmake_option: -DCMAKE_SYSTEM_PROCESSOR=aarch64
+            additional_cmake_option: -DAARCH64=1
           - os: ubuntu-latest
             c_compiler: x86_64-linux-gnu-gcc
             arch: x86_64

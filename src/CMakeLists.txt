@@ -58,6 +58,9 @@ set(BUILD_EXAMPLE_PROGRAMS "${BUILD_EXAMPLE_PROGRAMS_BU}")
 set(BUILD_TESTS "${BUILD_TESTS_BU}")
 set(BUILD_DYNAMIC_LIBS "${BUILD_DYNAMIC_LIBS_BU}")
 
+if(AARCH64)
+set(CMAKE_SYSTEM_PROCESSOR aarch64)
+endif()
 FetchContent_MakeAvailable(glfw VulkanMemoryAllocator muFFT)
 
 FetchContent_Populate(
