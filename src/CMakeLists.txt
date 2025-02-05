@@ -45,6 +45,7 @@ set_property(
 )
 endif()
 if(APPLE)
+  cmake_policy(SET CMP0079 NEW)
   find_library(CORE_AUDIO CoreAudio REQUIRED)
   find_library(AUDIO_TOOLBOX AudioToolBox REQUIRED)
   target_link_libraries(
