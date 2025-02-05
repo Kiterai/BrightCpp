@@ -276,44 +276,33 @@ class SoundIoWrap {
     }
 };
 
-class libsoundio_wrapper {
+class audio_libsoundio : public audio_backend {
+    std::optional<std::thread> audio_thread;
+    bool running = true;
+
     SoundIoWrap soundio;
     SoundIoOutputDeviceWrap device;
     std::optional<SoundIoOutStreamWrap> outstream;
 
   public:
-    libsoundio_wrapper()
+    audio_libsoundio()
         : soundio{},
-          device{soundio.get_default_output_device()},
-          outstream{std::make_optional(device.create_outstream())} {
-        outstream->open();
-        outstream->start();
-    }
-    void update() {
-        soundio.flush_events();
-        if (soundio.get_device_changed() && device != soundio.get_default_output_device()) {
-            outstream->pause();
-            outstream.reset();
-
-            device = soundio.get_default_output_device();
+          device{soundio.get_default_output_device()} {
+        audio_thread = std::make_optional<std::thread>([this]() {
             outstream = device.create_outstream();
             outstream->open();
             outstream->start();
-        }
-    }
-};
-
-class audio_libsoundio : public audio_backend {
-    std::optional<std::thread> audio_thread;
-    bool running = true;
-    std::optional<libsoundio_wrapper> c;
-
-  public:
-    audio_libsoundio() {
-        audio_thread = std::make_optional<std::thread>([this]() {
-            c.emplace();
             while (running) {
-                c->update();
+                soundio.flush_events();
+                if (soundio.get_device_changed() && device != soundio.get_default_output_device()) {
+                    outstream->pause();
+                    outstream.reset();
+
+                    device = soundio.get_default_output_device();
+                    outstream = device.create_outstream();
+                    outstream->open();
+                    outstream->start();
+                }
                 std::this_thread::sleep_for(std::chrono::milliseconds(5));
             }
         });
@@ -321,6 +310,21 @@ class audio_libsoundio : public audio_backend {
     ~audio_libsoundio() override {
         running = false;
         audio_thread->join();
+    }
+
+    int get_sample_rate() override {
+        return 0;
+    }
+
+    handle_holder<audio_impl>::handle_value_t create_audio_buffer(std::span<float> data) override {
+        return 0;
+    }
+    void destroy_audio_buffer(handle_holder<audio_impl> &) override {
+    }
+    audio_context_id play_audio_buffer(handle_holder<audio_impl> &, const audio_buffer_play_info &) override {
+        return 0;
+    }
+    void set_playing_state(audio_context_id id, const audio_buffer_play_info &) override {
     }
 };
 
