@@ -48,7 +48,7 @@ if(APPLE)
   find_library(CORE_AUDIO CoreAudio REQUIRED)
   find_library(AUDIO_TOOLBOX AudioToolBox REQUIRED)
   target_link_libraries(
-    app PRIVATE
+    libsoundio_static PRIVATE
     ${CORE_AUDIO}
     ${AUDIO_TOOLBOX}
   )
