@@ -15,7 +15,7 @@ namespace internal {
 namespace libsoundio {
 
 using write_sample_func = void(char *, float);
-using write_samples_func = void(SoundIoChannelArea *areas, int writable_frame_count, int channels_count);
+// using write_samples_func = void(SoundIoChannelArea *areas, int writable_frame_count, int channels_count, void* p);
 
 static void write_sample_s16ne(char *ptr, float sample) {
     int16_t *buf = (int16_t *)ptr;
@@ -53,6 +53,7 @@ template <template <write_sample_func> class write_samples_callback>
 class SoundIoOutStreamWrap {
     SoundIoOutStream *outstream;
     int buffer_length = default_buffer_length();
+    void *write_samples_userdata;
 
     template <write_sample_func write_sample>
     static void write_callback(SoundIoOutStream *outstream, int frame_count_min, int frame_count_max) {
@@ -79,7 +80,7 @@ class SoundIoOutStreamWrap {
             if (writable_frame_count == 0)
                 break;
 
-            write_samples_callback<write_sample>{}(areas, writable_frame_count, outstream->layout.channel_count);
+            write_samples_callback<write_sample>{}(areas, writable_frame_count, outstream->layout.channel_count, thiz->write_samples_userdata);
 
             if (int err = soundio_outstream_end_write(outstream); err) {
                 if (err == SoundIoErrorUnderflow)
@@ -106,7 +107,9 @@ class SoundIoOutStreamWrap {
     }
 
   public:
-    SoundIoOutStreamWrap(SoundIoDevice *device) : outstream{soundio_outstream_create(device)} {
+    SoundIoOutStreamWrap(SoundIoDevice *device, void *userdata)
+        : outstream{soundio_outstream_create(device)},
+          write_samples_userdata{userdata} {
         constexpr double latency = 0.01;
 
         outstream->userdata = this;
@@ -133,12 +136,16 @@ class SoundIoOutStreamWrap {
     SoundIoOutStreamWrap(const SoundIoOutStreamWrap &) = delete;
     SoundIoOutStreamWrap &operator=(const SoundIoOutStreamWrap &) = delete;
     SoundIoOutStreamWrap(SoundIoOutStreamWrap &&o) {
+        buffer_length = o.buffer_length;
+        write_samples_userdata = o.write_samples_userdata;
         outstream = o.outstream;
         o.outstream = nullptr;
 
         outstream->userdata = this;
     };
     SoundIoOutStreamWrap &operator=(SoundIoOutStreamWrap &&o) {
+        buffer_length = o.buffer_length;
+        write_samples_userdata = o.write_samples_userdata;
         outstream = o.outstream;
         o.outstream = nullptr;
 
@@ -202,8 +209,8 @@ class SoundIoOutputDeviceWrap {
     }
 
     template <template <write_sample_func> class write_samples_callback>
-    SoundIoOutStreamWrap<write_samples_callback> create_outstream() {
-        return SoundIoOutStreamWrap<write_samples_callback>(device);
+    SoundIoOutStreamWrap<write_samples_callback> create_outstream(void *userdata) {
+        return SoundIoOutStreamWrap<write_samples_callback>(device, userdata);
     }
     auto operator->() {
         return device;
@@ -261,7 +268,9 @@ class SoundIoWrap {
 class audio_libsoundio : public audio_backend {
     template <write_sample_func write_sample>
     struct write_samples {
-        void operator()(SoundIoChannelArea *areas, int writable_frame_count, int channels_count) {
+        void operator()(SoundIoChannelArea *areas, int writable_frame_count, int channels_count, void *p) {
+            auto thiz = reinterpret_cast<audio_libsoundio *>(p);
+
             for (int frame = 0; frame < writable_frame_count; frame++) {
                 float sample = 0;
                 // TODO
@@ -297,7 +306,7 @@ class audio_libsoundio : public audio_backend {
         : soundio{},
           device{soundio.get_default_output_device()} {
         audio_thread = std::make_optional<std::thread>([this]() {
-            outstream = device.create_outstream<write_samples>();
+            outstream = device.create_outstream<write_samples>(this);
             outstream->open();
             outstream->start();
             while (running) {
@@ -307,7 +316,7 @@ class audio_libsoundio : public audio_backend {
                     outstream.reset();
 
                     device = soundio.get_default_output_device();
-                    outstream = device.create_outstream<write_samples>();
+                    outstream = device.create_outstream<write_samples>(this);
                     outstream->open();
                     outstream->start();
                 }
