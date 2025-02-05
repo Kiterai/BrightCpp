@@ -40,21 +40,21 @@ class audio : handle_holder<audio_impl> {
     audio_clip clip(std::chrono::nanoseconds start, std::chrono::nanoseconds end);
 };
 
-class audio_streaming : handle_holder<audio_streaming> {
-    audio_buffer stream_buf;
+// class audio_streaming : handle_holder<audio_streaming> {
+//     audio_buffer stream_buf;
 
-  public:
-    audio_buffer &buffer() { return stream_buf; }
+//   public:
+//     audio_buffer &buffer() { return stream_buf; }
 
-    void play();
-    void pause();
-    void resume();
-    void stop();
-    void seek(std::chrono::nanoseconds point);
-    std::chrono::nanoseconds pos() const;
+//     void play();
+//     void pause();
+//     void resume();
+//     void stop();
+//     void seek(std::chrono::nanoseconds point);
+//     std::chrono::nanoseconds pos() const;
 
-    bool loading() const;
-};
+//     bool loading() const;
+// };
 
 class audio_player {
   public:
@@ -62,8 +62,8 @@ class audio_player {
 
     void set(audio &);
     void set(audio_clip &);
-    void set(audio_streaming &);
-    void set(audio_buffer &buf);
+    // void set(audio_streaming &);
+    // void set(audio_buffer &buf);
     void reset();
 
     audio_player &play_once();
@@ -81,26 +81,26 @@ class audio_player {
     bool busy() const;
 };
 
-class audio_player_multi {
-    std::vector<audio_player> players;
+// class audio_player_multi {
+//     std::vector<audio_player> players;
 
-  public:
-    audio_player_multi(audio_buffer &output, size_t num);
+//   public:
+//     audio_player_multi(audio_buffer &output, size_t num);
 
-    audio_player &play_once(audio &);
-    audio_player &play_once(audio_clip &);
-    audio_player &bind(audio_buffer &buf);
+//     audio_player &play_once(audio &);
+//     audio_player &play_once(audio_clip &);
+//     audio_player &bind(audio_buffer &buf);
 
-    audio_filter &filter();
-    audio_filter &filter(audio_filter &filter);
+//     audio_filter &filter();
+//     audio_filter &filter(audio_filter &filter);
 
-    void pause();
-    void resume();
-    void stop();
-    std::vector<std::chrono::nanoseconds> pos() const;
-    std::vector<bool> busy() const;
-    bool busy_all() const;
-    bool busy_any() const;
-};
+//     void pause();
+//     void resume();
+//     void stop();
+//     std::vector<std::chrono::nanoseconds> pos() const;
+//     std::vector<bool> busy() const;
+//     bool busy_all() const;
+//     bool busy_any() const;
+// };
 
 BRIGHTCPP_END

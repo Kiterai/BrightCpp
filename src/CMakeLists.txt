@@ -18,7 +18,8 @@ FetchContent_Declare(
 FetchContent_Declare(
   libsoundio
   GIT_REPOSITORY https://github.com/andrewrk/libsoundio.git
-  GIT_TAG 2.0.0)
+  # GIT_TAG 2.0.0
+)
 
 FetchContent_Declare(
   muFFT
@@ -30,11 +31,6 @@ FetchContent_Declare(
   GIT_TAG v3.1.0)
 
   
-if(MSVC)
-set(CMAKE_C_FLAGS_BU "${CMAKE_C_FLAGS}")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /experimental:c11atomics")
-set(CMAKE_C_STANDARD 11)
-endif()
 set(BUILD_EXAMPLE_PROGRAMS_BU "${BUILD_EXAMPLE_PROGRAMS}")
 set(BUILD_TESTS_BU "${BUILD_TESTS}")
 set(BUILD_DYNAMIC_LIBS_BU "${BUILD_DYNAMIC_LIBS}")
@@ -43,7 +39,10 @@ set(BUILD_TESTS OFF CACHE BOOL "")
 set(BUILD_DYNAMIC_LIBS OFF CACHE BOOL "")
 FetchContent_MakeAvailable(libsoundio)
 if(MSVC)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_BU}")
+set_property(
+  TARGET libsoundio_static
+  PROPERTY VS_USER_PROPS "${CMAKE_CURRENT_SOURCE_DIR}/libsoundio/CompileAsCpp.props"
+)
 endif()
 set(BUILD_EXAMPLE_PROGRAMS "${BUILD_EXAMPLE_PROGRAMS_BU}")
 set(BUILD_TESTS "${BUILD_TESTS_BU}")
@@ -85,6 +84,8 @@ add_library(
     audio/loader/audio_loader.cpp
     audio/loader/wav.cpp
     audio/loader/ogg.cpp
+
+    libsoundio/audio.cpp
 )
 target_include_directories(brightcpp PUBLIC ../include)
 b_embed(brightcpp shaders/shader.vert.spv)
@@ -97,5 +98,7 @@ target_link_libraries(brightcpp PRIVATE ${Vulkan_LIBRARIES})
 set_target_properties(brightcpp PROPERTIES CXX_STANDARD 20)
 target_link_libraries(brightcpp PRIVATE glfw)
 target_link_libraries(brightcpp PRIVATE VulkanMemoryAllocator)
+target_link_libraries(brightcpp PRIVATE libsoundio_static)
+target_include_directories(brightcpp PRIVATE ${libsoundio_SOURCE_DIR})
 target_include_directories(brightcpp PRIVATE ${vulkanmemoryallocator-hpp_SOURCE_DIR}/include)
 target_include_directories(brightcpp PRIVATE ${stb_SOURCE_DIR})
