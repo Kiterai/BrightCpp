@@ -266,6 +266,9 @@ class SoundIoWrap {
 };
 
 class audio_libsoundio : public audio_backend {
+    std::vector<audio_buffer_play_info> playing_list;
+    audio_context_id id_serial_count = 0;
+
     template <write_sample_func write_sample>
     struct write_samples {
         void operator()(SoundIoChannelArea *areas, int writable_frame_count, int channels_count, void *p) {
@@ -273,13 +276,35 @@ class audio_libsoundio : public audio_backend {
 
             for (int frame = 0; frame < writable_frame_count; frame++) {
                 float sample = 0;
-                // TODO
-                // for (auto &playing : playing_list) {
-                //     if (playing.pos >= buffer[playing.index].size())
-                //         continue;
-                //     sample += buffer[playing.index][playing.pos];
-                //     playing.pos++;
-                // }
+                for (auto &playing : thiz->playing_list) {
+                    if (playing.paused)
+                        continue;
+                    sample += *playing.current_pos;
+                    *playing.current_pos++;
+                    if (playing.current_pos >= playing.end_pos) {
+                        switch (playing.mode) {
+                        case audio_buffer_play_info::play_mode::normal:
+                            playing.current_pos = playing.loop_pos;
+                            playing.paused = true;
+                            break;
+                        case audio_buffer_play_info::play_mode::oneshot:
+                            playing.stopped = playing.paused = true;
+                            break;
+                        case audio_buffer_play_info::play_mode::loop:
+                            playing.current_pos = playing.loop_pos;
+                            playing.end_pos = playing.next_loop_end_pos;
+                            break;
+                        case audio_buffer_play_info::play_mode::streaming_loop_invalid:
+                            playing.paused = true;
+                            break;
+                        case audio_buffer_play_info::play_mode::streaming_loop_available:
+                            playing.current_pos = playing.loop_pos;
+                            playing.end_pos = playing.next_loop_end_pos;
+                            playing.mode = audio_buffer_play_info::play_mode::streaming_loop_invalid;
+                            break;
+                        }
+                    }
+                }
 
                 for (int channel = 0; channel < channels_count; channel++) {
                     write_sample(areas[channel].ptr, sample);
@@ -287,10 +312,9 @@ class audio_libsoundio : public audio_backend {
                 }
             }
 
-            // TODO
-            // std::erase_if(playing_list, [](const auto &playing) {
-            //     return playing.pos >= buffer[playing.index].size();
-            // });
+            std::erase_if(playing_list, [](const auto &playing) {
+                return playing.stopped;
+            });
         }
     };
 
@@ -333,15 +357,20 @@ class audio_libsoundio : public audio_backend {
         return 0;
     }
 
-    handle_holder<audio_impl>::handle_value_t create_audio_buffer(std::span<float> data) override {
+    audio_context_id play_audio_buffer(const audio_buffer_play_info &info) override {
+        playing_list.push_back(info);
+        playing_list.back().id = id_serial_count;
+        id_serial_count++;
         return 0;
     }
-    void destroy_audio_buffer(handle_holder<audio_impl> &) override {
-    }
-    audio_context_id play_audio_buffer(handle_holder<audio_impl> &, const audio_buffer_play_info &) override {
-        return 0;
-    }
-    void set_playing_state(audio_context_id id, const audio_buffer_play_info &) override {
+    void set_playing_state(audio_context_id id, const audio_buffer_play_info &info) override {
+        for (auto &playing : playing_list) {
+            if (playing.id == id) {
+                playing = info;
+                playing.id = id;
+                break;
+            }
+        }
     }
 };
 
