@@ -312,7 +312,7 @@ class audio_libsoundio : public audio_backend {
                 }
             }
 
-            std::erase_if(playing_list, [](const auto &playing) {
+            std::erase_if(thiz->playing_list, [](const auto &playing) {
                 return playing.stopped;
             });
         }

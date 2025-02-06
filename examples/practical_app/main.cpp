@@ -1,5 +1,6 @@
 #include <brightcpp/brightcpp.hpp>
 #include <brightcpp/renderer2d.hpp>
+#include <brightcpp/audio.hpp>
 #include <iostream>
 
 int main() {
@@ -17,21 +18,27 @@ int main() {
             },
         };
 
-        bgt::window wnd2{
-            bgt::window::settings{
-                .size = {
-                    .w = 300,
-                    .h = 400,
-                },
-                .is_resizable = false,
-                .title = "Sample App Window 2",
-            },
-        };
+        // bgt::window wnd2{
+        //     bgt::window::settings{
+        //         .size = {
+        //             .w = 300,
+        //             .h = 400,
+        //         },
+        //         .is_resizable = false,
+        //         .title = "Sample App Window 2",
+        //     },
+        // };
 
         bgt::renderer2d r(wnd1);
 
         bgt::image img{"examples/assets/test.png"};
         auto imgclip = img.clip(0, 0, 32, 32);
+
+        bgt::audio test_sound("examples/assets/test.ogg");
+
+        bgt::audio_player player(test_sound);
+
+        player.play_loop();
 
         while (bgt::frame_update()) {
             r.draw(img, 0, 100);

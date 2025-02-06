@@ -1,20 +1,49 @@
-#include "audio.hpp"
-#include "global_module.hpp"
 #include "interfaces/audio.hpp"
+#include "global_module.hpp"
 #include <brightcpp/audio.hpp>
 #include <unordered_map>
+#include <vorbis/codec.h>
+#include <vorbis/vorbisfile.h>
+#include <iostream>
 
 BRIGHTCPP_START
 
 using g_audio = internal::global_module<internal::audio_backend>;
 
-std::vector<std::vector<float>> buffers;
+std::vector<std::vector<float>> loaded_audios;
 
-handle_holder<audio> easy_audio_loader(char *path, audio_file_type type) {
+handle_holder<audio>::handle_value_t easy_audio_loader(const char *path, audio_file_type type) {
     // TODO
+    FILE *fp = std::fopen(path, "rb");
+
+    OggVorbis_File vf;
+    if (ov_open(fp, &vf, NULL, 0) < 0)
+        throw std::runtime_error("failed to ov_open");
+
+    auto vi = ov_info(&vf, -1);
+    if (vi == nullptr)
+        throw std::runtime_error("failed to ov_info");
+
+    std::vector<float> loaded_audio;
+
+    std::vector<char> buffer(4096);
+    auto p = reinterpret_cast<int16_t *>(buffer.data());
+    int cur, decoded;
+    do {
+        decoded = ov_read(&vf, buffer.data(), 4096, 0, 2, 1, &cur);
+        for (int i = 0; i < decoded / (2 * sizeof(int16_t)); i++)
+            loaded_audio.push_back(float(p[i * 2]) / 32768);
+    } while (decoded > 0);
+
+    ov_clear(&vf);
+    fclose(fp);
+
+    int id = loaded_audios.size();
+    loaded_audios.push_back(std::move(loaded_audio));
+    return id;
 }
 
-audio::audio(char *path, audio_file_type type) : handle_holder{easy_audio_loader(path, type)} {}
+audio::audio(const char *path, audio_file_type type) : handle_holder{easy_audio_loader(path, type)} {}
 
 class audio_player_impl {
     std::optional<audio> data;
@@ -45,10 +74,10 @@ class audio_player_impl {
             context_id,
             internal::audio_buffer_play_info{
                 .delay_timer = 0,
-                .current_pos = buffers[audio_handle].data(),
-                .end_pos = buffers[audio_handle].data() + buffers[audio_handle].size(),
-                .loop_pos = buffers[audio_handle].data(),
-                .next_loop_end_pos = buffers[audio_handle].data() + buffers[audio_handle].size(),
+                .current_pos = loaded_audios[audio_handle].data(),
+                .end_pos = loaded_audios[audio_handle].data() + loaded_audios[audio_handle].size(),
+                .loop_pos = loaded_audios[audio_handle].data(),
+                .next_loop_end_pos = loaded_audios[audio_handle].data() + loaded_audios[audio_handle].size(),
                 .volume = 1.0f,
                 .mode = internal::audio_buffer_play_info::play_mode::normal,
                 .stopped = false,
@@ -62,10 +91,10 @@ class audio_player_impl {
             context_id,
             internal::audio_buffer_play_info{
                 .delay_timer = 0,
-                .current_pos = buffers[audio_handle].data(),
-                .end_pos = buffers[audio_handle].data() + buffers[audio_handle].size(),
-                .loop_pos = buffers[audio_handle].data(),
-                .next_loop_end_pos = buffers[audio_handle].data() + buffers[audio_handle].size(),
+                .current_pos = loaded_audios[audio_handle].data(),
+                .end_pos = loaded_audios[audio_handle].data() + loaded_audios[audio_handle].size(),
+                .loop_pos = loaded_audios[audio_handle].data(),
+                .next_loop_end_pos = loaded_audios[audio_handle].data() + loaded_audios[audio_handle].size(),
                 .volume = 1.0f,
                 .mode = internal::audio_buffer_play_info::play_mode::loop,
                 .stopped = false,
@@ -78,8 +107,10 @@ handle_holder<audio>::handle_value_t player_serial_count = 0;
 std::unordered_map<handle_holder<audio>::handle_value_t, audio_player_impl> players;
 
 handle_holder<audio>::handle_value_t player_register() {
-    players.emplace(player_serial_count, audio_player_impl{});
+    int new_id = player_serial_count;
     player_serial_count++;
+    players.emplace(new_id, audio_player_impl{});
+    return new_id;
 }
 
 audio_player::audio_player(audio &data) : handle_holder{player_register()} {

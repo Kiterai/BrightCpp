@@ -26,6 +26,24 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/Themaister/muFFT.git)
 
 FetchContent_Declare(
+  ogg
+  GIT_REPOSITORY https://github.com/xiph/ogg.git
+  GIT_TAG v1.3.5
+)
+set(OGG_INCLUDE_DIR ${ogg_SOURCE_DIR}/include)
+if(MSVC)
+set(OGG_LIBRARY ${ogg_BINARY_DIR}/Release)
+else()
+set(OGG_LIBRARY ${ogg_BINARY_DIR})
+endif()
+
+FetchContent_Declare(
+  vorbis
+  GIT_REPOSITORY https://github.com/xiph/vorbis.git
+  GIT_TAG v1.3.7
+)
+
+FetchContent_Declare(
   VulkanMemoryAllocator
   GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
   GIT_TAG v3.1.0)
@@ -61,7 +79,7 @@ set(BUILD_DYNAMIC_LIBS "${BUILD_DYNAMIC_LIBS_BU}")
 if(AARCH64)
 set(CMAKE_SYSTEM_PROCESSOR aarch64)
 endif()
-FetchContent_MakeAvailable(glfw VulkanMemoryAllocator muFFT)
+FetchContent_MakeAvailable(glfw VulkanMemoryAllocator muFFT ogg vorbis)
 
 FetchContent_Populate(
   VulkanMemoryAllocator-Hpp
@@ -113,5 +131,7 @@ target_link_libraries(brightcpp PRIVATE glfw)
 target_link_libraries(brightcpp PRIVATE VulkanMemoryAllocator)
 target_link_libraries(brightcpp PRIVATE libsoundio_static)
 target_include_directories(brightcpp PRIVATE ${libsoundio_SOURCE_DIR})
+target_link_libraries(brightcpp PRIVATE vorbisfile)
+target_include_directories(brightcpp PRIVATE ${vorbis_SOURCE_DIR}/include)
 target_include_directories(brightcpp PRIVATE ${vulkanmemoryallocator-hpp_SOURCE_DIR}/include)
 target_include_directories(brightcpp PRIVATE ${stb_SOURCE_DIR})

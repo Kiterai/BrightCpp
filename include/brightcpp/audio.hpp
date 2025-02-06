@@ -17,7 +17,7 @@ enum class audio_file_type {
 
 class audio : public handle_holder<audio> {
   public:
-    audio(char *path, audio_file_type type = audio_file_type::auto_detect);
+    audio(const char *path, audio_file_type type = audio_file_type::auto_detect);
 };
 
 class audio_player : public handle_holder<audio> {
