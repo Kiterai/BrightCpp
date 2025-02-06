@@ -1,10 +1,10 @@
 #include "interfaces/audio.hpp"
 #include "global_module.hpp"
 #include <brightcpp/audio.hpp>
+#include <iostream>
 #include <unordered_map>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
-#include <iostream>
 
 BRIGHTCPP_START
 
@@ -84,8 +84,10 @@ class audio_player_impl {
                 .paused = false,
             });
     }
-    void play_loop() {
+    void play_loop(std::chrono::nanoseconds loop_point) {
         auto audio_handle = data->handle();
+
+        auto loop_point_sampleindex = loop_point.count() * 48000 / 1'000'000'000;
 
         g_audio::get().set_playing_state(
             context_id,
@@ -93,7 +95,7 @@ class audio_player_impl {
                 .delay_timer = 0,
                 .current_pos = loaded_audios[audio_handle].data(),
                 .end_pos = loaded_audios[audio_handle].data() + loaded_audios[audio_handle].size(),
-                .loop_pos = loaded_audios[audio_handle].data(),
+                .loop_pos = loaded_audios[audio_handle].data() + loop_point_sampleindex,
                 .next_loop_end_pos = loaded_audios[audio_handle].data() + loaded_audios[audio_handle].size(),
                 .volume = 1.0f,
                 .mode = internal::audio_buffer_play_info::play_mode::loop,
@@ -131,7 +133,7 @@ audio_player &audio_player::play_once() {
 }
 
 audio_player &audio_player::play_loop(std::chrono::nanoseconds loop_point) {
-    players[handle()].play_loop();
+    players[handle()].play_loop(loop_point);
     return *this;
 }
 
