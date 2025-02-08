@@ -103,6 +103,52 @@ class audio_player_impl {
                 .paused = false,
             });
     }
+    void reset() {
+        // TODO
+        g_audio::get().set_playing_state(
+            context_id,
+            internal::audio_buffer_play_info{
+                .stopped = true,
+            });
+    }
+    void pause() {
+        // TODO
+        g_audio::get().set_playing_state(
+            context_id,
+            internal::audio_buffer_play_info{
+                .paused = true,
+            });
+    }
+    void resume() {
+        // TODO
+        g_audio::get().set_playing_state(
+            context_id,
+            internal::audio_buffer_play_info{
+                .paused = false,
+            });
+    }
+    void stop() {
+        // TODO
+        g_audio::get().set_playing_state(
+            context_id,
+            internal::audio_buffer_play_info{
+                .paused = true,
+            });
+    }
+    void seek(std::chrono::nanoseconds point) {
+        // TODO
+        auto audio_handle = data->handle();
+        g_audio::get().set_playing_state(
+            context_id,
+            internal::audio_buffer_play_info{
+                .current_pos = loaded_audios[audio_handle].data(),
+                .paused = true,
+            });
+    }
+    std::chrono::nanoseconds pos() const {
+        // TODO
+        return std::chrono::nanoseconds(0);
+    }
 };
 
 handle_holder<audio>::handle_value_t player_serial_count = 0;
@@ -124,7 +170,7 @@ void audio_player::set(audio &data) {
 }
 
 void audio_player::reset() {
-    // TODO
+    players[handle()].reset();
 }
 
 audio_player &audio_player::play_once() {
@@ -138,24 +184,23 @@ audio_player &audio_player::play_loop(std::chrono::nanoseconds loop_point) {
 }
 
 void audio_player::pause() {
-    // TODO
+    players[handle()].pause();
 }
 
 void audio_player::resume() {
-    // TODO
+    players[handle()].resume();
 }
 
 void audio_player::stop() {
-    // TODO
+    players[handle()].stop();
 }
 
 void audio_player::seek(std::chrono::nanoseconds point) {
-    // TODO
+    players[handle()].seek(point);
 }
 
 std::chrono::nanoseconds audio_player::pos() const {
-    // TODO
-    return std::chrono::nanoseconds(0);
+    return players[handle()].pos();
 }
 
 bool audio_player::busy() const {
