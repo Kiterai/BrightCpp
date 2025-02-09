@@ -5,7 +5,7 @@ BRIGHTCPP_START
 
 namespace internal {
 
-std::vector<float> instant_full_resample(const std::vector<float> &src, int src_samplerate, int dst_samplerate);
+std::vector<float> instant_full_resample(const std::vector<float> &src, float src_samplerate, float dst_samplerate);
 
 } // namespace internal
 
