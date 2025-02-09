@@ -130,6 +130,7 @@ add_library(
 
     audio.cpp
     audio/audio_asset_manager.cpp
+    audio/loader/loader_selector.cpp
     audio/loader/wav.cpp
     audio/loader/ogg.cpp
     audio/loader/mp3.cpp
