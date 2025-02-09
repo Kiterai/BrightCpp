@@ -15,7 +15,6 @@ struct audio_loaded_result {
 
 class audio_loader_backend {
   public:
-    virtual std::vector<float> load_full_from_file(std::filesystem::path path) = 0;
     virtual audio_loaded_result load_full_from_file2(std::filesystem::path path) = 0;
 };
 
