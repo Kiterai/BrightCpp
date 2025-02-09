@@ -1,43 +1,13 @@
 #include "audio_asset_manager.hpp"
-#include "loader/mp3.hpp"
-#include "loader/ogg.hpp"
-#include "loader/wav.hpp"
+#include "loader/loader_selector.hpp"
 
 BRIGHTCPP_START
 
 namespace internal {
 
 handle_holder<audio>::handle_value_t audio_asset_manager::make(std::filesystem::path path, audio_file_type type) {
-    if (type == audio_file_type::auto_detect) {
-        if (path.extension() == ".wav")
-            type = audio_file_type::wav;
-        else if (path.extension() == ".ogg")
-            type = audio_file_type::ogg;
-        else if (path.extension() == ".mp3")
-            type = audio_file_type::mp3;
-        else
-            throw std::runtime_error("unknown audio file extension: " + path.extension().string());
-    }
-
-    std::vector<float> buf;
-
-    switch (type) {
-    case audio_file_type::wav:
-        buf = load_wavriff_full(path.string().c_str());
-        break;
-    case audio_file_type::ogg:
-        buf = load_oggvorbis_full(path.string().c_str());
-        break;
-    case audio_file_type::mp3:
-        buf = load_mp3_full(path.string().c_str());
-        break;
-    case audio_file_type::flac:
-        throw std::runtime_error("not implemented");
-        break;
-    default:
-        throw std::runtime_error("invalid audio file type");
-        break;
-    }
+    auto loader = make_loader(path, type);
+    auto buf = loader->load_full_from_file(path);
 
     loaded_audios[serial_id] = std::move(buf);
     auto id = serial_id;

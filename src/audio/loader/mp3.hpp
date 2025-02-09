@@ -1,11 +1,11 @@
+#include "loader.hpp"
 #include <brightcpp/common.hpp>
-#include <vector>
 
 BRIGHTCPP_START
 
 namespace internal {
 
-std::vector<float> load_mp3_full(const char *path);
+std::unique_ptr<audio_loader_backend> make_mp3_loader();
 
 } // namespace internal
 

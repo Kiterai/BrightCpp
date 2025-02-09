@@ -21,13 +21,13 @@ std::unique_ptr<audio_loader_backend> make_loader(std::filesystem::path path, au
 
     switch (type) {
     case audio_file_type::wav:
-        throw std::runtime_error("not implemented");
+        return make_wavriff_loader();
         break;
     case audio_file_type::ogg:
-        throw std::runtime_error("not implemented");
+        return make_oggvorbis_loader();
         break;
     case audio_file_type::mp3:
-        throw std::runtime_error("not implemented");
+        return make_mp3_loader();
         break;
     case audio_file_type::flac:
         throw std::runtime_error("not implemented");
