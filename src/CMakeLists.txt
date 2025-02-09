@@ -7,6 +7,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(battery-embed)
 
+# GLFW
 set(GLFW_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_TESTS OFF)
 set(GLFW_BUILD_DOCS OFF)
@@ -14,41 +15,14 @@ FetchContent_Declare(
   glfw
   GIT_REPOSITORY https://github.com/glfw/glfw.git
   GIT_TAG 3.4)
+FetchContent_MakeAvailable(glfw)
 
+# libsoundio
 FetchContent_Declare(
   libsoundio
   GIT_REPOSITORY https://github.com/andrewrk/libsoundio.git
   # GIT_TAG 2.0.0
 )
-
-FetchContent_Declare(
-  muFFT
-  GIT_REPOSITORY https://github.com/Themaister/muFFT.git)
-
-FetchContent_Declare(
-  ogg
-  GIT_REPOSITORY https://github.com/xiph/ogg.git
-  GIT_TAG v1.3.5
-)
-set(OGG_INCLUDE_DIR ${ogg_SOURCE_DIR}/include)
-if(MSVC)
-set(OGG_LIBRARY ${ogg_BINARY_DIR}/Release)
-else()
-set(OGG_LIBRARY ${ogg_BINARY_DIR})
-endif()
-
-FetchContent_Declare(
-  vorbis
-  GIT_REPOSITORY https://github.com/xiph/vorbis.git
-  GIT_TAG v1.3.7
-)
-
-FetchContent_Declare(
-  VulkanMemoryAllocator
-  GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
-  GIT_TAG v3.1.0)
-
-  
 set(BUILD_EXAMPLE_PROGRAMS_BU "${BUILD_EXAMPLE_PROGRAMS}")
 set(BUILD_TESTS_BU "${BUILD_TESTS}")
 set(BUILD_DYNAMIC_LIBS_BU "${BUILD_DYNAMIC_LIBS}")
@@ -76,16 +50,51 @@ set(BUILD_EXAMPLE_PROGRAMS "${BUILD_EXAMPLE_PROGRAMS_BU}")
 set(BUILD_TESTS "${BUILD_TESTS_BU}")
 set(BUILD_DYNAMIC_LIBS "${BUILD_DYNAMIC_LIBS_BU}")
 
+# muFFT
+FetchContent_Declare(
+  muFFT
+  GIT_REPOSITORY https://github.com/Themaister/muFFT.git)
 if(AARCH64)
 set(CMAKE_SYSTEM_PROCESSOR aarch64)
 endif()
-FetchContent_MakeAvailable(glfw VulkanMemoryAllocator muFFT ogg vorbis)
+FetchContent_MakeAvailable(muFFT)
 
+# ogg
+FetchContent_Declare(
+  ogg
+  GIT_REPOSITORY https://github.com/xiph/ogg.git
+  GIT_TAG v1.3.5
+)
+FetchContent_MakeAvailable(ogg)
+
+# vorbis
+FetchContent_Declare(
+  vorbis
+  GIT_REPOSITORY https://github.com/xiph/vorbis.git
+  GIT_TAG v1.3.7
+)
+set(OGG_INCLUDE_DIR ${ogg_SOURCE_DIR}/include)
+if(MSVC)
+set(OGG_LIBRARY ${ogg_BINARY_DIR}/Release)
+else()
+set(OGG_LIBRARY ${ogg_BINARY_DIR})
+endif()
+FetchContent_MakeAvailable(vorbis)
+
+# VMA
+FetchContent_Declare(
+  VulkanMemoryAllocator
+  GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+  GIT_TAG v3.1.0)
+FetchContent_MakeAvailable(VulkanMemoryAllocator)
+
+# VMA-Hpp
 FetchContent_Populate(
   VulkanMemoryAllocator-Hpp
   GIT_REPOSITORY https://github.com/YaaZ/VulkanMemoryAllocator-Hpp.git
   GIT_TAG v3.1.0)
 
+# stb
 FetchContent_Populate(
   stb
   GIT_REPOSITORY https://github.com/nothings/stb.git)
