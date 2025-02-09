@@ -129,7 +129,7 @@ add_library(
     vulkan/registration.cpp
 
     audio.cpp
-    audio/loader/audio_loader.cpp
+    audio/audio_asset_manager.cpp
     audio/loader/wav.cpp
     audio/loader/ogg.cpp
     audio/loader/mp3.cpp

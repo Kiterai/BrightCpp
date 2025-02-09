@@ -1,13 +1,13 @@
-#include "audio_loader.hpp"
-#include "mp3.hpp"
-#include "ogg.hpp"
-#include "wav.hpp"
+#include "audio_asset_manager.hpp"
+#include "loader/mp3.hpp"
+#include "loader/ogg.hpp"
+#include "loader/wav.hpp"
 
 BRIGHTCPP_START
 
 namespace internal {
 
-handle_holder<audio>::handle_value_t audio_loader::make(std::filesystem::path path, audio_file_type type) {
+handle_holder<audio>::handle_value_t audio_asset_manager::make(std::filesystem::path path, audio_file_type type) {
     if (type == audio_file_type::auto_detect) {
         if (path.extension() == ".wav")
             type = audio_file_type::wav;
@@ -45,11 +45,11 @@ handle_holder<audio>::handle_value_t audio_loader::make(std::filesystem::path pa
     return id;
 }
 
-void audio_loader::destroy(handle_holder<audio>::handle_value_t handle) noexcept {
+void audio_asset_manager::destroy(handle_holder<audio>::handle_value_t handle) noexcept {
     loaded_audios.erase(handle);
 }
 
-audio_buffer_info audio_loader::get_info(handle_holder<audio>::handle_value_t handle) const {
+audio_buffer_info audio_asset_manager::get_info(handle_holder<audio>::handle_value_t handle) const {
     const auto &entry = loaded_audios.at(handle);
     return audio_buffer_info{
         .begin = entry.data(),

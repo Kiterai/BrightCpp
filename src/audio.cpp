@@ -1,5 +1,5 @@
 #include "interfaces/audio.hpp"
-#include "audio/loader/audio_loader.hpp"
+#include "audio/audio_asset_manager.hpp"
 #include "global_module.hpp"
 #include <brightcpp/audio.hpp>
 #include <iostream>
@@ -7,9 +7,9 @@
 BRIGHTCPP_START
 
 using g_audio = internal::global_module<internal::audio_backend>;
-using g_audio_loader = internal::global_module<internal::audio_loader>;
+using g_audio_asset_manager = internal::global_module<internal::audio_asset_manager>;
 
-audio::audio(const char *path, audio_file_type type) : handle_holder{g_audio_loader::get().make(path, type)} {}
+audio::audio(const char *path, audio_file_type type) : handle_holder{g_audio_asset_manager::get().make(path, type)} {}
 
 class audio_player_impl {
     std::optional<audio> data;
@@ -35,7 +35,7 @@ class audio_player_impl {
     void set(audio &new_data) {
         data = new_data;
 
-        auto info = g_audio_loader::get().get_info(data->handle());
+        auto info = g_audio_asset_manager::get().get_info(data->handle());
         buf_begin = info.begin;
         buf_end = info.end;
     }
