@@ -16,7 +16,7 @@ static size_t initializer_count = 0;
 struct global_objects_t {
     std::shared_ptr<os_util_backend> os_util;
     std::unique_ptr<object_container> graphics;
-    std::optional<audio_loader> audio_loader;
+    std::optional<audio_loader> audio_loader_obj;
     std::unique_ptr<audio_backend> audio;
 };
 
@@ -35,8 +35,8 @@ system_initializer::system_initializer() {
 
         global_objects->graphics = vulkan::register_objects();
 
-        global_objects->audio_loader = audio_loader{};
-        global_module<audio_loader>::set(*global_objects->audio_loader);
+        global_objects->audio_loader_obj = audio_loader{};
+        global_module<audio_loader>::set(*global_objects->audio_loader_obj);
 
         global_objects->audio = libsoundio::make_libsoundio_manager();
         global_module<audio_backend>::set(*global_objects->audio);
