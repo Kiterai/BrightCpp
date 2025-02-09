@@ -1,5 +1,6 @@
 #include "audio_loader.hpp"
 #include "ogg.hpp"
+#include "wav.hpp"
 
 BRIGHTCPP_START
 
@@ -21,7 +22,7 @@ handle_holder<audio>::handle_value_t audio_loader::make(std::filesystem::path pa
 
     switch (type) {
     case audio_file_type::wav:
-        throw std::runtime_error("not implemented");
+        buf = load_wavriff_full(path.string().c_str());
         break;
     case audio_file_type::ogg:
         buf = load_oggvorbis_full(path.string().c_str());

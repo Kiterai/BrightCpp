@@ -29,12 +29,12 @@ int main() {
         //     },
         // };
 
-        bgt::renderer2d r(wnd1);
-
         bgt::image img{"examples/assets/test.png"};
         auto imgclip = img.clip(0, 0, 32, 32);
 
-        bgt::audio test_sound("examples/assets/test.ogg");
+        bgt::renderer2d r(wnd1);
+
+        bgt::audio test_sound("examples/assets/test.wav");
 
         bgt::audio_player player(test_sound);
 
