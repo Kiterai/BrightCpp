@@ -1,4 +1,5 @@
 #include "audio_loader.hpp"
+#include "mp3.hpp"
 #include "ogg.hpp"
 #include "wav.hpp"
 
@@ -28,7 +29,7 @@ handle_holder<audio>::handle_value_t audio_loader::make(std::filesystem::path pa
         buf = load_oggvorbis_full(path.string().c_str());
         break;
     case audio_file_type::mp3:
-        throw std::runtime_error("not implemented");
+        buf = load_mp3_full(path.string().c_str());
         break;
     case audio_file_type::flac:
         throw std::runtime_error("not implemented");

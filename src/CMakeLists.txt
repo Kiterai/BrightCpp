@@ -84,6 +84,11 @@ set(OGG_LIBRARY ${ogg_BINARY_DIR})
 endif()
 FetchContent_MakeAvailable(vorbis)
 
+# minimp3
+FetchContent_Populate(
+  minimp3
+  GIT_REPOSITORY https://github.com/lieff/minimp3.git)
+
 # VMA
 FetchContent_Declare(
   VulkanMemoryAllocator
@@ -127,6 +132,7 @@ add_library(
     audio/loader/audio_loader.cpp
     audio/loader/wav.cpp
     audio/loader/ogg.cpp
+    audio/loader/mp3.cpp
 
     libsoundio/audio.cpp
 )
@@ -147,3 +153,4 @@ target_link_libraries(brightcpp PRIVATE vorbisfile)
 target_include_directories(brightcpp PRIVATE ${vorbis_SOURCE_DIR}/include)
 target_include_directories(brightcpp PRIVATE ${vulkanmemoryallocator-hpp_SOURCE_DIR}/include)
 target_include_directories(brightcpp PRIVATE ${stb_SOURCE_DIR})
+target_include_directories(brightcpp PRIVATE ${minimp3_SOURCE_DIR})

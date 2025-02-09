@@ -34,7 +34,7 @@ int main() {
 
         bgt::renderer2d r(wnd1);
 
-        bgt::audio test_sound("examples/assets/test.wav");
+        bgt::audio test_sound("examples/assets/test.mp3");
 
         bgt::audio_player player(test_sound);
 
