@@ -1,10 +1,11 @@
 #include <iostream>
 #include <optional>
 
+#include "audio/loader/audio_loader.hpp"
 #include "glfw/glfw.hpp"
 #include "global_module.hpp"
-#include "vulkan/registration.hpp"
 #include "libsoundio/audio.hpp"
+#include "vulkan/registration.hpp"
 
 BRIGHTCPP_START
 
@@ -16,6 +17,7 @@ struct global_objects_t {
     std::shared_ptr<os_util_backend> os_util;
     std::unique_ptr<object_container> graphics;
     std::unique_ptr<audio_backend> audio;
+    std::optional<audio_loader> audio_loader;
 };
 
 std::optional<global_objects_t> global_objects;
@@ -35,6 +37,9 @@ system_initializer::system_initializer() {
 
         global_objects->audio = libsoundio::make_libsoundio_manager();
         global_module<audio_backend>::set(*global_objects->audio);
+
+        global_objects->audio_loader = audio_loader{};
+        global_module<audio_loader>::set(*global_objects->audio_loader);
 
 #ifdef _DEBUG
         std::cout << "successfully initialized BrightCpp." << std::endl;

@@ -11,7 +11,7 @@ using audio_context_id = size_t;
 
 struct audio_buffer_play_info {
     int delay_timer;
-    float *current_pos, *end_pos, *loop_pos, *next_loop_end_pos;
+    const float *current_pos, *end_pos, *loop_pos, *next_loop_end_pos;
     float volume;
     audio_context_id id;
     enum class play_mode {

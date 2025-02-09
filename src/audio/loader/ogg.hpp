@@ -1,13 +1,12 @@
 #include <brightcpp/common.hpp>
-#include <cstddef>
+#include <vector>
 
 BRIGHTCPP_START
 
-class ogg_loader {
-  public:
-    ogg_loader(const std::byte *pdata) {
-        
-    }
-};
+namespace internal {
+
+std::vector<float> load_oggvorbis_full(const char *path);
+
+} // namespace internal
 
 BRIGHTCPP_END

@@ -1,53 +1,21 @@
 #include "interfaces/audio.hpp"
+#include "audio/loader/audio_loader.hpp"
 #include "global_module.hpp"
 #include <brightcpp/audio.hpp>
 #include <iostream>
-#include <unordered_map>
-#include <vorbis/codec.h>
-#include <vorbis/vorbisfile.h>
 
 BRIGHTCPP_START
 
 using g_audio = internal::global_module<internal::audio_backend>;
+using g_audio_loader = internal::global_module<internal::audio_loader>;
 
-std::vector<std::vector<float>> loaded_audios;
-
-handle_holder<audio>::handle_value_t easy_audio_loader(const char *path, audio_file_type type) {
-    // TODO
-    FILE *fp = std::fopen(path, "rb");
-
-    OggVorbis_File vf;
-    if (ov_open(fp, &vf, NULL, 0) < 0)
-        throw std::runtime_error("failed to ov_open");
-
-    auto vi = ov_info(&vf, -1);
-    if (vi == nullptr)
-        throw std::runtime_error("failed to ov_info");
-
-    std::vector<float> loaded_audio;
-
-    std::vector<char> buffer(4096);
-    auto p = reinterpret_cast<int16_t *>(buffer.data());
-    int cur, decoded;
-    do {
-        decoded = ov_read(&vf, buffer.data(), 4096, 0, 2, 1, &cur);
-        for (int i = 0; i < decoded / (2 * sizeof(int16_t)); i++)
-            loaded_audio.push_back(float(p[i * 2]) / 32768);
-    } while (decoded > 0);
-
-    ov_clear(&vf);
-    fclose(fp);
-
-    int id = loaded_audios.size();
-    loaded_audios.push_back(std::move(loaded_audio));
-    return id;
-}
-
-audio::audio(const char *path, audio_file_type type) : handle_holder{easy_audio_loader(path, type)} {}
+audio::audio(const char *path, audio_file_type type) : handle_holder{g_audio_loader::get().make(path, type)} {}
 
 class audio_player_impl {
     std::optional<audio> data;
     internal::audio_context_id context_id;
+
+    const float *buf_begin, *buf_end;
 
   public:
     audio_player_impl() {
@@ -66,18 +34,20 @@ class audio_player_impl {
     }
     void set(audio &new_data) {
         data = new_data;
+
+        auto info = g_audio_loader::get().get_info(data->handle());
+        buf_begin = info.begin;
+        buf_end = info.end;
     }
     void play_once() {
-        auto audio_handle = data->handle();
-
         g_audio::get().set_playing_state(
             context_id,
             internal::audio_buffer_play_info{
                 .delay_timer = 0,
-                .current_pos = loaded_audios[audio_handle].data(),
-                .end_pos = loaded_audios[audio_handle].data() + loaded_audios[audio_handle].size(),
-                .loop_pos = loaded_audios[audio_handle].data(),
-                .next_loop_end_pos = loaded_audios[audio_handle].data() + loaded_audios[audio_handle].size(),
+                .current_pos = buf_begin,
+                .end_pos = buf_end,
+                .loop_pos = buf_begin,
+                .next_loop_end_pos = buf_end,
                 .volume = 1.0f,
                 .mode = internal::audio_buffer_play_info::play_mode::normal,
                 .stopped = false,
@@ -85,18 +55,16 @@ class audio_player_impl {
             });
     }
     void play_loop(std::chrono::nanoseconds loop_point) {
-        auto audio_handle = data->handle();
-
         auto loop_point_sampleindex = loop_point.count() * 48000 / 1'000'000'000;
 
         g_audio::get().set_playing_state(
             context_id,
             internal::audio_buffer_play_info{
                 .delay_timer = 0,
-                .current_pos = loaded_audios[audio_handle].data(),
-                .end_pos = loaded_audios[audio_handle].data() + loaded_audios[audio_handle].size(),
-                .loop_pos = loaded_audios[audio_handle].data() + loop_point_sampleindex,
-                .next_loop_end_pos = loaded_audios[audio_handle].data() + loaded_audios[audio_handle].size(),
+                .current_pos = buf_begin,
+                .end_pos = buf_end,
+                .loop_pos = buf_begin + loop_point_sampleindex,
+                .next_loop_end_pos = buf_end,
                 .volume = 1.0f,
                 .mode = internal::audio_buffer_play_info::play_mode::loop,
                 .stopped = false,
@@ -137,11 +105,12 @@ class audio_player_impl {
     }
     void seek(std::chrono::nanoseconds point) {
         // TODO
-        auto audio_handle = data->handle();
+        auto seek_point_sampleindex = point.count() * 48000 / 1'000'000'000;
+
         g_audio::get().set_playing_state(
             context_id,
             internal::audio_buffer_play_info{
-                .current_pos = loaded_audios[audio_handle].data(),
+                .current_pos = buf_begin + seek_point_sampleindex,
                 .paused = true,
             });
     }
