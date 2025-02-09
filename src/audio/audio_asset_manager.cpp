@@ -1,5 +1,6 @@
 #include "audio_asset_manager.hpp"
 #include "loader/loader_selector.hpp"
+#include "resample.hpp"
 
 BRIGHTCPP_START
 
@@ -9,7 +10,9 @@ handle_holder<audio>::handle_value_t audio_asset_manager::make(std::filesystem::
     auto loader = make_loader(path, type);
     auto buf = loader->load_full_from_file(path);
 
-    loaded_audios[serial_id] = std::move(buf);
+    auto buf_resampled = instant_full_resample(buf, 44100, 48000);
+
+    loaded_audios[serial_id] = std::move(buf_resampled);
     auto id = serial_id;
     serial_id++;
     return id;

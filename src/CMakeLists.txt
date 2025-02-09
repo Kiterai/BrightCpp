@@ -59,6 +59,14 @@ set(CMAKE_SYSTEM_PROCESSOR aarch64)
 endif()
 FetchContent_MakeAvailable(muFFT)
 
+# libsamplerate
+FetchContent_Declare(
+  libsamplerate
+  GIT_REPOSITORY https://github.com/libsndfile/libsamplerate.git
+  GIT_TAG 0.2.2
+)
+FetchContent_MakeAvailable(libsamplerate)
+
 # ogg
 set(BUILD_TESTING_BK "${BUILD_TESTING}")
 set(BUILD_TESTING OFF CACHE INTERNAL "")
@@ -130,6 +138,7 @@ add_library(
 
     audio.cpp
     audio/audio_asset_manager.cpp
+    audio/resample.cpp
     audio/loader/loader_selector.cpp
     audio/loader/wav.cpp
     audio/loader/ogg.cpp
@@ -148,6 +157,7 @@ target_link_libraries(brightcpp PRIVATE ${Vulkan_LIBRARIES})
 set_target_properties(brightcpp PROPERTIES CXX_STANDARD 20)
 target_link_libraries(brightcpp PRIVATE glfw)
 target_link_libraries(brightcpp PRIVATE VulkanMemoryAllocator)
+target_link_libraries(brightcpp PRIVATE samplerate)
 target_link_libraries(brightcpp PRIVATE libsoundio_static)
 target_include_directories(brightcpp PRIVATE ${libsoundio_SOURCE_DIR})
 target_link_libraries(brightcpp PRIVATE vorbisfile)
