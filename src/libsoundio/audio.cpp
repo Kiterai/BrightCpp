@@ -354,7 +354,7 @@ class audio_libsoundio : public audio_backend {
     }
 
     int get_sample_rate() override {
-        return 0;
+        return (*outstream)->sample_rate;
     }
 
     audio_context_id play_audio_buffer(const audio_buffer_play_info &info) override {
