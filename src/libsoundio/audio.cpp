@@ -280,7 +280,7 @@ class audio_libsoundio : public audio_backend {
                     if (playing.paused)
                         continue;
                     sample += *playing.current_pos;
-                    *playing.current_pos++;
+                    playing.current_pos++;
                     if (playing.current_pos >= playing.end_pos) {
                         switch (playing.mode) {
                         case audio_buffer_play_info::play_mode::normal:
