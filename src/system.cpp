@@ -2,6 +2,7 @@
 #include <optional>
 
 #include "audio/audio_asset_manager.hpp"
+#include "audio/mixer.hpp"
 #include "glfw/glfw.hpp"
 #include "global_module.hpp"
 #include "libsoundio/audio.hpp"
@@ -17,6 +18,7 @@ struct global_objects_t {
     std::shared_ptr<os_util_backend> os_util;
     std::unique_ptr<object_container> graphics;
     std::optional<audio_asset_manager> audio_loader_obj;
+    std::optional<audio_mixer> audio_mixer;
     std::unique_ptr<audio_backend> audio;
 };
 
@@ -37,6 +39,9 @@ system_initializer::system_initializer() {
 
         global_objects->audio_loader_obj = audio_asset_manager{};
         global_module<audio_asset_manager>::set(*global_objects->audio_loader_obj);
+
+        global_objects->audio_mixer = audio_mixer{};
+        global_module<audio_mixer>::set(*global_objects->audio_mixer);
 
         global_objects->audio = libsoundio::make_libsoundio_manager();
         global_module<audio_backend>::set(*global_objects->audio);
