@@ -268,9 +268,6 @@ class SoundIoWrap {
 };
 
 class audio_libsoundio : public audio_backend {
-    // std::vector<audio_buffer_play_info> playing_list;
-    // audio_context_id id_serial_count = 0;
-
     template <write_sample_func write_sample>
     struct write_samples {
         void operator()(SoundIoChannelArea *areas, int writable_frame_count, int channels_count, void *p) {
@@ -326,13 +323,6 @@ class audio_libsoundio : public audio_backend {
 
     int get_sample_rate() override {
         return (*outstream)->sample_rate;
-    }
-
-    audio_context_id play_audio_buffer(const audio_buffer_play_info &info) override {
-        return global_module<audio_mixer>::get().add_playing(info);
-    }
-    void set_playing_state(audio_context_id id, const audio_buffer_play_info &info) override {
-        global_module<audio_mixer>::get().set_playing(id, info);
     }
 };
 

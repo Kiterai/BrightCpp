@@ -33,9 +33,6 @@ class audio_backend {
     virtual ~audio_backend() = default;
 
     virtual int get_sample_rate() = 0;
-
-    virtual audio_context_id play_audio_buffer(const audio_buffer_play_info &) = 0;
-    virtual void set_playing_state(audio_context_id id, const audio_buffer_play_info &) = 0;
 };
 
 } // namespace internal
