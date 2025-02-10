@@ -21,18 +21,6 @@ class audio_player_impl {
 
   public:
     audio_player_impl() {
-        // context_id = g_audio::get().play_audio_buffer(
-        //     internal::audio_buffer_play_info{
-        //         .delay_timer = 0,
-        //         // .current_pos = buffers[audio_handle].data(),
-        //         // .end_pos = buffers[audio_handle].data() + buffers[audio_handle].size(),
-        //         // .loop_pos = buffers[audio_handle].data(),
-        //         // .next_loop_end_pos = buffers[audio_handle].data() + buffers[audio_handle].size(),
-        //         .volume = 1.0f,
-        //         .mode = internal::audio_buffer_play_info::play_mode::normal,
-        //         .stopped = false,
-        //         .paused = true,
-        //     });
         context_id = g_audio_mixer::get().add_playing(
             internal::audio_buffer_play_info{
                 .delay_timer = 0,
