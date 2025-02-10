@@ -301,7 +301,7 @@ class audio_libsoundio : public audio_backend {
                             playing.current_pos = playing.loop_pos;
                             playing.end_pos = playing.next_loop_end_pos;
                             playing.mode = audio_buffer_play_info::play_mode::streaming_loop_invalid;
-                            playing.callback(playing.callback_data, &playing);
+                            // playing.callback(playing.callback_data, &playing);
                             break;
                         }
                     }
