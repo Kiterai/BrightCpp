@@ -3,6 +3,7 @@
 
 #include "audio/audio_asset_manager.hpp"
 #include "audio/mixer.hpp"
+#include "audio/streaming_manager.hpp"
 #include "glfw/glfw.hpp"
 #include "global_module.hpp"
 #include "libsoundio/audio.hpp"
@@ -25,6 +26,7 @@ struct global_objects_t {
 
     std::optional<audio_asset_manager> audio_loader_obj;
     std::optional<audio_mixer> audio_mixer;
+    std::optional<streaming_manager> streaming_manager;
     std::unique_ptr<audio_backend> audio;
 };
 
@@ -76,6 +78,12 @@ template <>
 audio_mixer *global_module_constructor<audio_mixer>() {
     global_objects.audio_mixer = audio_mixer{};
     return &*global_objects.audio_mixer;
+}
+
+template <>
+streaming_manager *global_module_constructor<streaming_manager>() {
+    global_objects.streaming_manager.emplace();
+    return &*global_objects.streaming_manager;
 }
 
 template <>
