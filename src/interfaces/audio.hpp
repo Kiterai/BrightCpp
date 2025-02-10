@@ -22,6 +22,10 @@ struct audio_buffer_play_info {
         streaming_loop_available,
     } mode;
     bool stopped, paused;
+
+    using streaming_callback = void(void *, audio_buffer_play_info*);
+    void *callback_data;
+    streaming_callback callback;
 };
 
 class audio_backend {

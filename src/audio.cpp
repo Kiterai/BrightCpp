@@ -16,6 +16,7 @@ class audio_player_impl {
     internal::audio_context_id context_id;
 
     const float *buf_begin, *buf_end;
+    bool streaming = false;
 
   public:
     audio_player_impl() {
@@ -40,19 +41,35 @@ class audio_player_impl {
         buf_end = info.end;
     }
     void play_once() {
-        g_audio::get().set_playing_state(
-            context_id,
-            internal::audio_buffer_play_info{
-                .delay_timer = 0,
-                .current_pos = buf_begin,
-                .end_pos = buf_end,
-                .loop_pos = buf_begin,
-                .next_loop_end_pos = buf_end,
-                .volume = 1.0f,
-                .mode = internal::audio_buffer_play_info::play_mode::normal,
-                .stopped = false,
-                .paused = false,
-            });
+        if (!streaming) {
+            g_audio::get().set_playing_state(
+                context_id,
+                internal::audio_buffer_play_info{
+                    .delay_timer = 0,
+                    .current_pos = buf_begin,
+                    .end_pos = buf_end,
+                    .loop_pos = buf_begin,
+                    .next_loop_end_pos = buf_end,
+                    .volume = 1.0f,
+                    .mode = internal::audio_buffer_play_info::play_mode::normal,
+                    .stopped = false,
+                    .paused = false,
+                });
+        } else {
+            g_audio::get().set_playing_state(
+                context_id,
+                internal::audio_buffer_play_info{
+                    .delay_timer = 0,
+                    .current_pos = buf_begin,
+                    .end_pos = buf_end,
+                    .loop_pos = buf_begin,
+                    .next_loop_end_pos = buf_end,
+                    .volume = 1.0f,
+                    .mode = internal::audio_buffer_play_info::play_mode::streaming_loop_available,
+                    .stopped = false,
+                    .paused = false,
+                });
+        }
     }
     void play_loop(std::chrono::nanoseconds loop_point) {
         auto loop_point_sampleindex = loop_point.count() * 48000 / 1'000'000'000;
