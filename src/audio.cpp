@@ -1,6 +1,6 @@
-#include "audio/mixer.hpp"
-#include "global_module.hpp"
+#include "interfaces/audio.hpp"
 #include "audio/audio_asset_manager.hpp"
+#include "audio/mixer.hpp"
 #include "global_module.hpp"
 #include <brightcpp/audio.hpp>
 #include <iostream>
@@ -21,6 +21,9 @@ class audio_player_impl {
 
   public:
     audio_player_impl() {
+        // ensure audio thread running
+        internal::global_module<internal::audio_backend>::get();
+
         context_id = g_audio_mixer::get().add_playing(
             internal::audio_buffer_play_info{
                 .delay_timer = 0,
