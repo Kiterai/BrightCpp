@@ -2,6 +2,7 @@
 #include "audio.hpp"
 #include "../audio/mixer.cpp"
 #include "../global_module.hpp"
+#include "write_sample_func.hpp"
 #include <algorithm>
 #include <iostream>
 #include <optional>
@@ -15,33 +16,6 @@ BRIGHTCPP_START
 namespace internal {
 
 namespace libsoundio {
-
-using write_sample_func = void(char *, float);
-// using write_samples_func = void(SoundIoChannelArea *areas, int writable_frame_count, int channels_count, void* p);
-
-static void write_sample_s16ne(char *ptr, float sample) {
-    int16_t *buf = (int16_t *)ptr;
-    float range = (float)INT16_MAX - (float)INT16_MIN;
-    float val = sample * range / 2.0f;
-    *buf = int16_t(val);
-}
-
-static void write_sample_s32ne(char *ptr, float sample) {
-    int32_t *buf = (int32_t *)ptr;
-    float range = (float)INT32_MAX - (float)INT32_MIN;
-    float val = sample * range / 2.0f;
-    *buf = int32_t(val);
-}
-
-static void write_sample_float32ne(char *ptr, float sample) {
-    float *buf = (float *)ptr;
-    *buf = sample;
-}
-
-static void write_sample_float64ne(char *ptr, float sample) {
-    double *buf = (double *)ptr;
-    *buf = sample;
-}
 
 static int default_buffer_length() {
 #ifdef _WIN32
