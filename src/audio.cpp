@@ -1,6 +1,7 @@
 #include "interfaces/audio.hpp"
 #include "audio/audio_asset_manager.hpp"
 #include "audio/mixer.hpp"
+#include "audio/streaming_manager.hpp"
 #include "global_module.hpp"
 #include <brightcpp/audio.hpp>
 #include <iostream>
@@ -8,6 +9,7 @@
 BRIGHTCPP_START
 
 using g_audio_mixer = internal::global_module<internal::audio_mixer>;
+using g_audio_streaming_manager = internal::global_module<internal::streaming_manager>;
 using g_audio_asset_manager = internal::global_module<internal::audio_asset_manager>;
 
 audio::audio(const char *path, audio_file_type type) : handle_holder{g_audio_asset_manager::get().make(path, type)} {}
@@ -38,11 +40,19 @@ class audio_player_impl {
             });
     }
     void set(audio &new_data) {
+        if (streaming)
+            g_audio_streaming_manager::get().unregister_loader(context_id);
+
         data = new_data;
 
         auto info = g_audio_asset_manager::get().get_info(data->handle());
         buf_begin = info.begin;
         buf_end = info.end;
+
+        if (streaming)
+            g_audio_streaming_manager::get().register_loader(context_id, []() {
+                // TODO;
+            });
     }
     void play_once() {
         if (!streaming) {
@@ -99,6 +109,7 @@ class audio_player_impl {
             internal::audio_buffer_play_info{
                 .stopped = true,
             });
+        g_audio_streaming_manager::get().unregister_loader(context_id);
     }
     void pause() {
         // TODO
