@@ -13,9 +13,27 @@ audio_context_id audio_mixer::add_playing(const audio_buffer_play_info &info) {
     return new_id;
 }
 
-void audio_mixer::set_playing(audio_context_id id, const audio_buffer_play_info &info) {
+void audio_mixer::set_playing(audio_context_id id, const audio_buffer_play_info &info, audio_play_update_mask mask) {
     for (auto &playing : playing_list) {
         if (playing.id == id) {
+            if (mask & audio_play_update_bit::delay_timer) {
+                playing.delay_timer = info.delay_timer;
+            }
+            if (mask & audio_play_update_bit::current_range) {
+                playing.current_pos = info.current_pos;
+                playing.end_pos = info.end_pos;
+            }
+            if (mask & audio_play_update_bit::next_range) {
+                playing.loop_pos = info.loop_pos;
+                playing.next_loop_end_pos = info.next_loop_end_pos;
+            }
+            if (mask & audio_play_update_bit::mode) {
+                playing.mode = info.mode;
+            }
+            if (mask & audio_play_update_bit::stop_pause) {
+                playing.stopped = info.stopped;
+                playing.paused = info.paused;
+            }
             playing = info;
             playing.id = id;
             break;

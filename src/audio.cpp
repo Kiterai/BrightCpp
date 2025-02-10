@@ -68,7 +68,12 @@ class audio_player_impl {
                     .mode = internal::audio_buffer_play_info::play_mode::normal,
                     .stopped = false,
                     .paused = false,
-                });
+                },
+                internal::audio_play_update_bit::delay_timer |
+                    internal::audio_play_update_bit::current_range |
+                    internal::audio_play_update_bit::next_range |
+                    internal::audio_play_update_bit::mode |
+                    internal::audio_play_update_bit::stop_pause);
         } else {
             g_audio_mixer::get().set_playing(
                 context_id,
@@ -82,7 +87,12 @@ class audio_player_impl {
                     .mode = internal::audio_buffer_play_info::play_mode::streaming_loop_available,
                     .stopped = false,
                     .paused = false,
-                });
+                },
+                internal::audio_play_update_bit::delay_timer |
+                    internal::audio_play_update_bit::current_range |
+                    internal::audio_play_update_bit::next_range |
+                    internal::audio_play_update_bit::mode |
+                    internal::audio_play_update_bit::stop_pause);
         }
     }
     void play_loop(std::chrono::nanoseconds loop_point) {
@@ -100,55 +110,67 @@ class audio_player_impl {
                 .mode = internal::audio_buffer_play_info::play_mode::loop,
                 .stopped = false,
                 .paused = false,
-            });
+            },
+            internal::audio_play_update_bit::delay_timer |
+                internal::audio_play_update_bit::current_range |
+                internal::audio_play_update_bit::next_range |
+                internal::audio_play_update_bit::mode |
+                internal::audio_play_update_bit::stop_pause);
     }
     void reset() {
-        // TODO
         g_audio_mixer::get().set_playing(
             context_id,
             internal::audio_buffer_play_info{
                 .stopped = true,
-            });
+                .paused = true,
+            },
+            internal::audio_play_update_bit::stop_pause);
         g_audio_streaming_manager::get().unregister_loader(context_id);
     }
     void pause() {
-        // TODO
         g_audio_mixer::get().set_playing(
             context_id,
             internal::audio_buffer_play_info{
+                .stopped = false,
                 .paused = true,
-            });
+            },
+            internal::audio_play_update_bit::stop_pause);
     }
     void resume() {
-        // TODO
         g_audio_mixer::get().set_playing(
             context_id,
             internal::audio_buffer_play_info{
+                .stopped = false,
                 .paused = false,
-            });
+            },
+            internal::audio_play_update_bit::stop_pause);
     }
     void stop() {
-        // TODO
         g_audio_mixer::get().set_playing(
             context_id,
             internal::audio_buffer_play_info{
+                .current_pos = buf_begin,
+                .end_pos = buf_end,
+                .stopped = false,
                 .paused = true,
-            });
+            },
+            internal::audio_play_update_bit::current_range |
+                internal::audio_play_update_bit::stop_pause);
     }
     void seek(std::chrono::nanoseconds point) {
-        // TODO
         auto seek_point_sampleindex = point.count() * 48000 / 1'000'000'000;
 
         g_audio_mixer::get().set_playing(
             context_id,
             internal::audio_buffer_play_info{
                 .current_pos = buf_begin + seek_point_sampleindex,
-                .paused = true,
-            });
+                .end_pos = buf_end,
+            },
+            internal::audio_play_update_bit::current_range);
     }
     std::chrono::nanoseconds pos() const {
-        // TODO
-        return std::chrono::nanoseconds(0);
+        auto s = g_audio_mixer::get().get_playing(context_id).current_pos - buf_begin;
+        return std::chrono::nanoseconds(s * 1'000'000'000 / 48000);
     }
 };
 
