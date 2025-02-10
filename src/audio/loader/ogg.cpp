@@ -17,9 +17,8 @@ class oggvorbis_loader : public audio_loader_backend {
         fclose(fp);
     }
     audio_loaded_meta open(std::filesystem::path path) override {
-        FILE *fp = std::fopen(path.string().c_str(), "rb");
+        fp = std::fopen(path.string().c_str(), "rb");
 
-        OggVorbis_File vf;
         if (ov_open(fp, &vf, NULL, 0) < 0)
             throw std::runtime_error("failed to ov_open");
 
