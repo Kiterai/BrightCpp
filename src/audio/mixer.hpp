@@ -13,7 +13,7 @@ class audio_mixer {
   public:
     audio_context_id add_playing(const audio_buffer_play_info &);
     void set_playing(audio_context_id id, const audio_buffer_play_info &);
-    audio_buffer_play_info get_playing(audio_context_id id);
+    audio_buffer_play_info get_playing(audio_context_id id) const;
     void read(float *dst, size_t frames);
 };
 

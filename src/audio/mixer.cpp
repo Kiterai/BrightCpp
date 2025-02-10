@@ -1,4 +1,5 @@
 #include "mixer.hpp"
+#include <iostream>
 #include <stdexcept>
 
 BRIGHTCPP_START
@@ -22,7 +23,7 @@ void audio_mixer::set_playing(audio_context_id id, const audio_buffer_play_info 
     }
 }
 
-audio_buffer_play_info audio_mixer::get_playing(audio_context_id id) {
+audio_buffer_play_info audio_mixer::get_playing(audio_context_id id) const {
     for (auto &playing : playing_list) {
         if (playing.id == id)
             return playing;
