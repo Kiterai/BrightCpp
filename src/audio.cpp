@@ -178,7 +178,7 @@ handle_holder<audio>::handle_value_t player_serial_count = 0;
 std::unordered_map<handle_holder<audio>::handle_value_t, audio_player_impl> players;
 
 handle_holder<audio>::handle_value_t player_register() {
-    int new_id = player_serial_count;
+    auto new_id = player_serial_count;
     player_serial_count++;
     players.emplace(new_id, audio_player_impl{});
     return new_id;
