@@ -30,6 +30,10 @@ struct fmt_chunk {
 };
 
 class wavriff_loader : public audio_loader_backend {
+    std::ifstream f;
+    fmt_chunk format_info;
+    size_t data_chunk_length;
+
   public:
     audio_loaded_result load_full_from_file2(std::filesystem::path path) override {
         std::vector<float> loaded_audio;
@@ -97,6 +101,94 @@ class wavriff_loader : public audio_loader_backend {
             .buf = std::move(loaded_audio),
             .samplerate = float(format_info.samples_per_sec),
         };
+    }
+    audio_loaded_meta open(std::filesystem::path path) override {
+        f.open(path, std::ios::binary);
+
+        wav_header header;
+        f.read(reinterpret_cast<char *>(&header), sizeof(header));
+
+        // inversed due to little endian
+        if (header.chunk_id != 'FFIR')
+            throw std::runtime_error("invalid wav file: chunk id != \"RIFF\"");
+        if (header.form_type != 'EVAW')
+            throw std::runtime_error("invalid wav file: form type != \"WAVE\"");
+
+        bool fmt_chunk_exists = false, data_chunk_exists = false;
+
+        while (!f.eof()) {
+            subchunk_header chunkheader;
+            f.read(reinterpret_cast<char *>(&chunkheader), sizeof(chunkheader));
+
+            if (chunkheader.subchunk_id == ' tmf') {
+                if (chunkheader.length < 16)
+                    throw std::runtime_error("invalid wav file: fmt chunk size < 16");
+
+                std::vector<char> buf(chunkheader.length);
+                f.read(buf.data(), chunkheader.length);
+
+                format_info = *reinterpret_cast<const fmt_chunk *>(buf.data());
+
+                if (format_info.format_tag != 1)
+                    throw std::runtime_error("invalid wav file: format is not Linear PCM");
+                if (format_info.bits_per_sample != 8 && format_info.bits_per_sample != 16)
+                    throw std::runtime_error("invalid wav file: bits per sample is not 8 or 16");
+
+                fmt_chunk_exists = true;
+            } else if (chunkheader.subchunk_id == 'atad') {
+                if (!fmt_chunk_exists)
+                    throw std::runtime_error("invalid wav file: data chunk before fmt chunk");
+                data_chunk_length = chunkheader.length;
+
+                data_chunk_exists = true;
+                break;
+            } else {
+                f.seekg(chunkheader.length, std::ios_base::cur);
+            }
+        }
+
+        if (!data_chunk_exists)
+            throw std::runtime_error("invalid wav file: data chunk not exists");
+
+        return audio_loaded_meta {
+            .samplerate = float(format_info.samples_per_sec),
+        };
+    }
+    std::vector<float> load_full() override {
+        std::vector<float> loaded_audio;
+
+        for (size_t p = 0; p < data_chunk_length;) {
+            char buf[16];
+            f.read(buf, format_info.block_align);
+            p += format_info.block_align;
+
+            if (format_info.bits_per_sample == 8) {
+                loaded_audio.push_back((float(*reinterpret_cast<uint8_t *>(buf)) - 128) / 128.0f);
+            } else if (format_info.bits_per_sample == 16) {
+                loaded_audio.push_back(float(*reinterpret_cast<int16_t *>(buf)) / 32768.0f);
+            }
+        }
+
+        return loaded_audio;
+    }
+    size_t load_chunk(float *out, size_t max_sample) override {
+        size_t loaded = 0;
+        for (size_t p = 0; p < data_chunk_length && max_sample > 0;) {
+            char buf[16];
+            f.read(buf, format_info.block_align);
+            p += format_info.block_align;
+
+            if (format_info.bits_per_sample == 8) {
+                *out = (float(*reinterpret_cast<uint8_t *>(buf)) - 128) / 128.0f;
+            } else if (format_info.bits_per_sample == 16) {
+                *out = float(*reinterpret_cast<int16_t *>(buf)) / 32768.0f;
+            }
+            out++;
+            loaded++;
+            max_sample--;
+        }
+
+        return loaded;
     }
 };
 

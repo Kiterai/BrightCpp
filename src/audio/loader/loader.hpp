@@ -19,6 +19,8 @@ struct audio_loaded_meta {
 
 class audio_loader_backend {
   public:
+    virtual ~audio_loader_backend() = default;
+
     virtual audio_loaded_result load_full_from_file2(std::filesystem::path path) = 0;
     virtual audio_loaded_meta open(std::filesystem::path path) { throw std::runtime_error("not implemented"); }
     virtual std::vector<float> load_full() { throw std::runtime_error("not implemented"); }

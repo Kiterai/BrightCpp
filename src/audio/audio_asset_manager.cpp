@@ -8,9 +8,10 @@ namespace internal {
 
 handle_holder<audio>::handle_value_t audio_asset_manager::make(std::filesystem::path path, audio_file_type type) {
     auto loader = make_loader(path, type);
-    auto audio_data = loader->load_full_from_file2(path);
+    auto meta = loader->open(path);
+    auto audio_data = loader->load_full();
 
-    auto buf_resampled = instant_full_resample(audio_data.buf, audio_data.samplerate, 48000);
+    auto buf_resampled = instant_full_resample(audio_data, meta.samplerate, 48000);
 
     loaded_audios[serial_id] = std::move(buf_resampled);
     auto id = serial_id;
