@@ -134,7 +134,6 @@ add_library(
     vulkan/render_target.cpp
     vulkan/renderer2d.cpp
     vulkan/texture.cpp
-    vulkan/registration.cpp
 
     audio.cpp
     audio/audio_asset_manager.cpp
