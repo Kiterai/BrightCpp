@@ -27,14 +27,14 @@ class audio_player_impl {
         internal::global_module<internal::audio_backend>::get();
 
         context_id = g_audio_mixer::get().add_playing(
-            internal::audio_buffer_play_info{
+            internal::audio_play_info{
                 .delay_timer = 0,
                 // .current_pos = buffers[audio_handle].data(),
                 // .end_pos = buffers[audio_handle].data() + buffers[audio_handle].size(),
                 // .loop_pos = buffers[audio_handle].data(),
                 // .next_loop_end_pos = buffers[audio_handle].data() + buffers[audio_handle].size(),
                 .volume = 1.0f,
-                .mode = internal::audio_buffer_play_info::play_mode::normal,
+                .mode = internal::audio_play_info::play_mode::normal,
                 .stopped = false,
                 .paused = true,
             });
@@ -58,14 +58,14 @@ class audio_player_impl {
         if (!streaming) {
             g_audio_mixer::get().set_playing(
                 context_id,
-                internal::audio_buffer_play_info{
+                internal::audio_play_info{
                     .delay_timer = 0,
                     .current_pos = buf_begin,
                     .end_pos = buf_end,
                     .loop_pos = buf_begin,
                     .next_loop_end_pos = buf_end,
                     .volume = 1.0f,
-                    .mode = internal::audio_buffer_play_info::play_mode::normal,
+                    .mode = internal::audio_play_info::play_mode::normal,
                     .stopped = false,
                     .paused = false,
                 },
@@ -77,14 +77,14 @@ class audio_player_impl {
         } else {
             g_audio_mixer::get().set_playing(
                 context_id,
-                internal::audio_buffer_play_info{
+                internal::audio_play_info{
                     .delay_timer = 0,
                     .current_pos = buf_begin,
                     .end_pos = buf_end,
                     .loop_pos = buf_begin,
                     .next_loop_end_pos = buf_end,
                     .volume = 1.0f,
-                    .mode = internal::audio_buffer_play_info::play_mode::streaming_loop_available,
+                    .mode = internal::audio_play_info::play_mode::streaming_loop_available,
                     .stopped = false,
                     .paused = false,
                 },
@@ -100,14 +100,14 @@ class audio_player_impl {
 
         g_audio_mixer::get().set_playing(
             context_id,
-            internal::audio_buffer_play_info{
+            internal::audio_play_info{
                 .delay_timer = 0,
                 .current_pos = buf_begin,
                 .end_pos = buf_end,
                 .loop_pos = buf_begin + loop_point_sampleindex,
                 .next_loop_end_pos = buf_end,
                 .volume = 1.0f,
-                .mode = internal::audio_buffer_play_info::play_mode::loop,
+                .mode = internal::audio_play_info::play_mode::loop,
                 .stopped = false,
                 .paused = false,
             },
@@ -120,7 +120,7 @@ class audio_player_impl {
     void reset() {
         g_audio_mixer::get().set_playing(
             context_id,
-            internal::audio_buffer_play_info{
+            internal::audio_play_info{
                 .stopped = true,
                 .paused = true,
             },
@@ -130,7 +130,7 @@ class audio_player_impl {
     void pause() {
         g_audio_mixer::get().set_playing(
             context_id,
-            internal::audio_buffer_play_info{
+            internal::audio_play_info{
                 .stopped = false,
                 .paused = true,
             },
@@ -139,7 +139,7 @@ class audio_player_impl {
     void resume() {
         g_audio_mixer::get().set_playing(
             context_id,
-            internal::audio_buffer_play_info{
+            internal::audio_play_info{
                 .stopped = false,
                 .paused = false,
             },
@@ -148,7 +148,7 @@ class audio_player_impl {
     void stop() {
         g_audio_mixer::get().set_playing(
             context_id,
-            internal::audio_buffer_play_info{
+            internal::audio_play_info{
                 .current_pos = buf_begin,
                 .end_pos = buf_end,
                 .stopped = false,
@@ -162,7 +162,7 @@ class audio_player_impl {
 
         g_audio_mixer::get().set_playing(
             context_id,
-            internal::audio_buffer_play_info{
+            internal::audio_play_info{
                 .current_pos = buf_begin + seek_point_sampleindex,
                 .end_pos = buf_end,
             },

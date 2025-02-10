@@ -16,7 +16,7 @@ streaming_manager::streaming_manager() {
         while (running) {
             for (const auto &ctx : streams)
                 if (default_mixer.get_playing(ctx.id).mode ==
-                    audio_buffer_play_info::play_mode::streaming_loop_invalid)
+                    audio_play_info::play_mode::streaming_loop_invalid)
                     ctx.loader();
 
             std::this_thread::sleep_for(std::chrono::milliseconds(100));

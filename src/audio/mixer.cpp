@@ -6,14 +6,14 @@ BRIGHTCPP_START
 
 namespace internal {
 
-audio_context_id audio_mixer::add_playing(const audio_buffer_play_info &info) {
+audio_context_id audio_mixer::add_playing(const audio_play_info &info) {
     playing_list.push_back(info);
     auto new_id = playing_list.back().id = id_serial_count;
     id_serial_count++;
     return new_id;
 }
 
-void audio_mixer::set_playing(audio_context_id id, const audio_buffer_play_info &info, audio_play_update_mask mask) {
+void audio_mixer::set_playing(audio_context_id id, const audio_play_info &info, audio_play_update_mask mask) {
     for (auto &playing : playing_list) {
         if (playing.id == id) {
             if (mask & audio_play_update_bit::delay_timer) {
@@ -41,7 +41,7 @@ void audio_mixer::set_playing(audio_context_id id, const audio_buffer_play_info 
     }
 }
 
-audio_buffer_play_info audio_mixer::get_playing(audio_context_id id) const {
+audio_play_info audio_mixer::get_playing(audio_context_id id) const {
     for (auto &playing : playing_list) {
         if (playing.id == id)
             return playing;
@@ -59,24 +59,24 @@ void audio_mixer::read(float *dst, size_t frames) {
             playing.current_pos++;
             if (playing.current_pos >= playing.end_pos) {
                 switch (playing.mode) {
-                case audio_buffer_play_info::play_mode::normal:
+                case audio_play_info::play_mode::normal:
                     playing.current_pos = playing.loop_pos;
                     playing.paused = true;
                     break;
-                case audio_buffer_play_info::play_mode::oneshot:
+                case audio_play_info::play_mode::oneshot:
                     playing.stopped = playing.paused = true;
                     break;
-                case audio_buffer_play_info::play_mode::loop:
+                case audio_play_info::play_mode::loop:
                     playing.current_pos = playing.loop_pos;
                     playing.end_pos = playing.next_loop_end_pos;
                     break;
-                case audio_buffer_play_info::play_mode::streaming_loop_invalid:
+                case audio_play_info::play_mode::streaming_loop_invalid:
                     playing.paused = true;
                     break;
-                case audio_buffer_play_info::play_mode::streaming_loop_available:
+                case audio_play_info::play_mode::streaming_loop_available:
                     playing.current_pos = playing.loop_pos;
                     playing.end_pos = playing.next_loop_end_pos;
-                    playing.mode = audio_buffer_play_info::play_mode::streaming_loop_invalid;
+                    playing.mode = audio_play_info::play_mode::streaming_loop_invalid;
                     break;
                 }
             }
