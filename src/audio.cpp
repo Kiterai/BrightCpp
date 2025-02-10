@@ -1,4 +1,5 @@
-#include "interfaces/audio.hpp"
+#include "audio/mixer.hpp"
+#include "global_module.hpp"
 #include "audio/audio_asset_manager.hpp"
 #include "global_module.hpp"
 #include <brightcpp/audio.hpp>
@@ -6,7 +7,7 @@
 
 BRIGHTCPP_START
 
-using g_audio = internal::global_module<internal::audio_backend>;
+using g_audio_mixer = internal::global_module<internal::audio_mixer>;
 using g_audio_asset_manager = internal::global_module<internal::audio_asset_manager>;
 
 audio::audio(const char *path, audio_file_type type) : handle_holder{g_audio_asset_manager::get().make(path, type)} {}
@@ -20,7 +21,19 @@ class audio_player_impl {
 
   public:
     audio_player_impl() {
-        context_id = g_audio::get().play_audio_buffer(
+        // context_id = g_audio::get().play_audio_buffer(
+        //     internal::audio_buffer_play_info{
+        //         .delay_timer = 0,
+        //         // .current_pos = buffers[audio_handle].data(),
+        //         // .end_pos = buffers[audio_handle].data() + buffers[audio_handle].size(),
+        //         // .loop_pos = buffers[audio_handle].data(),
+        //         // .next_loop_end_pos = buffers[audio_handle].data() + buffers[audio_handle].size(),
+        //         .volume = 1.0f,
+        //         .mode = internal::audio_buffer_play_info::play_mode::normal,
+        //         .stopped = false,
+        //         .paused = true,
+        //     });
+        context_id = g_audio_mixer::get().add_playing(
             internal::audio_buffer_play_info{
                 .delay_timer = 0,
                 // .current_pos = buffers[audio_handle].data(),
@@ -42,7 +55,7 @@ class audio_player_impl {
     }
     void play_once() {
         if (!streaming) {
-            g_audio::get().set_playing_state(
+            g_audio_mixer::get().set_playing(
                 context_id,
                 internal::audio_buffer_play_info{
                     .delay_timer = 0,
@@ -56,7 +69,7 @@ class audio_player_impl {
                     .paused = false,
                 });
         } else {
-            g_audio::get().set_playing_state(
+            g_audio_mixer::get().set_playing(
                 context_id,
                 internal::audio_buffer_play_info{
                     .delay_timer = 0,
@@ -74,7 +87,7 @@ class audio_player_impl {
     void play_loop(std::chrono::nanoseconds loop_point) {
         auto loop_point_sampleindex = loop_point.count() * 48000 / 1'000'000'000;
 
-        g_audio::get().set_playing_state(
+        g_audio_mixer::get().set_playing(
             context_id,
             internal::audio_buffer_play_info{
                 .delay_timer = 0,
@@ -90,7 +103,7 @@ class audio_player_impl {
     }
     void reset() {
         // TODO
-        g_audio::get().set_playing_state(
+        g_audio_mixer::get().set_playing(
             context_id,
             internal::audio_buffer_play_info{
                 .stopped = true,
@@ -98,7 +111,7 @@ class audio_player_impl {
     }
     void pause() {
         // TODO
-        g_audio::get().set_playing_state(
+        g_audio_mixer::get().set_playing(
             context_id,
             internal::audio_buffer_play_info{
                 .paused = true,
@@ -106,7 +119,7 @@ class audio_player_impl {
     }
     void resume() {
         // TODO
-        g_audio::get().set_playing_state(
+        g_audio_mixer::get().set_playing(
             context_id,
             internal::audio_buffer_play_info{
                 .paused = false,
@@ -114,7 +127,7 @@ class audio_player_impl {
     }
     void stop() {
         // TODO
-        g_audio::get().set_playing_state(
+        g_audio_mixer::get().set_playing(
             context_id,
             internal::audio_buffer_play_info{
                 .paused = true,
@@ -124,7 +137,7 @@ class audio_player_impl {
         // TODO
         auto seek_point_sampleindex = point.count() * 48000 / 1'000'000'000;
 
-        g_audio::get().set_playing_state(
+        g_audio_mixer::get().set_playing(
             context_id,
             internal::audio_buffer_play_info{
                 .current_pos = buf_begin + seek_point_sampleindex,
