@@ -1,6 +1,6 @@
 #include "player_normal.hpp"
-#include "../global_module.hpp"
-#include "audio_asset_manager.hpp"
+#include "../../global_module.hpp"
+#include "../audio_asset_manager.hpp"
 #include <iostream>
 
 BRIGHTCPP_START

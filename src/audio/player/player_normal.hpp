@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mixer.hpp"
+#include "../mixer.hpp"
 #include "player.hpp"
 #include <brightcpp/audio.hpp>
 #include <chrono>

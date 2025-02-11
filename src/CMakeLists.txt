@@ -136,11 +136,11 @@ add_library(
     vulkan/texture.cpp
 
     audio.cpp
-    audio/player_normal.cpp
     audio/audio_asset_manager.cpp
     audio/resample.cpp
     audio/mixer.cpp
     audio/streaming_manager.cpp
+    audio/player/player_normal.cpp
     audio/loader/loader_selector.cpp
     audio/loader/wav.cpp
     audio/loader/ogg.cpp
