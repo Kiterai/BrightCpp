@@ -31,6 +31,7 @@ struct audio_play_info {
         loop,
         streaming_loop_invalid,
         streaming_loop_available,
+        streaming_loop_nextend,
     } mode;
     bool stopped, paused;
 

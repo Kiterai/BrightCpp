@@ -33,8 +33,7 @@ audio_player_impl_streaming::audio_player_impl_streaming(streaming_audio &data)
         auto &loader = g_streaming_audio_manager::get().get_loader(this->data->handle());
         auto loaded = loader.load_chunk(buffer.data() + (buffer_state * buffer_sz), buffer_sz);
 
-        if (loaded == 0) {
-        } else if (loaded >= buffer_sz) {
+        if (loaded >= buffer_sz) {
             g_audio_mixer::get().set_playing(
                 context_id,
                 internal::audio_play_info{
@@ -51,11 +50,10 @@ audio_player_impl_streaming::audio_player_impl_streaming(streaming_audio &data)
                 internal::audio_play_info{
                     .loop_pos = buffer.data() + (buffer_state * buffer_sz),
                     .next_loop_end_pos = buffer.data() + (buffer_state * buffer_sz) + loaded,
-                    .mode = internal::audio_play_info::play_mode::streaming_loop_available,
+                    .mode = internal::audio_play_info::play_mode::streaming_loop_nextend,
                 },
                 internal::audio_play_update_bit::next_range |
                     internal::audio_play_update_bit::mode);
-            buffer_state = (buffer_state + 1) % 2;
         }
     });
 }

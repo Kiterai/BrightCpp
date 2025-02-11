@@ -77,6 +77,11 @@ void audio_mixer::read(float *dst, size_t frames) {
                     playing.end_pos = playing.next_loop_end_pos;
                     playing.mode = audio_play_info::play_mode::streaming_loop_invalid;
                     break;
+                case audio_play_info::play_mode::streaming_loop_nextend:
+                    playing.current_pos = playing.loop_pos;
+                    playing.end_pos = playing.next_loop_end_pos;
+                    playing.mode = audio_play_info::play_mode::normal;
+                    break;
                 }
             }
         }

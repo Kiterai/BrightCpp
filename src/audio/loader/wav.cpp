@@ -32,7 +32,7 @@ struct fmt_chunk {
 class wavriff_loader : public audio_loader_backend {
     std::ifstream f;
     fmt_chunk format_info;
-    size_t data_chunk_length;
+    size_t data_chunk_length, p = 0;
 
   public:
     audio_loaded_meta open(std::filesystem::path path) override {
@@ -90,7 +90,7 @@ class wavriff_loader : public audio_loader_backend {
     std::vector<float> load_full() override {
         std::vector<float> loaded_audio;
 
-        for (size_t p = 0; p < data_chunk_length;) {
+        for (; p < data_chunk_length;) {
             char buf[16];
             f.read(buf, format_info.block_align);
             p += format_info.block_align;
@@ -106,7 +106,7 @@ class wavriff_loader : public audio_loader_backend {
     }
     size_t load_chunk(float *out, size_t max_sample) override {
         size_t loaded = 0;
-        for (size_t p = 0; p < data_chunk_length && max_sample > 0;) {
+        for (; p < data_chunk_length && max_sample > 0;) {
             char buf[16];
             f.read(buf, format_info.block_align);
             p += format_info.block_align;
