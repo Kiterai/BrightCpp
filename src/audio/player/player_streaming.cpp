@@ -1,6 +1,6 @@
 #include "player_streaming.hpp"
 #include "../../global_module.hpp"
-#include "../streaming_audio_manager.hpp"
+#include "../streaming_audio_asset_manager.hpp"
 #include "../streaming_manager.hpp"
 #include <iostream>
 
@@ -10,7 +10,7 @@ namespace internal {
 
 using g_audio_mixer = internal::global_module<internal::audio_mixer>;
 using g_streaming_manager = internal::global_module<internal::streaming_manager>;
-using g_streaming_audio_manager = internal::global_module<internal::streaming_audio_manager>;
+using g_streaming_audio_manager = internal::global_module<internal::streaming_audio_asset_manager>;
 
 constexpr size_t buffer_sz = 48000;
 

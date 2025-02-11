@@ -12,12 +12,12 @@ BRIGHTCPP_START
 
 namespace internal {
 
-class streaming_audio_manager {
+class streaming_audio_asset_manager {
     size_t serial_id = 0;
     std::unordered_map<size_t, std::unique_ptr<audio_loader_backend>> streaming_audios;
 
   public:
-    ~streaming_audio_manager() = default;
+    ~streaming_audio_asset_manager() = default;
 
     handle_holder<streaming_audio>::handle_value_t make(std::filesystem::path path, audio_file_type type);
     void destroy(handle_holder<streaming_audio>::handle_value_t) noexcept;
