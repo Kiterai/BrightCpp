@@ -137,10 +137,12 @@ add_library(
 
     audio.cpp
     audio/audio_asset_manager.cpp
+    audio/streaming_audio_manager.cpp
     audio/resample.cpp
     audio/mixer.cpp
     audio/streaming_manager.cpp
     audio/player/player_normal.cpp
+    audio/player/player_streaming.cpp
     audio/loader/loader_selector.cpp
     audio/loader/wav.cpp
     audio/loader/ogg.cpp

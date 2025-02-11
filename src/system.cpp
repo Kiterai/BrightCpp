@@ -3,6 +3,7 @@
 
 #include "audio/audio_asset_manager.hpp"
 #include "audio/mixer.hpp"
+#include "audio/streaming_audio_manager.hpp"
 #include "audio/streaming_manager.hpp"
 #include "glfw/glfw.hpp"
 #include "global_module.hpp"
@@ -25,6 +26,7 @@ struct global_objects_t {
     std::unique_ptr<vulkan::renderer2d_factory_vulkan> renderer2d_factory;
 
     std::optional<audio_asset_manager> audio_loader_obj;
+    std::optional<streaming_audio_manager> streaming_audio_manager_obj;
     std::optional<audio_mixer> audio_mixer;
     std::optional<streaming_manager> streaming_manager;
     std::unique_ptr<audio_backend> audio;
@@ -72,6 +74,12 @@ template <>
 audio_asset_manager *global_module_constructor<audio_asset_manager>() {
     global_objects.audio_loader_obj = audio_asset_manager{};
     return &*global_objects.audio_loader_obj;
+}
+
+template <>
+streaming_audio_manager *global_module_constructor<streaming_audio_manager>() {
+    global_objects.streaming_audio_manager_obj.emplace();
+    return &*global_objects.streaming_audio_manager_obj;
 }
 
 template <>

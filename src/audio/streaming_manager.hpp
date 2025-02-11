@@ -4,6 +4,7 @@
 #include <brightcpp/audio.hpp>
 #include <brightcpp/common.hpp>
 #include <functional>
+#include <mutex>
 #include <thread>
 
 BRIGHTCPP_START
@@ -17,6 +18,7 @@ class streaming_manager {
     };
     std::vector<streaming_context> streams;
     std::thread streaming_thread;
+    std::mutex mtx;
     bool running = true;
 
   public:

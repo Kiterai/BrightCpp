@@ -2,6 +2,8 @@
 #include "audio/audio_asset_manager.hpp"
 #include "audio/mixer.hpp"
 #include "audio/player/player_normal.hpp"
+#include "audio/player/player_streaming.hpp"
+#include "audio/streaming_audio_manager.hpp"
 #include "audio/streaming_manager.hpp"
 #include "global_module.hpp"
 #include <brightcpp/audio.hpp>
@@ -9,7 +11,8 @@
 
 BRIGHTCPP_START
 
-using g_audio_streaming_manager = internal::global_module<internal::streaming_manager>;
+using g_streaming_manager = internal::global_module<internal::streaming_manager>;
+using g_streaming_audio_manager = internal::global_module<internal::streaming_audio_manager>;
 using g_audio_asset_manager = internal::global_module<internal::audio_asset_manager>;
 
 handle_holder<audio_player>::handle_value_t player_serial_count = 1;
@@ -26,6 +29,7 @@ handle_holder<audio_player>::handle_value_t register_player() {
 }
 
 audio::audio(const char *path, audio_file_type type) : handle_holder{g_audio_asset_manager::get().make(path, type)} {}
+streaming_audio::streaming_audio(const char *path, audio_file_type type) : handle_holder{g_streaming_audio_manager::get().make(path, type)} {}
 
 audio_player::audio_player() : handle_holder{register_player()} {}
 
@@ -42,7 +46,7 @@ void audio_player::set(audio &data) {
 }
 
 void audio_player::set(streaming_audio &data) {
-    // TODO
+    players.at(handle()) = std::make_unique<internal::audio_player_impl_streaming>(data);
 }
 
 void audio_player::reset() {
