@@ -27,10 +27,12 @@ class streaming_audio : public handle_holder<streaming_audio> {
 
 class audio_player : public handle_holder<audio_player> {
   public:
+    audio_player();
     audio_player(audio &data);
     audio_player(streaming_audio &data);
 
     void set(audio &);
+    void set(streaming_audio &);
     void reset();
 
     audio_player &play_once();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mixer.hpp"
+#include "player.hpp"
 #include <brightcpp/audio.hpp>
 #include <chrono>
 #include <optional>
@@ -10,7 +11,7 @@ BRIGHTCPP_START
 
 namespace internal {
 
-class audio_player_impl_normal {
+class audio_player_impl_normal : public audio_player_backend {
     std::optional<audio> data;
     internal::audio_context_id context_id;
 
@@ -18,20 +19,15 @@ class audio_player_impl_normal {
     bool streaming = false;
 
   public:
-    audio_player_impl_normal();
-    void set(audio &new_data);
+    audio_player_impl_normal(audio &new_data);
     void play_once();
     void play_loop(std::chrono::nanoseconds loop_point);
-    void reset();
     void pause();
     void resume();
     void stop();
     void seek(std::chrono::nanoseconds point);
     std::chrono::nanoseconds pos() const;
 };
-
-extern std::unordered_map<handle_holder<audio_player>::handle_value_t, audio_player_impl_normal> players;
-handle_holder<audio_player>::handle_value_t player_register();
 
 } // namespace internal
 
