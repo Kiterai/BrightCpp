@@ -5,7 +5,6 @@
 #include <brightcpp/audio.hpp>
 #include <chrono>
 #include <optional>
-#include <unordered_map>
 
 BRIGHTCPP_START
 
