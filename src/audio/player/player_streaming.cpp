@@ -1,4 +1,4 @@
-#include "player_normal.hpp"
+#include "player_streaming.hpp"
 #include "../../global_module.hpp"
 #include "../audio_asset_manager.hpp"
 #include <iostream>
@@ -10,24 +10,20 @@ namespace internal {
 using g_audio_mixer = internal::global_module<internal::audio_mixer>;
 using g_audio_asset_manager = internal::global_module<internal::audio_asset_manager>;
 
-audio_player_impl_normal::audio_player_impl_normal(audio &new_data) {
-    data = new_data;
-
-    auto info = g_audio_asset_manager::get().get_info(data->handle());
-    buf_begin = info.begin;
-    buf_end = info.end;
-
+audio_player_impl_streaming::audio_player_impl_streaming(streaming_audio &data) : data{data} {
+    // TODO
     context_id = g_audio_mixer::get().add_playing(
         internal::audio_play_info{
             .delay_timer = 0,
             .volume = 1.0f,
-            .mode = internal::audio_play_info::play_mode::normal,
+            .mode = internal::audio_play_info::play_mode::streaming_loop_available,
             .stopped = false,
             .paused = true,
         });
 }
 
-void audio_player_impl_normal::play_once() {
+void audio_player_impl_streaming::play_once() {
+    // TODO
     g_audio_mixer::get().set_playing(
         context_id,
         internal::audio_play_info{
@@ -37,7 +33,7 @@ void audio_player_impl_normal::play_once() {
             .loop_pos = buf_begin,
             .next_loop_end_pos = buf_end,
             .volume = 1.0f,
-            .mode = internal::audio_play_info::play_mode::normal,
+            .mode = internal::audio_play_info::play_mode::streaming_loop_available,
             .stopped = false,
             .paused = false,
         },
@@ -48,7 +44,8 @@ void audio_player_impl_normal::play_once() {
             internal::audio_play_update_bit::stop_pause);
 }
 
-void audio_player_impl_normal::play_loop(std::chrono::nanoseconds loop_point) {
+void audio_player_impl_streaming::play_loop(std::chrono::nanoseconds loop_point) {
+    // TODO
     auto loop_point_sampleindex = loop_point.count() * 48000 / 1'000'000'000;
 
     g_audio_mixer::get().set_playing(
@@ -71,7 +68,8 @@ void audio_player_impl_normal::play_loop(std::chrono::nanoseconds loop_point) {
             internal::audio_play_update_bit::stop_pause);
 }
 
-void audio_player_impl_normal::pause() {
+void audio_player_impl_streaming::pause() {
+    // TODO
     g_audio_mixer::get().set_playing(
         context_id,
         internal::audio_play_info{
@@ -81,7 +79,8 @@ void audio_player_impl_normal::pause() {
         internal::audio_play_update_bit::stop_pause);
 }
 
-void audio_player_impl_normal::resume() {
+void audio_player_impl_streaming::resume() {
+    // TODO
     g_audio_mixer::get().set_playing(
         context_id,
         internal::audio_play_info{
@@ -91,7 +90,8 @@ void audio_player_impl_normal::resume() {
         internal::audio_play_update_bit::stop_pause);
 }
 
-void audio_player_impl_normal::stop() {
+void audio_player_impl_streaming::stop() {
+    // TODO
     g_audio_mixer::get().set_playing(
         context_id,
         internal::audio_play_info{
@@ -104,7 +104,8 @@ void audio_player_impl_normal::stop() {
             internal::audio_play_update_bit::stop_pause);
 }
 
-void audio_player_impl_normal::seek(std::chrono::nanoseconds point) {
+void audio_player_impl_streaming::seek(std::chrono::nanoseconds point) {
+    // TODO
     auto seek_point_sampleindex = point.count() * 48000 / 1'000'000'000;
 
     g_audio_mixer::get().set_playing(
@@ -116,7 +117,8 @@ void audio_player_impl_normal::seek(std::chrono::nanoseconds point) {
         internal::audio_play_update_bit::current_range);
 }
 
-std::chrono::nanoseconds audio_player_impl_normal::pos() const {
+std::chrono::nanoseconds audio_player_impl_streaming::pos() const {
+    // TODO
     auto s = g_audio_mixer::get().get_playing(context_id).current_pos - buf_begin;
     return std::chrono::nanoseconds(s * 1'000'000'000 / 48000);
 }

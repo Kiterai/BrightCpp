@@ -10,14 +10,15 @@ BRIGHTCPP_START
 
 namespace internal {
 
-class audio_player_impl_normal : public audio_player_backend {
-    std::optional<audio> data;
+class audio_player_impl_streaming : public audio_player_backend {
+    std::optional<streaming_audio> data;
     internal::audio_context_id context_id;
 
     const float *buf_begin, *buf_end;
+    bool streaming = false;
 
   public:
-    audio_player_impl_normal(audio &new_data);
+    audio_player_impl_streaming(streaming_audio &new_data);
     void play_once();
     void play_loop(std::chrono::nanoseconds loop_point);
     void pause();
