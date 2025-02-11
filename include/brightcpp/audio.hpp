@@ -20,9 +20,15 @@ class audio : public handle_holder<audio> {
     audio(const char *path, audio_file_type type = audio_file_type::auto_detect);
 };
 
-class audio_player : public handle_holder<audio> {
+class streaming_audio : public handle_holder<streaming_audio> {
+  public:
+    streaming_audio(const char *path, audio_file_type type = audio_file_type::auto_detect);
+};
+
+class audio_player : public handle_holder<audio_player> {
   public:
     audio_player(audio &data);
+    audio_player(streaming_audio &data);
 
     void set(audio &);
     void reset();
@@ -38,16 +44,13 @@ class audio_player : public handle_holder<audio> {
     bool busy() const;
 };
 
-class audio_player_multi {
+class oneshot_audio_player {
   public:
-    audio_player &play_once(audio &);
+    void play_oneshot(audio &);
 
     void pause();
     void resume();
     void stop();
-    std::vector<std::chrono::nanoseconds> pos() const;
-    std::vector<bool> busy() const;
-    bool busy_all() const;
     bool busy_any() const;
 };
 

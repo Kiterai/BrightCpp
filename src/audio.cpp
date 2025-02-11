@@ -14,7 +14,7 @@ using g_audio_asset_manager = internal::global_module<internal::audio_asset_mana
 
 audio::audio(const char *path, audio_file_type type) : handle_holder{g_audio_asset_manager::get().make(path, type)} {}
 
-class audio_player_impl {
+class audio_player_impl_normal {
     std::optional<audio> data;
     internal::audio_context_id context_id;
 
@@ -22,7 +22,7 @@ class audio_player_impl {
     bool streaming = false;
 
   public:
-    audio_player_impl() {
+    audio_player_impl_normal() {
         // ensure audio thread running
         internal::global_module<internal::audio_backend>::get();
 
@@ -174,13 +174,13 @@ class audio_player_impl {
     }
 };
 
-handle_holder<audio>::handle_value_t player_serial_count = 0;
-std::unordered_map<handle_holder<audio>::handle_value_t, audio_player_impl> players;
+handle_holder<audio_player>::handle_value_t player_serial_count = 0;
+std::unordered_map<handle_holder<audio_player>::handle_value_t, audio_player_impl_normal> players;
 
-handle_holder<audio>::handle_value_t player_register() {
+handle_holder<audio_player>::handle_value_t player_register() {
     auto new_id = player_serial_count;
     player_serial_count++;
-    players.emplace(new_id, audio_player_impl{});
+    players.emplace(new_id, audio_player_impl_normal{});
     return new_id;
 }
 
