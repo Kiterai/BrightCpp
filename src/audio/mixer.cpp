@@ -34,7 +34,6 @@ void audio_mixer::set_playing(audio_context_id id, const audio_play_info &info, 
                 playing.stopped = info.stopped;
                 playing.paused = info.paused;
             }
-            playing = info;
             playing.id = id;
             break;
         }
