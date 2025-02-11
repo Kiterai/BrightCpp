@@ -1,6 +1,7 @@
 #include "player_streaming.hpp"
 #include "../../global_module.hpp"
 #include "../audio_asset_manager.hpp"
+#include "../streaming_manager.hpp"
 #include <iostream>
 
 BRIGHTCPP_START
@@ -8,6 +9,7 @@ BRIGHTCPP_START
 namespace internal {
 
 using g_audio_mixer = internal::global_module<internal::audio_mixer>;
+using g_streaming_manager = internal::global_module<internal::streaming_manager>;
 using g_audio_asset_manager = internal::global_module<internal::audio_asset_manager>;
 
 audio_player_impl_streaming::audio_player_impl_streaming(streaming_audio &data) : data{data} {
@@ -20,6 +22,14 @@ audio_player_impl_streaming::audio_player_impl_streaming(streaming_audio &data) 
             .stopped = false,
             .paused = true,
         });
+
+    g_streaming_manager::get().register_loader(context_id, []() {
+        // TODO
+    });
+}
+
+audio_player_impl_streaming::~audio_player_impl_streaming() {
+    g_streaming_manager::get().unregister_loader(context_id);
 }
 
 void audio_player_impl_streaming::play_once() {

@@ -19,6 +19,7 @@ class audio_player_impl_streaming : public audio_player_backend {
 
   public:
     audio_player_impl_streaming(streaming_audio &new_data);
+    ~audio_player_impl_streaming();
     void play_once();
     void play_loop(std::chrono::nanoseconds loop_point);
     void pause();
