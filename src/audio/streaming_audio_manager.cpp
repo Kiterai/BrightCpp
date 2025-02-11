@@ -7,8 +7,6 @@ BRIGHTCPP_START
 namespace internal {
 
 handle_holder<audio>::handle_value_t streaming_audio_manager::make(std::filesystem::path path, audio_file_type type) {
-    auto loader = make_loader(path, type);
-
     streaming_audios[serial_id] = make_loader(path, type);
     auto meta = streaming_audios[serial_id]->open(path);
     auto id = serial_id;
