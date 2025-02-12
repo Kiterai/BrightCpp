@@ -3,7 +3,7 @@
 
 #include "audio/audio_asset_manager.hpp"
 #include "audio/mixer.hpp"
-#include "audio/streaming_audio_asset_manager.cpp"
+#include "audio/streaming_audio_asset_manager.hpp"
 #include "audio/streaming_manager.hpp"
 #include "glfw/glfw.hpp"
 #include "global_module.hpp"
