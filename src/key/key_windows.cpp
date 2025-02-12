@@ -2,7 +2,7 @@
 
 #include "../global_module.hpp"
 #include "../interfaces/os_util.hpp"
-#include <WinUser.h>
+#include <Windows.h>
 
 BRIGHTCPP_START
 

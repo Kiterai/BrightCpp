@@ -128,6 +128,7 @@ add_library(
 
     glfw/glfw.cpp
 
+    key/key.cpp
     key/key_windows.cpp
     key/key_macos.cpp
     key/key_x11.cpp

@@ -1,4 +1,5 @@
 #pragma once
 
-#include <brightcpp/window.hpp>
 #include <brightcpp/image.hpp>
+#include <brightcpp/key.hpp>
+#include <brightcpp/window.hpp>

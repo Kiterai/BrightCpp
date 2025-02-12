@@ -5,7 +5,12 @@
 BRIGHTCPP_START
 
 class key {
+    const int code;
+    key(int);
+
   public:
+    friend key __key_factory(int);
+
     bool pressed() const;
     bool released() const;
     bool pressing() const;
