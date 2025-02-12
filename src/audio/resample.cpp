@@ -12,14 +12,14 @@ std::vector<float> instant_full_resample(const std::vector<float> &src, float sr
         throw std::runtime_error("failed to setup resampler: " + std::string(src_strerror(err)));
 
     size_t src_frames = src.size();
-    size_t dst_frames = src_frames * dst_samplerate / src_samplerate;
+    size_t dst_frames = size_t(src_frames * dst_samplerate / src_samplerate);
     std::vector<float> dst(dst_frames);
 
     SRC_DATA data;
     data.data_in = src.data();
-    data.input_frames = src_frames;
+    data.input_frames = long(src_frames);
     data.data_out = dst.data();
-    data.output_frames = dst_frames;
+    data.output_frames = long(dst_frames);
     data.src_ratio = dst_samplerate / src_samplerate;
     data.end_of_input = 1;
 
@@ -49,9 +49,9 @@ size_t streaming_resampler::resample(float *out, const float *in, size_t in_fram
 
     SRC_DATA data;
     data.data_in = buffer.data();
-    data.input_frames = buffer.size();
+    data.input_frames = long(buffer.size());
     data.data_out = out;
-    data.output_frames = max_out_frames;
+    data.output_frames = long(max_out_frames);
     data.src_ratio = rate;
     data.end_of_input = 0;
 

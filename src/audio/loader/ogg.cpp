@@ -57,7 +57,7 @@ class oggvorbis_loader : public audio_loader_backend {
 
         int block_size = 2 * sizeof(int16_t);
         do {
-            decoded = ov_read(&vf, buffer.data(), std::min(bufsize, (max_sample - decoded_sum) * block_size), 0, 2, 1, &cur);
+            decoded = ov_read(&vf, buffer.data(), int(std::min(bufsize, (max_sample - decoded_sum) * block_size)), 0, 2, 1, &cur);
             for (int i = 0; i < decoded / block_size; i++) {
                 *out = float(p[i * 2]) / 32768;
                 out++;
