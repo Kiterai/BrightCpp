@@ -14,13 +14,11 @@ class oggvorbis_loader : public audio_loader_backend {
 
   public:
     ~oggvorbis_loader() override {
-        std::cout << "b" << std::endl;
         ov_clear(&vf);
         if (fp)
             fclose(fp);
     }
     audio_loaded_meta open(std::filesystem::path path) override {
-        std::cout << "a" << std::endl;
         fp = std::fopen(path.string().c_str(), "rb");
 
         if (ov_open(fp, &vf, NULL, 0) < 0)

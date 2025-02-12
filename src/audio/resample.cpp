@@ -1,5 +1,4 @@
 #include "resample.hpp"
-#include <iostream>
 #include <stdexcept>
 
 BRIGHTCPP_START
@@ -27,9 +26,6 @@ std::vector<float> instant_full_resample(const std::vector<float> &src, float sr
     err = src_process(state, &data);
     if (err != 0)
         throw std::runtime_error("failed to process resampling: " + std::string(src_strerror(err)));
-
-    // std::cout << data.input_frames_used << " / " << src_frames << " consumed" << std::endl;
-    // std::cout << data.output_frames_gen << " / " << dst_frames << " generated" << std::endl;
 
     src_delete(state);
 
