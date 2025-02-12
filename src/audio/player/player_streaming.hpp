@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../mixer.hpp"
+#include "../resample.hpp"
 #include "player.hpp"
 #include <brightcpp/audio.hpp>
 #include <chrono>
@@ -13,8 +14,10 @@ namespace internal {
 class audio_player_impl_streaming : public audio_player_backend {
     std::optional<streaming_audio> data;
     internal::audio_context_id context_id;
-    std::vector<float> buffer;
+    std::vector<float> buffer, raw_buffer;
     int buffer_state = 0;
+    streaming_resampler resampler;
+    size_t bufsz[2];
 
   public:
     audio_player_impl_streaming(streaming_audio &new_data);

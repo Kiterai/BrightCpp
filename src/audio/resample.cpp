@@ -47,17 +47,15 @@ streaming_resampler::~streaming_resampler() {
     src_delete(state);
 }
 
-size_t streaming_resampler::resample(float *out, const float *in, size_t in_frames) {
+size_t streaming_resampler::resample(float *out, const float *in, size_t in_frames, size_t max_out_frames) {
     for (size_t i = 0; i < in_frames; i++)
         buffer.push_back(in[i]);
-
-    size_t out_samples = in_frames * rate;
 
     SRC_DATA data;
     data.data_in = buffer.data();
     data.input_frames = buffer.size();
     data.data_out = out;
-    data.output_frames = out_samples;
+    data.output_frames = max_out_frames;
     data.src_ratio = rate;
     data.end_of_input = 0;
 

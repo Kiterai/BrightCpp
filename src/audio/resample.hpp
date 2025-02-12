@@ -17,7 +17,7 @@ class streaming_resampler {
     streaming_resampler(float in_samplerate, float out_samplerate);
     ~streaming_resampler();
 
-    size_t resample(float *out, const float *in, size_t in_frames);
+    size_t resample(float *out, const float *in, size_t in_frames, size_t max_out_frames);
 };
 
 } // namespace internal
