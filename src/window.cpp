@@ -4,44 +4,36 @@
 #include <brightcpp/window.hpp>
 #include <stdexcept>
 #include <unordered_set>
-#include <list>
 
 BRIGHTCPP_START
-
-static std::list<std::reference_wrapper<internal::window_backend>> available_windows;
 
 using g_os_util = internal::global_module<internal::os_util_backend>;
 using g_graphics = internal::global_module<internal::graphics_backend>;
 
-class window::_impl {
+namespace internal {
+
+class window_impl {
     std::unique_ptr<internal::window_backend> window;
     render_target self_render_target;
-
-    decltype(available_windows.begin()) wndlist_it;
 
   public:
     friend bool frame_update();
 
-    _impl(const settings &initial_settings)
+    window_impl(const window::settings &initial_settings)
         : window{g_os_util::get().create_window(initial_settings)},
-          self_render_target{g_graphics::get().create_render_target(*window.get())} {
-        available_windows.push_front(*window.get());
-        wndlist_it = available_windows.begin();
-    }
-    ~_impl() {
-        available_windows.erase(wndlist_it);
-    }
+          self_render_target{g_graphics::get().create_render_target(*window.get())} {}
+    ~window_impl() {}
 
     render_target get_render_target() const {
         return self_render_target;
     }
 
-    void resize(window_size size) {
+    void resize(window::window_size size) {
         window->set_size(size.w, size.h);
     }
-    window_size size() const {
+    window::window_size size() const {
         auto res = window->get_size();
-        return window_size{
+        return window::window_size{
             .w = std::get<0>(res),
             .h = std::get<1>(res),
         };
@@ -73,35 +65,55 @@ class window::_impl {
     }
 };
 
+handle_holder<window>::handle_value_t window_serial_id = 0;
+std::unordered_map<handle_holder<window>::handle_value_t, window_impl> available_windows;
+
+} // namespace internal
+
+handle_holder<window>::handle_value_t register_window(const window::settings &settings) {
+    const auto new_id = internal::window_serial_id;
+    internal::window_serial_id++;
+
+    internal::available_windows.emplace(
+        std::piecewise_construct,
+        std::forward_as_tuple(new_id),
+        std::forward_as_tuple(settings));
+    return new_id;
+}
+
+void unregister_window(handle_holder<window>::handle_value_t id) {
+    internal::available_windows.erase(id);
+}
+
 window::window()
-    : pimpl{std::make_unique<_impl>(settings{})} {}
+    : handle_holder{register_window(settings{})} {}
 window::window(const settings &initial_settings)
-    : pimpl{std::make_unique<_impl>(initial_settings)} {}
+    : handle_holder{register_window(initial_settings)} {}
 window::~window() = default;
 
-void window::resize(window_size size) { pimpl->resize(size); }
-window::window_size window::size() const { return pimpl->size(); }
+void window::resize(window_size size) { internal::available_windows.at(handle()).resize(size); }
+window::window_size window::size() const { return internal::available_windows.at(handle()).size(); }
 
-render_target window::get_render_target() const { return pimpl->get_render_target(); }
+render_target window::get_render_target() const { return internal::available_windows.at(handle()).get_render_target(); }
 
-void window::set_resizable(bool is_resizable) { pimpl->set_resizable(is_resizable); }
-bool window::is_resizable() const { return pimpl->is_resizable(); };
+void window::set_resizable(bool is_resizable) { internal::available_windows.at(handle()).set_resizable(is_resizable); }
+bool window::is_resizable() const { return internal::available_windows.at(handle()).is_resizable(); };
 
-void window::set_fullscreen(bool is_fullscreen) { pimpl->set_fullscreen(is_fullscreen); }
-bool window::is_fullscreen() const { return pimpl->is_fullscreen(); }
+void window::set_fullscreen(bool is_fullscreen) { internal::available_windows.at(handle()).set_fullscreen(is_fullscreen); }
+bool window::is_fullscreen() const { return internal::available_windows.at(handle()).is_fullscreen(); }
 
-void window::set_title(std::string title) { pimpl->set_title(title); }
-std::string window::title() const { return pimpl->title(); }
+void window::set_title(std::string title) { internal::available_windows.at(handle()).set_title(title); }
+std::string window::title() const { return internal::available_windows.at(handle()).title(); }
 
-bool window::close_requested() const { return pimpl->close_requested(); }
+bool window::close_requested() const { return internal::available_windows.at(handle()).close_requested(); }
 
 bool frame_update() {
     // internal::apply_render();
     g_os_util::get().poll_events();
 
     // one of windows closed, to finish application
-    for (const auto &available_window : available_windows) {
-        if (available_window.get().is_close_requested()) {
+    for (const auto &[id, available_window] : internal::available_windows) {
+        if (available_window.close_requested()) {
             return false;
         }
     }

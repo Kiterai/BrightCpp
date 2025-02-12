@@ -1,16 +1,14 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
+#include <brightcpp/handle_holder.hpp>
 #include <brightcpp/render_target.hpp>
 #include <memory>
 #include <string>
 
 BRIGHTCPP_START
 
-class window {
-    class _impl;
-    std::unique_ptr<_impl> pimpl;
-
+class window : public handle_holder<window> {
   public:
     struct window_size {
         int w, h;
