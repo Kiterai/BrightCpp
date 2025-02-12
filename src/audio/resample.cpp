@@ -38,7 +38,7 @@ std::vector<float> instant_full_resample(const std::vector<float> &src, float sr
 
 streaming_resampler::streaming_resampler(float in_samplerate, float out_samplerate) : rate{out_samplerate / in_samplerate} {
     int err;
-    auto state = src_new(SRC_SINC_MEDIUM_QUALITY, 1, &err);
+    state = src_new(SRC_SINC_MEDIUM_QUALITY, 1, &err);
     if (state == nullptr)
         throw std::runtime_error("failed to setup resampler: " + std::string(src_strerror(err)));
 }
@@ -48,14 +48,14 @@ streaming_resampler::~streaming_resampler() {
 }
 
 size_t streaming_resampler::resample(float *out, const float *in, size_t in_frames) {
-    for(size_t i = 0; i < in_frames; i++)
+    for (size_t i = 0; i < in_frames; i++)
         buffer.push_back(in[i]);
 
     size_t out_samples = in_frames * rate;
 
     SRC_DATA data;
-    data.data_in = in;
-    data.input_frames = in_frames;
+    data.data_in = buffer.data();
+    data.input_frames = buffer.size();
     data.data_out = out;
     data.output_frames = out_samples;
     data.src_ratio = rate;
