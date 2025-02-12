@@ -54,7 +54,6 @@ extern key key_y;
 extern key key_z;
 extern key key_lshift;
 extern key key_rshift;
-extern key key_lshift;
 extern key key_lctrl;
 extern key key_rctrl;
 extern key key_lalt;
@@ -62,9 +61,9 @@ extern key key_ralt;
 extern key key_space;
 extern key key_enter;
 extern key key_esc;
-extern key key_up;
-extern key key_down;
 extern key key_left;
+extern key key_up;
 extern key key_right;
+extern key key_down;
 
 BRIGHTCPP_END
