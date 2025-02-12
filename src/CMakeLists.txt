@@ -128,6 +128,10 @@ add_library(
 
     glfw/glfw.cpp
 
+    key/key_windows.cpp
+    key/key_macos.cpp
+    key/key_x11.cpp
+
     vulkan/graphics.cpp
     vulkan/util.cpp
     vulkan/vma_impl.cpp
