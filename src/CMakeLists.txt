@@ -141,6 +141,7 @@ add_library(
     vulkan/texture.cpp
 
     audio.cpp
+    oneshot_audio.cpp
     audio/audio_asset_manager.cpp
     audio/streaming_audio_asset_manager.cpp
     audio/resample.cpp

@@ -48,6 +48,7 @@ class audio_player : public handle_holder<audio_player> {
 
 class oneshot_audio_player {
   public:
+    oneshot_audio_player();
     void play_oneshot(audio &);
 
     void pause();
