@@ -10,11 +10,6 @@ BRIGHTCPP_START
 
 namespace internal {
 
-class key_backend {
-  public:
-    virtual bool get_key_state(int key) const = 0;
-};
-
 class window_backend {
   public:
     virtual ~window_backend() = default;

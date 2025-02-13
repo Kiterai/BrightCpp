@@ -1,7 +1,7 @@
 #ifdef __APPLE__
 
 #include "../global_module.hpp"
-#include "../interfaces/os_util.hpp"
+#include "key.hpp"
 #include <ApplicationServices/ApplicationServices.h>
 
 BRIGHTCPP_START

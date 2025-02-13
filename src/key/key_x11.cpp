@@ -1,7 +1,7 @@
 #ifdef __unix__
 
 #include "../global_module.hpp"
-#include "../interfaces/os_util.hpp"
+#include "key.hpp"
 
 BRIGHTCPP_START
 
