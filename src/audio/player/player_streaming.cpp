@@ -79,6 +79,13 @@ audio_player_impl_streaming::audio_player_impl_streaming(streaming_audio &data)
 }
 
 audio_player_impl_streaming::~audio_player_impl_streaming() {
+    g_audio_mixer::get().set_playing(
+        context_id,
+        internal::audio_play_info{
+            .stopped = true,
+            .paused = true,
+        },
+        internal::audio_play_update_bit::stop_pause);
     g_streaming_manager::get().unregister_loader(context_id);
 }
 

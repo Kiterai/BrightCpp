@@ -27,6 +27,16 @@ audio_player_impl_normal::audio_player_impl_normal(audio &new_data) {
         });
 }
 
+audio_player_impl_normal::~audio_player_impl_normal() {
+    g_audio_mixer::get().set_playing(
+        context_id,
+        internal::audio_play_info{
+            .stopped = true,
+            .paused = true,
+        },
+        internal::audio_play_update_bit::stop_pause);
+}
+
 void audio_player_impl_normal::play_once() {
     g_audio_mixer::get().set_playing(
         context_id,

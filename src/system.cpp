@@ -20,18 +20,18 @@ namespace internal {
 static size_t initializer_count = 0;
 
 struct global_objects_t {
-    std::unique_ptr<os_util_backend> os_util;
-
-    std::unique_ptr<vulkan::graphics_vulkan> graphics;
-    std::unique_ptr<vulkan::texture_factory_vulkan> tex_factory;
-    std::unique_ptr<vulkan::renderer2d_factory_vulkan> renderer2d_factory;
-
     std::optional<audio_asset_manager> audio_loader_obj;
     std::optional<streaming_audio_asset_manager> streaming_audio_manager_obj;
     std::optional<audio_mixer> audio_mixer;
     std::optional<streaming_manager> streaming_manager;
     std::unique_ptr<audio_backend> audio;
     std::optional<audio_player_manager> player_manager;
+
+    std::unique_ptr<os_util_backend> os_util;
+
+    std::unique_ptr<vulkan::graphics_vulkan> graphics;
+    std::unique_ptr<vulkan::texture_factory_vulkan> tex_factory;
+    std::unique_ptr<vulkan::renderer2d_factory_vulkan> renderer2d_factory;
 };
 
 global_objects_t global_objects;

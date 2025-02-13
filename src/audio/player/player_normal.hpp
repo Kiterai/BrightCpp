@@ -18,6 +18,7 @@ class audio_player_impl_normal : public audio_player_backend {
 
   public:
     audio_player_impl_normal(audio &new_data);
+    ~audio_player_impl_normal();
     void play_once();
     void play_loop(std::chrono::nanoseconds loop_point);
     void pause();
