@@ -24,6 +24,7 @@ class audio_loader_backend {
     virtual audio_loaded_meta open(std::filesystem::path path) { throw std::runtime_error("not implemented"); }
     virtual std::vector<float> load_full() { throw std::runtime_error("not implemented"); }
     virtual size_t load_chunk(float *out, size_t max_sample) { throw std::runtime_error("not implemented"); }
+    virtual void seek(size_t frame) { throw std::runtime_error("not implemented"); }
 };
 
 } // namespace internal

@@ -18,17 +18,19 @@ class audio_player_impl_streaming : public audio_player_backend {
     int buffer_state = 0;
     streaming_resampler resampler;
     size_t bufsz[2];
+    size_t loop_frame;
+    bool loop = false;
 
   public:
     audio_player_impl_streaming(streaming_audio &new_data);
     ~audio_player_impl_streaming();
     void play_once();
-    // void play_loop(std::chrono::nanoseconds loop_point);
+    void play_loop(std::chrono::nanoseconds loop_point);
     void pause();
     void resume();
-    // void stop();
-    // void seek(std::chrono::nanoseconds point);
-    // std::chrono::nanoseconds pos() const;
+    void stop();
+    void seek(std::chrono::nanoseconds point);
+    std::chrono::nanoseconds pos() const;
 };
 
 } // namespace internal

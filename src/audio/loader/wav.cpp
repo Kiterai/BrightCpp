@@ -33,6 +33,7 @@ class wavriff_loader : public audio_loader_backend {
     std::ifstream f;
     fmt_chunk format_info;
     size_t data_chunk_length, p = 0;
+    std::streampos data_chunk_pos;
 
   public:
     audio_loaded_meta open(std::filesystem::path path) override {
@@ -72,6 +73,7 @@ class wavriff_loader : public audio_loader_backend {
                 if (!fmt_chunk_exists)
                     throw std::runtime_error("invalid wav file: data chunk before fmt chunk");
                 data_chunk_length = chunkheader.length;
+                data_chunk_pos = f.tellg();
 
                 data_chunk_exists = true;
                 break;
@@ -83,7 +85,7 @@ class wavriff_loader : public audio_loader_backend {
         if (!data_chunk_exists)
             throw std::runtime_error("invalid wav file: data chunk not exists");
 
-        return audio_loaded_meta {
+        return audio_loaded_meta{
             .samplerate = float(format_info.samples_per_sec),
         };
     }
@@ -122,6 +124,12 @@ class wavriff_loader : public audio_loader_backend {
         }
 
         return loaded;
+    }
+    void seek(size_t frame) {
+        auto pos = data_chunk_pos;
+        p = frame * format_info.block_align;
+        pos += p;
+        f.seekg(pos, std::ios_base::beg);
     }
 };
 

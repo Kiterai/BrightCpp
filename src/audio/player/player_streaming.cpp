@@ -46,6 +46,11 @@ audio_player_impl_streaming::audio_player_impl_streaming(streaming_audio &data)
 
         size_t req = buffer_cap * 44100 / 48000 - 128;
         size_t loaded = loader.load_chunk(raw_buffer.data(), req);
+        if (loop && loaded < req) {
+            loader.seek(loop_frame);
+            loaded += loader.load_chunk(raw_buffer.data() + loaded, req - loaded);
+        }
+
         bufsz[buffer_state] = resampler.resample(buffer.data() + (buffer_state * buffer_cap), raw_buffer.data(), loaded, buffer_cap);
 
         if (loaded >= req) {
@@ -78,6 +83,30 @@ audio_player_impl_streaming::~audio_player_impl_streaming() {
 }
 
 void audio_player_impl_streaming::play_once() {
+    loop = false;
+    g_audio_mixer::get().set_playing(
+        context_id,
+        internal::audio_play_info{
+            .delay_timer = 0,
+            .current_pos = buffer.data(),
+            .end_pos = buffer.data() + bufsz[0],
+            .loop_pos = buffer.data() + buffer_cap,
+            .next_loop_end_pos = buffer.data() + buffer_cap + bufsz[1],
+            .volume = 1.0f,
+            .mode = internal::audio_play_info::play_mode::streaming_loop_available,
+            .stopped = false,
+            .paused = false,
+        },
+        internal::audio_play_update_bit::delay_timer |
+            internal::audio_play_update_bit::current_range |
+            internal::audio_play_update_bit::next_range |
+            internal::audio_play_update_bit::mode |
+            internal::audio_play_update_bit::stop_pause);
+}
+
+void audio_player_impl_streaming::play_loop(std::chrono::nanoseconds loop_point) {
+    loop = true;
+    loop_frame = loop_point.count() * 48000 / 1'000'000'000;
     g_audio_mixer::get().set_playing(
         context_id,
         internal::audio_play_info{

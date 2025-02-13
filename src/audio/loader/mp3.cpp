@@ -55,6 +55,9 @@ class mp3_loader : public audio_loader_backend {
 
         return read_sum;
     }
+    void seek(size_t frame) {
+        mp3dec_ex_seek(&dec, frame);
+    }
 };
 
 std::unique_ptr<audio_loader_backend> make_mp3_loader() {

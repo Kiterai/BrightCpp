@@ -38,7 +38,7 @@ int main() {
         bgt::streaming_audio test_sound("examples/assets/test.mp3");
         bgt::audio_player player(test_sound);
 
-        // player.play_once();
+        player.play_loop();
 
         while (bgt::frame_update()) {
             if (bgt::key_z.pressed()) {
