@@ -38,18 +38,14 @@ int main() {
         bgt::streaming_audio test_sound("examples/assets/test.mp3");
         bgt::audio_player player(test_sound);
 
-        player.play_once();
-
-        bool old_pressed = false;
+        // player.play_once();
 
         while (bgt::frame_update()) {
-            auto now_pressed = bgt::key_z.pressed();
-            if (!old_pressed && now_pressed) {
+            if (bgt::key_z.pressed()) {
                 se_player.play_oneshot(se_powa);
             }
             r.draw(img, 0, 0);
 
-            old_pressed = now_pressed;
             r.flush();
         }
     } catch (std::exception &e) {

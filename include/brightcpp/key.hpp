@@ -4,12 +4,16 @@
 
 BRIGHTCPP_START
 
+namespace internal {
+class key_manager;
+};
+
 class key {
     const int code;
     key(int);
 
   public:
-    friend key __key_factory(int);
+    friend class internal::key_manager;
 
     bool pressed() const;
     bool released() const;

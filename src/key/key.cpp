@@ -1,76 +1,105 @@
+#include "key.hpp"
 #include "../global_module.hpp"
 #include "../interfaces/os_util.hpp"
 #include <brightcpp/key.hpp>
 
 BRIGHTCPP_START
 
-key __key_factory(int code) {
+namespace internal {
+
+key_manager g_key_manager;
+
+template <>
+key_manager *global_module_constructor<key_manager>() {
+    return &g_key_manager;
+}
+
+key key_manager::register_key(int code) {
+    key_list.push_back(code);
     return key{code};
 }
 
-key key_a = __key_factory('A');
-key key_b = __key_factory('B');
-key key_c = __key_factory('C');
-key key_d = __key_factory('D');
-key key_e = __key_factory('E');
-key key_f = __key_factory('F');
-key key_g = __key_factory('G');
-key key_h = __key_factory('H');
-key key_i = __key_factory('I');
-key key_j = __key_factory('J');
-key key_k = __key_factory('K');
-key key_l = __key_factory('L');
-key key_m = __key_factory('M');
-key key_n = __key_factory('N');
-key key_o = __key_factory('O');
-key key_p = __key_factory('P');
-key key_q = __key_factory('Q');
-key key_r = __key_factory('R');
-key key_s = __key_factory('S');
-key key_t = __key_factory('T');
-key key_u = __key_factory('U');
-key key_v = __key_factory('V');
-key key_w = __key_factory('W');
-key key_x = __key_factory('X');
-key key_y = __key_factory('Y');
-key key_z = __key_factory('Z');
-key key_0 = __key_factory('0');
-key key_1 = __key_factory('1');
-key key_2 = __key_factory('2');
-key key_3 = __key_factory('3');
-key key_4 = __key_factory('4');
-key key_5 = __key_factory('5');
-key key_6 = __key_factory('6');
-key key_7 = __key_factory('7');
-key key_8 = __key_factory('8');
-key key_9 = __key_factory('9');
+void key_manager::update() {
+    const auto &g = global_module<key_backend>::get();
+
+    for (const auto tgt : key_list) {
+        bool pressing = g.get_key_state(tgt);
+        auto old_state = keys[tgt];
+        keys[tgt] = key_state{
+            .pressing = pressing,
+            .pressed = !old_state.pressing && pressing,
+            .released = old_state.pressing && !pressing,
+        };
+    }
+}
+
+key_manager::key_state key_manager::get_keystate(key _key) const {
+    return keys[_key.code];
+}
+
+} // namespace internal
+
+key key_a = internal::g_key_manager.register_key('A');
+key key_b = internal::g_key_manager.register_key('B');
+key key_c = internal::g_key_manager.register_key('C');
+key key_d = internal::g_key_manager.register_key('D');
+key key_e = internal::g_key_manager.register_key('E');
+key key_f = internal::g_key_manager.register_key('F');
+key key_g = internal::g_key_manager.register_key('G');
+key key_h = internal::g_key_manager.register_key('H');
+key key_i = internal::g_key_manager.register_key('I');
+key key_j = internal::g_key_manager.register_key('J');
+key key_k = internal::g_key_manager.register_key('K');
+key key_l = internal::g_key_manager.register_key('L');
+key key_m = internal::g_key_manager.register_key('M');
+key key_n = internal::g_key_manager.register_key('N');
+key key_o = internal::g_key_manager.register_key('O');
+key key_p = internal::g_key_manager.register_key('P');
+key key_q = internal::g_key_manager.register_key('Q');
+key key_r = internal::g_key_manager.register_key('R');
+key key_s = internal::g_key_manager.register_key('S');
+key key_t = internal::g_key_manager.register_key('T');
+key key_u = internal::g_key_manager.register_key('U');
+key key_v = internal::g_key_manager.register_key('V');
+key key_w = internal::g_key_manager.register_key('W');
+key key_x = internal::g_key_manager.register_key('X');
+key key_y = internal::g_key_manager.register_key('Y');
+key key_z = internal::g_key_manager.register_key('Z');
+key key_0 = internal::g_key_manager.register_key('0');
+key key_1 = internal::g_key_manager.register_key('1');
+key key_2 = internal::g_key_manager.register_key('2');
+key key_3 = internal::g_key_manager.register_key('3');
+key key_4 = internal::g_key_manager.register_key('4');
+key key_5 = internal::g_key_manager.register_key('5');
+key key_6 = internal::g_key_manager.register_key('6');
+key key_7 = internal::g_key_manager.register_key('7');
+key key_8 = internal::g_key_manager.register_key('8');
+key key_9 = internal::g_key_manager.register_key('9');
 // TODO: This is just Windows Virtual Keycode
-key key_lshift = __key_factory(0xA0);
-key key_rshift = __key_factory(0xA1);
-key key_lctrl = __key_factory(0xA2);
-key key_rctrl = __key_factory(0xA3);
-key key_lalt = __key_factory(0xA4);
-key key_ralt = __key_factory(0xA5);
-key key_space = __key_factory(' ');
-key key_enter = __key_factory('\r');
-key key_esc = __key_factory(0x1B);
-key key_left = __key_factory(0x25);
-key key_up = __key_factory(0x26);
-key key_right = __key_factory(0x27);
-key key_down = __key_factory(0x28);
+key key_lshift = internal::g_key_manager.register_key(0xA0);
+key key_rshift = internal::g_key_manager.register_key(0xA1);
+key key_lctrl = internal::g_key_manager.register_key(0xA2);
+key key_rctrl = internal::g_key_manager.register_key(0xA3);
+key key_lalt = internal::g_key_manager.register_key(0xA4);
+key key_ralt = internal::g_key_manager.register_key(0xA5);
+key key_space = internal::g_key_manager.register_key(' ');
+key key_enter = internal::g_key_manager.register_key('\r');
+key key_esc = internal::g_key_manager.register_key(0x1B);
+key key_left = internal::g_key_manager.register_key(0x25);
+key key_up = internal::g_key_manager.register_key(0x26);
+key key_right = internal::g_key_manager.register_key(0x27);
+key key_down = internal::g_key_manager.register_key(0x28);
 
 key::key(int code) : code{code} {}
 
 bool key::pressed() const {
-    return internal::global_module<internal::key_backend>::get().get_key_state(code);
+    return internal::global_module<internal::key_manager>::get().get_keystate(*this).pressed;
 }
 bool key::released() const {
-    // TODO
-    throw std::exception("not implemented");
+    return internal::global_module<internal::key_manager>::get().get_keystate(*this).released;
 }
 bool key::pressing() const {
-    // TODO
-    throw std::exception("not implemented");
+    return internal::global_module<internal::key_manager>::get().get_keystate(*this).pressing;
 }
 
 BRIGHTCPP_END

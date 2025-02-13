@@ -1,6 +1,7 @@
 #include "global_module.hpp"
 #include "interfaces/graphics.hpp"
 #include "interfaces/os_util.hpp"
+#include "key/key.hpp"
 #include <brightcpp/window.hpp>
 #include <stdexcept>
 #include <unordered_set>
@@ -110,6 +111,7 @@ bool window::close_requested() const { return internal::available_windows.at(han
 bool frame_update() {
     // internal::apply_render();
     g_os_util::get().poll_events();
+    internal::global_module<internal::key_manager>::get().update();
 
     // one of windows closed, to finish application
     for (const auto &[id, available_window] : internal::available_windows) {
