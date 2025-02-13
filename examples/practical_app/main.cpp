@@ -1,6 +1,6 @@
+#include <brightcpp/audio.hpp>
 #include <brightcpp/brightcpp.hpp>
 #include <brightcpp/renderer2d.hpp>
-#include <brightcpp/audio.hpp>
 #include <iostream>
 
 int main() {
@@ -32,20 +32,24 @@ int main() {
 
         bgt::renderer2d r(wnd1);
 
-        bgt::audio test_sound("examples/assets/test.mp3");
+        bgt::audio se_powa("examples/assets/powa.wav");
+        bgt::oneshot_audio_player se_player;
 
+        bgt::streaming_audio test_sound("examples/assets/test.mp3");
         bgt::audio_player player(test_sound);
 
-        player.play_loop();
+        player.play_once();
+
+        bool old_pressed = false;
 
         while (bgt::frame_update()) {
-            r.draw(img, 0, 100);
-            r.draw(img, 100, 100, 1.57f);
-            r.draw(img, 200, 100, 3.14f);
-            r.draw(img, 0, 200, bgt::pivot_pos::center);
-            r.draw(img, 100, 200, 1.57f, bgt::pivot_pos::center);
-            r.draw(img, 200, 200, 3.14f, bgt::pivot_pos::center);
-            r.draw(imgclip, 0, 0);
+            auto now_pressed = bgt::key_z.pressed();
+            if (!old_pressed && now_pressed) {
+                se_player.play_oneshot(se_powa);
+            }
+            r.draw(img, 0, 0);
+
+            old_pressed = now_pressed;
             r.flush();
         }
     } catch (std::exception &e) {
