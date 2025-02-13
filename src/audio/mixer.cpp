@@ -7,6 +7,7 @@ BRIGHTCPP_START
 namespace internal {
 
 audio_context_id audio_mixer::add_playing(const audio_play_info &info) {
+    std::lock_guard<std::mutex> lock(mtx);
     playing_list.push_back(info);
     auto new_id = playing_list.back().id = id_serial_count;
     id_serial_count++;
@@ -14,6 +15,7 @@ audio_context_id audio_mixer::add_playing(const audio_play_info &info) {
 }
 
 void audio_mixer::set_playing(audio_context_id id, const audio_play_info &info, audio_play_update_mask mask) {
+    std::lock_guard<std::mutex> lock(mtx);
     for (auto &playing : playing_list) {
         if (playing.id == id) {
             if (mask & audio_play_update_bit::delay_timer) {
@@ -41,6 +43,7 @@ void audio_mixer::set_playing(audio_context_id id, const audio_play_info &info, 
 }
 
 audio_play_info audio_mixer::get_playing(audio_context_id id) const {
+    std::lock_guard<std::mutex> lock(mtx);
     for (auto &playing : playing_list) {
         if (playing.id == id)
             return playing;
@@ -49,6 +52,7 @@ audio_play_info audio_mixer::get_playing(audio_context_id id) const {
 }
 
 void audio_mixer::read(float *dst, size_t frames) {
+    std::lock_guard<std::mutex> lock(mtx);
     for (int frame = 0; frame < frames; frame++) {
         float sample = 0;
         for (auto &playing : playing_list) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
+#include <mutex>
 #include <vector>
 
 BRIGHTCPP_START
@@ -41,6 +42,7 @@ struct audio_play_info {
 class audio_mixer {
     std::vector<audio_play_info> playing_list;
     audio_context_id id_serial_count = 0;
+    mutable std::mutex mtx;
 
   public:
     audio_context_id add_playing(const audio_play_info &);

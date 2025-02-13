@@ -86,7 +86,7 @@ streaming_audio_asset_manager *global_module_constructor<streaming_audio_asset_m
 
 template <>
 audio_mixer *global_module_constructor<audio_mixer>() {
-    global_objects.audio_mixer = audio_mixer{};
+    global_objects.audio_mixer.emplace();
     return &*global_objects.audio_mixer;
 }
 
