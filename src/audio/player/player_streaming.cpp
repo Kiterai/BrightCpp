@@ -147,6 +147,58 @@ void audio_player_impl_streaming::resume() {
         internal::audio_play_update_bit::stop_pause);
 }
 
+void audio_player_impl_streaming::stop() {
+    auto &loader = g_streaming_audio_manager::get().get_loader(this->data->handle());
+    loader.seek(0);
+
+    buffer_state = 0;
+    {
+        size_t req = buffer_cap * 44100 / 48000 - 128;
+        size_t loaded = loader.load_chunk(raw_buffer.data(), req);
+        bufsz[0] = resampler.resample(buffer.data(), raw_buffer.data(), loaded, buffer_cap);
+    }
+    {
+        size_t req = buffer_cap * 44100 / 48000 - 128;
+        size_t loaded = loader.load_chunk(raw_buffer.data(), req);
+        bufsz[1] = resampler.resample(buffer.data() + buffer_cap, raw_buffer.data(), loaded, buffer_cap);
+    }
+
+    g_audio_mixer::get().set_playing(
+        context_id,
+        internal::audio_play_info{
+            .stopped = false,
+            .paused = true,
+        },
+        internal::audio_play_update_bit::stop_pause);
+}
+void audio_player_impl_streaming::seek(std::chrono::nanoseconds point) {
+    auto &loader = g_streaming_audio_manager::get().get_loader(this->data->handle());
+    loader.seek(point.count() * 48000 / 1'000'000'000);
+
+    buffer_state = 0;
+    {
+        size_t req = buffer_cap * 44100 / 48000 - 128;
+        size_t loaded = loader.load_chunk(raw_buffer.data(), req);
+        bufsz[0] = resampler.resample(buffer.data(), raw_buffer.data(), loaded, buffer_cap);
+    }
+    {
+        size_t req = buffer_cap * 44100 / 48000 - 128;
+        size_t loaded = loader.load_chunk(raw_buffer.data(), req);
+        bufsz[1] = resampler.resample(buffer.data() + buffer_cap, raw_buffer.data(), loaded, buffer_cap);
+    }
+
+    g_audio_mixer::get().set_playing(
+        context_id,
+        internal::audio_play_info{
+            .stopped = false,
+            .paused = true,
+        },
+        internal::audio_play_update_bit::stop_pause);
+}
+// std::chrono::nanoseconds audio_player_impl_streaming::pos() const {
+//     // TODO
+// }
+
 } // namespace internal
 
 BRIGHTCPP_END
