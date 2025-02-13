@@ -144,6 +144,7 @@ add_library(
     oneshot_audio.cpp
     audio/audio_asset_manager.cpp
     audio/streaming_audio_asset_manager.cpp
+    audio/audio_player_manager.cpp
     audio/resample.cpp
     audio/mixer.cpp
     audio/streaming_manager.cpp

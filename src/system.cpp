@@ -2,6 +2,7 @@
 #include <optional>
 
 #include "audio/audio_asset_manager.hpp"
+#include "audio/audio_player_manager.hpp"
 #include "audio/mixer.hpp"
 #include "audio/streaming_audio_asset_manager.hpp"
 #include "audio/streaming_manager.hpp"
@@ -30,6 +31,7 @@ struct global_objects_t {
     std::optional<audio_mixer> audio_mixer;
     std::optional<streaming_manager> streaming_manager;
     std::unique_ptr<audio_backend> audio;
+    std::optional<audio_player_manager> player_manager;
 };
 
 global_objects_t global_objects;
@@ -86,6 +88,12 @@ template <>
 audio_mixer *global_module_constructor<audio_mixer>() {
     global_objects.audio_mixer = audio_mixer{};
     return &*global_objects.audio_mixer;
+}
+
+template <>
+audio_player_manager *global_module_constructor<audio_player_manager>() {
+    global_objects.player_manager.emplace();
+    return &*global_objects.player_manager;
 }
 
 template <>
