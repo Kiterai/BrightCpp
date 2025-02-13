@@ -30,7 +30,7 @@ class audio_player_impl_streaming : public audio_player_backend {
     void resume();
     void stop();
     void seek(std::chrono::nanoseconds point);
-    std::chrono::nanoseconds pos() const;
+    // std::chrono::nanoseconds pos() const;
 };
 
 } // namespace internal
