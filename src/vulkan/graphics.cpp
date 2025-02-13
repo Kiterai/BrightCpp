@@ -56,6 +56,10 @@ static auto create_vulkan_instance(os_util_backend &os_util) {
     app_info.engineVersion = 0;
 
     vk::InstanceCreateInfo create_info;
+#ifdef __APPLE__
+    create_info.flags = vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR;
+    exts.push_back("VK_KHR_portability_enumeration");
+#endif
     create_info.pApplicationInfo = &app_info;
     create_info.enabledLayerCount = uint32_t(layers.size());
     create_info.ppEnabledLayerNames = layers.data();
@@ -127,6 +131,10 @@ static auto choose_phys_device(vk::Instance instance, const std::vector<vk::Surf
 static auto create_device(vk::PhysicalDevice phys_device, queue_index_set queue_indices) {
     std::vector<const char *> layers = device_layer_required();
     std::vector<const char *> exts = device_extension_required();
+
+#ifdef __APPLE__
+    exts.push_back("VK_KHR_portability_subset");
+#endif
 
     std::vector<vk::DeviceQueueCreateInfo> queueCreateInfo;
     float queuePriorities[1] = {1.0f};
