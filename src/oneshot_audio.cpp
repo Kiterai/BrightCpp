@@ -3,7 +3,7 @@
 #include "global_module.hpp"
 #include "interfaces/audio.hpp"
 #include <brightcpp/audio.hpp>
-#include<iostream>
+#include <stdexcept>
 
 BRIGHTCPP_START
 
@@ -31,19 +31,19 @@ void oneshot_audio_player::play_oneshot(audio &data) {
 
 // TODO
 void oneshot_audio_player::pause() {
-    throw std::exception("not implemented");
+    throw std::runtime_error("not implemented");
 }
 
 void oneshot_audio_player::resume() {
-    throw std::exception("not implemented");
+    throw std::runtime_error("not implemented");
 }
 
 void oneshot_audio_player::stop() {
-    throw std::exception("not implemented");
+    throw std::runtime_error("not implemented");
 }
 
 bool oneshot_audio_player::busy_any() const {
-    throw std::exception("not implemented");
+    throw std::runtime_error("not implemented");
 }
 
 BRIGHTCPP_END
