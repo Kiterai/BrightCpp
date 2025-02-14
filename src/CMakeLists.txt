@@ -165,6 +165,11 @@ find_package(Vulkan REQUIRED)
 target_include_directories(brightcpp PRIVATE ${Vulkan_INCLUDE_DIRS})
 target_link_libraries(brightcpp PRIVATE ${Vulkan_LIBRARIES})
 
+if(BRIGHTCPP_BUILD_X11)
+find_package(X11 REQUIRED)
+target_link_libraries(brightcpp PRIVATE ${X11_LIBRARIES})
+endif()
+
 set_target_properties(brightcpp PROPERTIES CXX_STANDARD 20)
 target_link_libraries(brightcpp PRIVATE glfw)
 target_link_libraries(brightcpp PRIVATE VulkanMemoryAllocator)

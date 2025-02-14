@@ -63,6 +63,7 @@ enum class key_id {
 
 class key_backend {
   public:
+    virtual void update() {}
     virtual int get_code_by_id(key_id id) const = 0;
     virtual bool get_key_state(int key) const = 0;
 };

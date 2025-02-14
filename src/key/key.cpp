@@ -2,6 +2,7 @@
 #include "../global_module.hpp"
 #include "../interfaces/os_util.hpp"
 #include <brightcpp/key.hpp>
+#include <iostream>
 
 BRIGHTCPP_START
 
@@ -15,7 +16,8 @@ key_manager *global_module_constructor<key_manager>() {
 }
 
 key key_manager::register_key(key_id id) {
-    int code = global_module<key_backend>::get().get_code_by_id(id);
+    auto &g = global_module<key_backend>::get();
+    int code = g.get_code_by_id(id);
     key_list.push_back(code);
     return key{code};
 }
