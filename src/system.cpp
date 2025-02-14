@@ -22,8 +22,8 @@ static size_t initializer_count = 0;
 struct global_objects_t {
     std::optional<audio_asset_manager> audio_loader_obj;
     std::optional<streaming_audio_asset_manager> streaming_audio_manager_obj;
-    std::optional<audio_mixer> audio_mixer;
-    std::optional<streaming_manager> streaming_manager;
+    std::optional<audio_mixer> default_audio_mixer;
+    std::optional<streaming_manager> global_streaming_manager;
     std::unique_ptr<audio_backend> audio;
     std::optional<audio_player_manager> player_manager;
 
