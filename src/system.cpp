@@ -86,8 +86,8 @@ streaming_audio_asset_manager *global_module_constructor<streaming_audio_asset_m
 
 template <>
 audio_mixer *global_module_constructor<audio_mixer>() {
-    global_objects.audio_mixer.emplace();
-    return &*global_objects.audio_mixer;
+    global_objects.default_audio_mixer.emplace();
+    return &*global_objects.default_audio_mixer;
 }
 
 template <>
@@ -98,8 +98,8 @@ audio_player_manager *global_module_constructor<audio_player_manager>() {
 
 template <>
 streaming_manager *global_module_constructor<streaming_manager>() {
-    global_objects.streaming_manager.emplace();
-    return &*global_objects.streaming_manager;
+    global_objects.global_streaming_manager.emplace();
+    return &*global_objects.global_streaming_manager;
 }
 
 template <>
