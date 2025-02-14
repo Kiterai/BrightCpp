@@ -1,5 +1,3 @@
-#pragma once
-
 #include "streaming_manager.hpp"
 #include "../global_module.hpp"
 #include "mixer.hpp"
