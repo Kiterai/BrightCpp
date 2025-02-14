@@ -23,8 +23,8 @@ key key_manager::register_key(key_id id) {
 }
 
 void key_manager::update() {
-    const auto &g = global_module<key_backend>::get();
-
+    auto &g = global_module<key_backend>::get();
+    g.update();
     for (const auto tgt : key_list) {
         bool pressing = g.get_key_state(tgt);
         auto old_state = keys[tgt];
