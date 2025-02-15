@@ -226,6 +226,8 @@ class SoundIoWrap {
         std::vector<SoundIoOutputDeviceWrap> devices;
         for (int i = 0; i < device_count; i++)
             devices.emplace_back(soundio, i);
+
+        return devices;
     }
     SoundIoOutputDeviceWrap get_default_output_device() {
         auto index = soundio_default_output_device_index(soundio);
