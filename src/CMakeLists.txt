@@ -169,7 +169,7 @@ find_package(Vulkan REQUIRED)
 target_include_directories(brightcpp PRIVATE ${Vulkan_INCLUDE_DIRS})
 target_link_libraries(brightcpp PRIVATE ${Vulkan_LIBRARIES})
 
-find_package(X11 REQUIRED)
+find_package(X11)
 if(X11_FOUND)
   message(STATUS "X11 Found")
   target_link_libraries(brightcpp PRIVATE ${X11_LIBRARIES})
