@@ -28,7 +28,6 @@ static int default_buffer_length() {
 template <template <write_sample_func> class write_samples_callback>
 class SoundIoOutStreamWrap {
     SoundIoOutStream *outstream;
-    int buffer_length = default_buffer_length();
     void *write_samples_userdata;
 
     template <write_sample_func write_sample>
@@ -39,11 +38,7 @@ class SoundIoOutStreamWrap {
 
         SoundIoChannelArea *areas;
 
-        if (frame_count_min > thiz->buffer_length || thiz->buffer_length > frame_count_max)
-            thiz->buffer_length = std::clamp(thiz->buffer_length, frame_count_min, frame_count_max);
-        const auto &buffer_length = thiz->buffer_length;
-
-        int writing_frames_left = buffer_length;
+        int writing_frames_left = std::clamp(default_buffer_length(), frame_count_min, frame_count_max);
 
         while (true) {
             int writable_frame_count = writing_frames_left;
@@ -112,7 +107,6 @@ class SoundIoOutStreamWrap {
     SoundIoOutStreamWrap(const SoundIoOutStreamWrap &) = delete;
     SoundIoOutStreamWrap &operator=(const SoundIoOutStreamWrap &) = delete;
     SoundIoOutStreamWrap(SoundIoOutStreamWrap &&o) {
-        buffer_length = o.buffer_length;
         write_samples_userdata = o.write_samples_userdata;
         outstream = o.outstream;
         o.outstream = nullptr;
@@ -120,7 +114,6 @@ class SoundIoOutStreamWrap {
         outstream->userdata = this;
     };
     SoundIoOutStreamWrap &operator=(SoundIoOutStreamWrap &&o) {
-        buffer_length = o.buffer_length;
         write_samples_userdata = o.write_samples_userdata;
         outstream = o.outstream;
         o.outstream = nullptr;
