@@ -1,6 +1,12 @@
 # BrightCpp
 
-A light-weight and cross-platform games/tools development library for C++
+A lightweight and cross-platform game/tools development library for C++
+
+- works on Windows, macOS, Linux
+- never takes over your `main()` function
+- no need for an explicit initialization function call like `library_init()`
+- error handling is primarily performed using exceptions rather than return values (following the conventions of C++ standard libraries)
+- supports multi-window application development
 
 ## Getting Started
 
