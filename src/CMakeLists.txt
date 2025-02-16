@@ -1,5 +1,8 @@
 # for embed shader code
 include(FetchContent)
+
+# embed
+set(B_PRODUCTION_MODE ON)
 FetchContent_Declare(
   battery-embed
   GIT_REPOSITORY https://github.com/batterycenter/embed.git
