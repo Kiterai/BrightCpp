@@ -53,29 +53,37 @@ audio_play_info audio_mixer::get_playing(audio_context_id id) const {
 
 void audio_mixer::read(float *dst, size_t frames) {
     std::lock_guard<std::mutex> lock(mtx);
+
+    static std::vector<float> buffer;
+    buffer.resize(frames);
+
     for (int frame = 0; frame < frames; frame++) {
-        float sample = 0;
-        for (auto &playing : playing_list) {
-            if (playing.paused)
-                continue;
-            sample += *playing.current_pos;
+        buffer[frame] = 0;
+    }
+
+    for (auto &playing : playing_list) {
+        if (playing.paused)
+            continue;
+
+        for (int frame = 0; frame < frames; frame++) {
+            buffer[frame] += *playing.current_pos;
             playing.current_pos++;
             if (playing.current_pos >= playing.end_pos) {
                 switch (playing.mode) {
                 case audio_play_info::play_mode::normal:
                     playing.current_pos = playing.loop_pos;
                     playing.paused = true;
-                    break;
+                    goto break_playing;
                 case audio_play_info::play_mode::oneshot:
                     playing.stopped = playing.paused = true;
-                    break;
+                    goto break_playing;
                 case audio_play_info::play_mode::loop:
                     playing.current_pos = playing.loop_pos;
                     playing.end_pos = playing.next_loop_end_pos;
                     break;
                 case audio_play_info::play_mode::streaming_loop_invalid:
                     playing.paused = true;
-                    break;
+                    goto break_playing;
                 case audio_play_info::play_mode::streaming_loop_available:
                     playing.current_pos = playing.loop_pos;
                     playing.end_pos = playing.next_loop_end_pos;
@@ -90,7 +98,11 @@ void audio_mixer::read(float *dst, size_t frames) {
             }
         }
 
-        *dst = sample;
+    break_playing:;
+    }
+
+    for (int frame = 0; frame < frames; frame++) {
+        *dst = buffer[frame];
         dst++;
     }
 
