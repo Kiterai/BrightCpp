@@ -168,9 +168,22 @@ target_include_directories(brightcpp PUBLIC ../include)
 b_embed(brightcpp shaders/shader.vert.spv)
 b_embed(brightcpp shaders/shader.frag.spv)
 
+# Vulkan
+if(IOS)
+message(STATUS "iOS platform")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+find_package(Vulkan REQUIRED COMPONENTS MoltenVK)
+target_link_libraries(brightcpp PRIVATE
+  "-framework UIKit"
+  "-framework QuartzCore"
+)
+target_link_libraries(brightcpp PUBLIC Vulkan::Vulkan)
+target_link_options(brightcpp PRIVATE -rpath @executable_path/Frameworks)
+else()
 find_package(Vulkan REQUIRED)
 target_include_directories(brightcpp PRIVATE ${Vulkan_INCLUDE_DIRS})
 target_link_libraries(brightcpp PRIVATE ${Vulkan_LIBRARIES})
+endif()
 
 find_package(X11)
 if(X11_FOUND)
