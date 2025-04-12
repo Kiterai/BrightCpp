@@ -1,5 +1,7 @@
 #ifdef __APPLE__
 
+#if !TARGET_OS_IOS
+
 #include "../global_module.hpp"
 #include "key.hpp"
 #include <ApplicationServices/ApplicationServices.h>
@@ -79,5 +81,7 @@ key_backend *global_module_constructor<key_backend>() {
 } // namespace internal
 
 BRIGHTCPP_END
+
+#endif
 
 #endif

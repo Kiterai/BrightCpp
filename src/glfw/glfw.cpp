@@ -1,3 +1,5 @@
+#if !TARGET_OS_IOS
+
 #define GLFW_INCLUDE_VULKAN
 #include "glfw.hpp"
 #include "glfw_common.hpp"
@@ -104,3 +106,5 @@ std::unique_ptr<os_util_backend> make_glfw_manager() {
 }
 
 BRIGHTCPP_OSUTIL_GLFW_END
+
+#endif
