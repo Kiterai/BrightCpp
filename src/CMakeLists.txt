@@ -77,11 +77,17 @@ message(STATUS "GLFW disabled")
 endif()
 
 # libsoundio
+# NOTE: temporary fix for latest macOS
 FetchContent_Declare(
   libsoundio
-  GIT_REPOSITORY https://github.com/andrewrk/libsoundio.git
-  # GIT_TAG 2.0.0
+  GIT_REPOSITORY https://github.com/harukasan/libsoundio.git
+  GIT_TAG fix/build_macos_14_0
 )
+# FetchContent_Declare(
+#   libsoundio
+#   GIT_REPOSITORY https://github.com/andrewrk/libsoundio.git
+#   # GIT_TAG 2.0.0
+# )
 set(BUILD_EXAMPLE_PROGRAMS_BK "${BUILD_EXAMPLE_PROGRAMS}")
 set(BUILD_EXAMPLE_PROGRAMS OFF CACHE INTERNAL "")
 set(BUILD_TESTS_BK "${BUILD_TESTS}")
