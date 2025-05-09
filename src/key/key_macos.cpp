@@ -5,6 +5,7 @@
 #include "../global_module.hpp"
 #include "key.hpp"
 #include <ApplicationServices/ApplicationServices.h>
+#include <Carbon/Carbon.h>
 
 BRIGHTCPP_START
 
