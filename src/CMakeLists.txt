@@ -172,13 +172,13 @@ FetchContent_Declare(
   GIT_TAG v3.1.0)
 FetchContent_MakeAvailable(VulkanMemoryAllocator)
 target_link_libraries(brightcpp PRIVATE VulkanMemoryAllocator)
-target_include_directories(brightcpp PRIVATE ${vulkanmemoryallocator-hpp_SOURCE_DIR}/include)
 
 # VMA-Hpp
 FetchContent_Populate(
   VulkanMemoryAllocator-Hpp
   GIT_REPOSITORY https://github.com/YaaZ/VulkanMemoryAllocator-Hpp.git
   GIT_TAG v3.1.0)
+target_include_directories(brightcpp PRIVATE ${vulkanmemoryallocator-hpp_SOURCE_DIR}/include)
 
 # stb
 FetchContent_Populate(
