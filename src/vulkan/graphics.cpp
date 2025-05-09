@@ -58,7 +58,7 @@ static auto create_vulkan_instance(os_util_backend &os_util) {
     vk::InstanceCreateInfo create_info;
 #ifdef __APPLE__
     create_info.flags = vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR;
-    exts.push_back("VK_KHR_portability_enumeration");
+    exts.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 #endif
     create_info.pApplicationInfo = &app_info;
     create_info.enabledLayerCount = uint32_t(layers.size());
