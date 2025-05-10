@@ -9,8 +9,6 @@ add_library(
     render_target.cpp
     renderer2d.cpp
 
-    glfw/glfw.cpp
-
     key/key.cpp
 
     vulkan/graphics.cpp
@@ -75,6 +73,7 @@ b_embed(brightcpp shaders/shader.frag.spv)
 # GLFW
 if(NOT IOS)
 message(STATUS "GLFW enabled")
+target_sources(brightcpp PRIVATE glfw/glfw.cpp)
 set(GLFW_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_TESTS OFF)
 set(GLFW_BUILD_DOCS OFF)
