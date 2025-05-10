@@ -241,6 +241,9 @@ endif()
 set_target_properties(brightcpp PROPERTIES CXX_STANDARD 20)
 
 function(brightcpp_ios_declare_app app_target app_name app_id)
+message(STATUS "iOS Application setting launched")
+message(STATUS "  App Name: ${app_name}")
+message(STATUS "  Bundle ID: ${app_id}")
 set_target_properties(${app_target} PROPERTIES
   MACOSX_BUNDLE_BUNDLE_NAME ${app_name}
   MACOSX_BUNDLE_GUI_IDENTIFIER ${app_id}
