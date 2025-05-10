@@ -12,9 +12,6 @@ add_library(
     glfw/glfw.cpp
 
     key/key.cpp
-    key/key_windows.cpp
-    key/key_macos.cpp
-    key/key_x11.cpp
 
     vulkan/graphics.cpp
     vulkan/util.cpp
@@ -41,6 +38,25 @@ add_library(
     libsoundio/audio.cpp
 )
 target_include_directories(brightcpp PUBLIC ../include)
+
+if(WIN32)
+## windows
+target_sources(brightcpp PRIVATE key/key_windows.cpp)
+elseif(X11)
+## X11
+target_sources(brightcpp PRIVATE key/key_x11.cpp)
+elseif(APPLE)
+if(IOS)
+## iOS(dummy)
+target_sources(brightcpp PRIVATE key/key_dummy.cpp)
+else()
+## macOS
+target_sources(brightcpp PRIVATE key/key_macos.cpp)
+endif()
+else()
+## other(dummy)
+target_sources(brightcpp PRIVATE key/key_dummy.cpp)
+endif()
 
 # embed
 set(B_PRODUCTION_MODE ON)
