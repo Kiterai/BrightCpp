@@ -130,6 +130,8 @@ endif()
 FetchContent_MakeAvailable(muFFT)
 
 # libsamplerate
+set(BUILD_TESTING_BK "${BUILD_TESTING}")
+set(BUILD_TESTING OFF CACHE INTERNAL "")
 FetchContent_Declare(
   libsamplerate
   GIT_REPOSITORY https://github.com/libsndfile/libsamplerate.git
@@ -137,6 +139,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(libsamplerate)
 target_link_libraries(brightcpp PRIVATE samplerate)
+set(BUILD_TESTING "${BUILD_TESTING_BK}")
 
 # ogg
 set(BUILD_TESTING_BK "${BUILD_TESTING}")
