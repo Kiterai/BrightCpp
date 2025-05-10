@@ -197,16 +197,29 @@ target_include_directories(brightcpp PRIVATE ${stb_SOURCE_DIR})
 
 # Vulkan
 if(IOS)
+## on IOS
 message(STATUS "iOS platform")
+
+target_sources(brightcpp INTERFACE $ENV{VULKAN_SDK}/share/vulkan)
+set_source_files_properties(Assets
+   $ENV{VULKAN_SDK}/share/vulkan
+   PROPERTIES
+   MACOSX_PACKAGE_LOCATION Resources
+)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(Vulkan REQUIRED COMPONENTS MoltenVK)
 target_link_libraries(brightcpp PRIVATE
   "-framework UIKit"
   "-framework QuartzCore"
 )
-target_link_libraries(brightcpp PUBLIC Vulkan::Vulkan)
-target_link_options(brightcpp PRIVATE -rpath @executable_path/Frameworks)
+target_link_libraries(brightcpp PRIVATE Vulkan::Vulkan)
+target_link_libraries(brightcpp PUBLIC
+  "-framework Foundation"
+)
+
 else()
+## on other platforms
 find_package(Vulkan REQUIRED)
 target_include_directories(brightcpp PRIVATE ${Vulkan_INCLUDE_DIRS})
 target_link_libraries(brightcpp PRIVATE ${Vulkan_LIBRARIES})
@@ -226,3 +239,38 @@ if(PULSEAUDIO_FOUND)
 endif()
 
 set_target_properties(brightcpp PROPERTIES CXX_STANDARD 20)
+
+function(brightcpp_ios_declare_app app_target app_name app_id)
+set_target_properties(${app_target} PROPERTIES
+  MACOSX_BUNDLE_BUNDLE_NAME ${app_name}
+  MACOSX_BUNDLE_GUI_IDENTIFIER ${app_id}
+    
+  XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "YES"
+  XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES "YES"
+  XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "@executable_path/Frameworks"
+  XCODE_ATTRIBUTE_CODE_SIGN_STYLE "Automatic" # already default value
+  XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer"
+  XCODE_EMBED_FRAMEWORKS "${Vulkan_MoltenVK_LIBRARY};${Vulkan_LIBRARIES};${Vulkan_Layer_VALIDATION};"
+  XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY		"YES"
+  XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY	"YES"
+  XCODE_ATTRIBUTE_SKIP_INSTALL NO
+  XCODE_ATTRIBUTE_INSTALL_PATH "$(LOCAL_APPS_DIR)"
+  XCODE_ATTRIBUTE_DEAD_CODE_STRIPPING NO
+  XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
+
+  OSX_ARCHITECTURES arm64
+  XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH YES
+#  RESOURCE "${RESOURCE_FILES}"
+)
+endfunction()
+function(brightcpp_ios_set_version_info app_version app_version_short)
+set_target_properties(${app_target} PROPERTIES
+  MACOSX_BUNDLE_SHORT_VERSION_STRING ${app_version}
+  MACOSX_BUNDLE_BUNDLE_VERSION ${app_version_short}
+)
+endfunction()
+function(brightcpp_ios_set_icon app_icon)
+set_target_properties(${app_target} PROPERTIES
+  XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME ${app_icon}
+)
+endfunction()
