@@ -10,13 +10,56 @@ A lightweight and cross-platform game/tools development library for C++
 
 ## Getting Started
 
+### Prerequisites
+
+- [CMake](https://cmake.org/) is required to build & install.
+- [Vulkan SDK](https://vulkan.lunarg.com/) is required to install.
+    - on macOS, you need to run `source setup-env.sh` to load environment variables.
+
+### Your first code
+
+This is the simplest code to use BrightCpp.
+
+```cpp
+#include <brightcpp/brightcpp.hpp>
+#include <iostream>
+
+int main() {
+    try {
+        bgt::window wnd;
+
+        while (bgt::frame_update()) {
+            
+        }
+    } catch (std::exception &e) {
+        std::cerr << "error: " << e.what() << std::endl;
+    }
+}
+```
+
+Since BrightCpp uses exceptions to handle errors, we recommend you to wrap whole code in `try` block if you aren't developping throwaway codes.
+
 ### Use by FetchContent(CMake)
 
-### Use by manual link(CMake)
+BrightCpp can be load by FetchContent in CMake.
 
-### Use by manual link(GCC)
+```cmake
+include(FetchContent)
 
-### Use by manual link(Visual Studio)
+FetchContent_Declare(
+  brightcpp
+  GIT_REPOSITORY https://github.com/Kiterai/BrightCpp.git
+  GIT_TAG        main
+)
+FetchContent_MakeAvailable(brightcpp)
+```
+
+then, you can easily link:
+
+```cmake
+add_executable(app main.cpp)
+target_link_libraries(app PRIVATE brightcpp)
+```
 
 ## Build
 
