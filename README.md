@@ -20,7 +20,7 @@ A lightweight and cross-platform game/tools development library for C++
 
 ### Prerequisites
 
-- [CMake](https://cmake.org/) is required to build & install.
+- [CMake](https://cmake.org/) is required to install for build.
 - [Vulkan SDK](https://vulkan.lunarg.com/) is required to install.
     - on macOS, you need to run `source setup-env.sh` to load environment variables.
 
