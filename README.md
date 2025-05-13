@@ -8,6 +8,14 @@ A lightweight and cross-platform game/tools development library for C++
 - error handling is primarily performed using exceptions rather than return values (following the conventions of C++ standard libraries)
 - supports multi-window application development
 
+## Files and Directories
+
+- `examples/`: example codes
+- `include/`: include directory
+- `src/`: source code
+- `CMakeLists.txt`: CMake settings file
+- `README.md`: this file
+
 ## Getting Started
 
 ### Prerequisites
@@ -77,3 +85,5 @@ cd BrightCpp
 cmake . -B build
 cmake --build ./build
 ```
+
+If you want to build example codes under `examples/`, you might use `-DBUILD_EXAMPLES=ON` at configuration.
