@@ -15,12 +15,8 @@ class window_backend_glfw : public window_backend {
         if (settings.is_fullscreen) {
             auto monitor = glfwGetPrimaryMonitor();
             const auto mode = glfwGetVideoMode(monitor);
-
-            BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_RED_BITS, mode->redBits));
-            BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits));
-            BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits));
-            BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate));
-            BRIGHTCPP_GLFW_CHK_ERR(window_handle = glfwCreateWindow(mode->width, mode->height, settings.title.c_str(), monitor, NULL));
+            BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_DECORATED, GLFW_FALSE));
+            BRIGHTCPP_GLFW_CHK_ERR(window_handle = glfwCreateWindow(mode->width, mode->height, settings.title.c_str(), NULL, NULL));
         } else {
             BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_RESIZABLE, settings.is_resizable ? GLFW_TRUE : GLFW_FALSE));
             BRIGHTCPP_GLFW_CHK_ERR(window_handle = glfwCreateWindow(settings.size.w, settings.size.h, settings.title.c_str(), NULL, NULL));
