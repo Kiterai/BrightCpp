@@ -64,43 +64,36 @@ class window_backend_glfw : public window_backend {
     }
 };
 
-class os_util_backend_glfw : public os_util_backend {
-  public:
-    os_util_backend_glfw() {
-        BRIGHTCPP_GLFW_CHK_ERR(glfwInit());
+os_util_backend_glfw::os_util_backend_glfw() {
+    BRIGHTCPP_GLFW_CHK_ERR(glfwInit());
 #ifdef _DEBUG
-        std::cout << "GLFW initialized." << std::endl;
+    std::cout << "GLFW initialized." << std::endl;
 #endif
-    }
-    ~os_util_backend_glfw() override {
+}
+os_util_backend_glfw::~os_util_backend_glfw() {
 #ifdef _DEBUG
-        std::cout << "GLFW shutdown..." << std::endl;
+    std::cout << "GLFW shutdown..." << std::endl;
 #endif
-        glfwTerminate();
-    }
+    glfwTerminate();
+}
 
-    std::unique_ptr<window_backend> create_window(const window::settings &settings) override {
-        return std::make_unique<window_backend_glfw>(settings);
-    }
+std::unique_ptr<window_backend> os_util_backend_glfw::create_window(const window::settings &settings) {
+    return std::make_unique<window_backend_glfw>(settings);
+}
 
-    std::vector<const char *> get_vulkan_required_instance_extensions() override {
-        std::vector<const char *> exts;
+std::vector<const char *> os_util_backend_glfw::get_vulkan_required_instance_extensions() {
+    std::vector<const char *> exts;
 
-        uint32_t glfw_required_exts_count;
-        const auto glfw_required_exts = glfwGetRequiredInstanceExtensions(&glfw_required_exts_count);
-        for (const auto ext : std::span{glfw_required_exts, glfw_required_exts_count})
-            exts.push_back(ext);
+    uint32_t glfw_required_exts_count;
+    const auto glfw_required_exts = glfwGetRequiredInstanceExtensions(&glfw_required_exts_count);
+    for (const auto ext : std::span{glfw_required_exts, glfw_required_exts_count})
+        exts.push_back(ext);
 
-        return exts;
-    }
+    return exts;
+}
 
-    void poll_events() override {
-        glfwPollEvents();
-    }
-};
-
-std::unique_ptr<os_util_backend> make_glfw_manager() {
-    return std::make_unique<os_util_backend_glfw>();
+void os_util_backend_glfw::poll_events() {
+    glfwPollEvents();
 }
 
 BRIGHTCPP_OSUTIL_GLFW_END

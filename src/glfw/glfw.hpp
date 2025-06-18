@@ -18,6 +18,13 @@
 
 BRIGHTCPP_OSUTIL_GLFW_START
 
-std::unique_ptr<os_util_backend> make_glfw_manager();
+class os_util_backend_glfw : public os_util_backend {
+  public:
+    os_util_backend_glfw();
+    ~os_util_backend_glfw();
+    std::unique_ptr<window_backend> create_window(const window::settings &settings) override;
+    std::vector<const char *> get_vulkan_required_instance_extensions() override;
+    void poll_events() override;
+};
 
 BRIGHTCPP_OSUTIL_GLFW_END

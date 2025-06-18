@@ -27,7 +27,7 @@ struct global_objects_t {
     std::unique_ptr<audio_backend> audio;
     std::optional<audio_player_manager> player_manager;
 
-    std::unique_ptr<os_util_backend> os_util;
+    std::unique_ptr<glfw::os_util_backend_glfw> os_util;
 
     std::unique_ptr<vulkan::graphics_vulkan> graphics;
     std::unique_ptr<vulkan::texture_factory_vulkan> tex_factory;
@@ -37,9 +37,13 @@ struct global_objects_t {
 global_objects_t global_objects;
 
 template <>
-os_util_backend *global_module_constructor<os_util_backend>() {
-    global_objects.os_util = glfw::make_glfw_manager();
+glfw::os_util_backend_glfw *global_module_constructor<glfw::os_util_backend_glfw>() {
+    global_objects.os_util = std::make_unique<glfw::os_util_backend_glfw>();
     return global_objects.os_util.get();
+}
+template <>
+os_util_backend *global_module_constructor<os_util_backend>() {
+    return &global_module<glfw::os_util_backend_glfw>::get();
 }
 
 template <>
