@@ -9,7 +9,8 @@ target_sources(brightcpp PRIVATE
 )
 
 message(STATUS "Compiling shader.vert...")
-execute_process(COMMAND $ENV{VULKAN_SDK}/Bin/glslc
+execute_process(COMMAND
+  glslc
   ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert
   -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert.spv
   RESULT_VARIABLE result
@@ -19,7 +20,8 @@ if(NOT result EQUAL "0")
 endif()
 
 message(STATUS "Compiling shader.frag...")
-execute_process(COMMAND $ENV{VULKAN_SDK}/Bin/glslc
+execute_process(COMMAND
+  glslc
   ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag
   -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag.spv
   RESULT_VARIABLE result
