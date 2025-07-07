@@ -19,8 +19,6 @@ add_library(
     render_target.cpp
     renderer2d.cpp
 
-    os/key/key.cpp
-
     audio.cpp
     oneshot_audio.cpp
     audio/audio_asset_manager.cpp
@@ -39,48 +37,9 @@ add_library(
     audio/libsoundio/audio.cpp
 )
 add_subdirectory(graphics)
+add_subdirectory(os)
 
 target_include_directories(brightcpp PUBLIC ../include)
-
-if(WIN32)
-## windows
-target_sources(brightcpp PRIVATE os/key/key_windows.cpp)
-elseif(APPLE)
-if(IOS)
-## iOS(dummy)
-target_sources(brightcpp PRIVATE os/key/key_dummy.cpp)
-else()
-## macOS
-target_sources(brightcpp PRIVATE os/key/key_macos.cpp)
-endif()
-elseif(UNIX)
-## X11
-target_sources(brightcpp PRIVATE os/key/key_x11.cpp)
-else()
-## other(dummy)
-target_sources(brightcpp PRIVATE os/key/key_dummy.cpp)
-endif()
-
-# GLFW
-if(NOT IOS)
-message(STATUS "GLFW enabled")
-target_sources(brightcpp PRIVATE os/glfw/glfw.cpp)
-set(GLFW_BUILD_EXAMPLES OFF)
-set(GLFW_BUILD_TESTS OFF)
-set(GLFW_BUILD_DOCS OFF)
-if(UNIX)
-set(GLFW_BUILD_X11 ON)
-set(GLFW_BUILD_WAYLAND OFF)
-endif()
-FetchContent_Declare(
-  glfw
-  GIT_REPOSITORY https://github.com/glfw/glfw.git
-  GIT_TAG 3.4)
-FetchContent_MakeAvailable(glfw)
-target_link_libraries(brightcpp PRIVATE glfw)
-else()
-message(STATUS "GLFW disabled")
-endif()
 
 # libsoundio
 # NOTE: temporary fix for latest macOS and iOS
@@ -179,12 +138,6 @@ FetchContent_Populate(
   minimp3
   GIT_REPOSITORY https://github.com/lieff/minimp3.git)
 target_include_directories(brightcpp PRIVATE ${minimp3_SOURCE_DIR})
-
-find_package(X11)
-if(X11_FOUND)
-  message(STATUS "X11 Found")
-  target_link_libraries(brightcpp PRIVATE ${X11_LIBRARIES})
-endif()
 
 find_package(PulseAudio)
 if(PULSEAUDIO_FOUND)

@@ -1,0 +1,25 @@
+target_sources(brightcpp PRIVATE key.cpp)
+
+if(WIN32)
+## windows
+target_sources(brightcpp PRIVATE key_windows.cpp)
+elseif(APPLE)
+if(IOS)
+## iOS(dummy)
+target_sources(brightcpp PRIVATE key_dummy.cpp)
+else()
+## macOS
+target_sources(brightcpp PRIVATE key_macos.cpp)
+endif()
+elseif(UNIX)
+## X11
+find_package(X11)
+if(X11_FOUND)
+  message(STATUS "X11 Found")
+  target_link_libraries(brightcpp PRIVATE ${X11_LIBRARIES})
+endif()
+target_sources(brightcpp PRIVATE key_x11.cpp)
+else()
+## other(dummy)
+target_sources(brightcpp PRIVATE key_dummy.cpp)
+endif()
