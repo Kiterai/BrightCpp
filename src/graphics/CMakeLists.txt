@@ -8,8 +8,26 @@ target_sources(brightcpp PRIVATE
     vulkan/vbuffer.cpp
 )
 
-execute_process(COMMAND glslc ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert.spv)
-execute_process(COMMAND glslc ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag.spv)
+message(STATUS "Compiling shader.vert...")
+execute_process(COMMAND $ENV{VULKAN_SDK}/Bin/glslc
+  ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert
+  -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert.spv
+  RESULT_VARIABLE result
+)
+if(NOT result EQUAL "0")
+    message( FATAL_ERROR "Failed to compile shader.vert")
+endif()
+
+message(STATUS "Compiling shader.frag...")
+execute_process(COMMAND $ENV{VULKAN_SDK}/Bin/glslc
+  ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag
+  -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag.spv
+  RESULT_VARIABLE result
+)
+if(NOT result EQUAL "0")
+    message( FATAL_ERROR "Failed to compile shader.frag")
+endif()
+
 b_embed(brightcpp shaders/shader.vert.spv)
 b_embed(brightcpp shaders/shader.frag.spv)
 
