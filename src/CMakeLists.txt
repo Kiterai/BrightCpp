@@ -17,6 +17,7 @@ add_library(
     vulkan/render_target.cpp
     vulkan/renderer2d.cpp
     vulkan/texture.cpp
+    vulkan/vbuffer.cpp
 
     audio.cpp
     oneshot_audio.cpp
