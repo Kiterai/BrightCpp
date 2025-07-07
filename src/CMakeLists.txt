@@ -74,7 +74,7 @@ b_embed(brightcpp graphics/shaders/shader.frag.spv)
 # GLFW
 if(NOT IOS)
 message(STATUS "GLFW enabled")
-target_sources(brightcpp PRIVATE glfw/glfw.cpp)
+target_sources(brightcpp PRIVATE os/glfw/glfw.cpp)
 set(GLFW_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_TESTS OFF)
 set(GLFW_BUILD_DOCS OFF)

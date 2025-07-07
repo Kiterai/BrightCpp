@@ -6,7 +6,7 @@
 #include "audio/mixer.hpp"
 #include "audio/streaming_audio_asset_manager.hpp"
 #include "audio/streaming_manager.hpp"
-#include "glfw/glfw.hpp"
+#include "os/glfw/glfw.hpp"
 #include "global_module.hpp"
 #include "audio/libsoundio/audio.hpp"
 #include "graphics/vulkan/graphics.hpp"
