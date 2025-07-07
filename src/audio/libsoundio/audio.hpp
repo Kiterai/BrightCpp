@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../interfaces/audio.hpp"
+#include "../../interfaces/audio.hpp"
 #include <memory>
 
 BRIGHTCPP_START

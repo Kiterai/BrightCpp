@@ -1,7 +1,7 @@
 #define SOUNDIO_STATIC_LIBRARY
 #include "audio.hpp"
-#include "../audio/mixer.hpp"
-#include "../global_module.hpp"
+#include "../mixer.hpp"
+#include "../../global_module.hpp"
 #include "write_sample_func.hpp"
 #include <algorithm>
 #include <iostream>

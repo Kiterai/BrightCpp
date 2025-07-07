@@ -8,7 +8,7 @@
 #include "audio/streaming_manager.hpp"
 #include "glfw/glfw.hpp"
 #include "global_module.hpp"
-#include "libsoundio/audio.hpp"
+#include "audio/libsoundio/audio.hpp"
 #include "vulkan/graphics.hpp"
 #include "vulkan/renderer2d.hpp"
 #include "vulkan/texture.hpp"

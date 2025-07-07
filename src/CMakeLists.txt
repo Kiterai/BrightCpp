@@ -34,7 +34,7 @@ add_library(
     audio/loader/ogg.cpp
     audio/loader/mp3.cpp
 
-    libsoundio/audio.cpp
+    audio/libsoundio/audio.cpp
 )
 target_include_directories(brightcpp PUBLIC ../include)
 
@@ -114,7 +114,7 @@ FetchContent_MakeAvailable(libsoundio)
 if(MSVC)
 set_property(
   TARGET libsoundio_static
-  PROPERTY VS_USER_PROPS "${CMAKE_CURRENT_SOURCE_DIR}/libsoundio/CompileAsCpp.props"
+  PROPERTY VS_USER_PROPS "${CMAKE_CURRENT_SOURCE_DIR}/audio/libsoundio/CompileAsCpp.props"
 )
 endif()
 if(APPLE)
