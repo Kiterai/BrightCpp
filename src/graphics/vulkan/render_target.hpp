@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../interfaces/graphics.hpp"
+#include "../../interfaces/graphics.hpp"
 #include "vulkan_common.hpp"
 #include "util.hpp"
 #include <brightcpp/common.hpp>

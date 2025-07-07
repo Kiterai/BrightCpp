@@ -1,5 +1,5 @@
 #include "texture.hpp"
-#include "../global_module.hpp"
+#include "../../global_module.hpp"
 #include "graphics.hpp"
 #include <iostream>
 

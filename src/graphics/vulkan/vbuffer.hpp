@@ -3,7 +3,7 @@
 #include <brightcpp/common.hpp>
 #include <unordered_map>
 
-#include "../interfaces/vbuffer_factory.hpp"
+#include "../../interfaces/vbuffer_factory.hpp"
 #include "util.hpp"
 #include "vma.hpp"
 

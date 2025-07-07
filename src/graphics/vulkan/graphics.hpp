@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../interfaces/graphics.hpp"
+#include "../../interfaces/graphics.hpp"
 #include "render_target.hpp"
 #include "renderer2d.hpp"
 #include "texture.hpp"

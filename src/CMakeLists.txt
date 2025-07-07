@@ -11,13 +11,13 @@ add_library(
 
     key/key.cpp
 
-    vulkan/graphics.cpp
-    vulkan/util.cpp
-    vulkan/vma_impl.cpp
-    vulkan/render_target.cpp
-    vulkan/renderer2d.cpp
-    vulkan/texture.cpp
-    vulkan/vbuffer.cpp
+    graphics/vulkan/graphics.cpp
+    graphics/vulkan/util.cpp
+    graphics/vulkan/vma_impl.cpp
+    graphics/vulkan/render_target.cpp
+    graphics/vulkan/renderer2d.cpp
+    graphics/vulkan/texture.cpp
+    graphics/vulkan/vbuffer.cpp
 
     audio.cpp
     oneshot_audio.cpp
@@ -66,10 +66,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(battery-embed)
 
-execute_process(COMMAND glslc ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert.spv)
-execute_process(COMMAND glslc ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag.spv)
-b_embed(brightcpp shaders/shader.vert.spv)
-b_embed(brightcpp shaders/shader.frag.spv)
+execute_process(COMMAND glslc ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.vert -o ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.vert.spv)
+execute_process(COMMAND glslc ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.frag -o ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.frag.spv)
+b_embed(brightcpp graphics/shaders/shader.vert.spv)
+b_embed(brightcpp graphics/shaders/shader.frag.spv)
 
 # GLFW
 if(NOT IOS)

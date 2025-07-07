@@ -9,9 +9,9 @@
 #include "glfw/glfw.hpp"
 #include "global_module.hpp"
 #include "audio/libsoundio/audio.hpp"
-#include "vulkan/graphics.hpp"
-#include "vulkan/renderer2d.hpp"
-#include "vulkan/texture.hpp"
+#include "graphics/vulkan/graphics.hpp"
+#include "graphics/vulkan/renderer2d.hpp"
+#include "graphics/vulkan/texture.hpp"
 
 BRIGHTCPP_START
 
