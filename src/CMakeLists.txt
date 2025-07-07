@@ -223,7 +223,8 @@ set_source_files_properties(Assets
    MACOSX_PACKAGE_LOCATION Resources
 )
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+# for loading src/cmake/FindVulkan.cmake
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/graphics/cmake")
 find_package(Vulkan REQUIRED COMPONENTS MoltenVK)
 target_link_libraries(brightcpp PRIVATE
   "-framework UIKit"
