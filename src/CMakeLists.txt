@@ -1,5 +1,15 @@
 include(FetchContent)
 
+# embed
+set(B_PRODUCTION_MODE ON)
+FetchContent_Declare(
+  battery-embed
+  GIT_REPOSITORY https://github.com/batterycenter/embed.git
+  GIT_TAG        v1.2.16
+)
+FetchContent_MakeAvailable(battery-embed)
+
+# target
 add_library(
     brightcpp
     window.cpp
@@ -10,14 +20,6 @@ add_library(
     renderer2d.cpp
 
     os/key/key.cpp
-
-    graphics/vulkan/graphics.cpp
-    graphics/vulkan/util.cpp
-    graphics/vulkan/vma_impl.cpp
-    graphics/vulkan/render_target.cpp
-    graphics/vulkan/renderer2d.cpp
-    graphics/vulkan/texture.cpp
-    graphics/vulkan/vbuffer.cpp
 
     audio.cpp
     oneshot_audio.cpp
@@ -36,6 +38,8 @@ add_library(
 
     audio/libsoundio/audio.cpp
 )
+add_subdirectory(graphics)
+
 target_include_directories(brightcpp PUBLIC ../include)
 
 if(WIN32)
@@ -56,20 +60,6 @@ else()
 ## other(dummy)
 target_sources(brightcpp PRIVATE os/key/key_dummy.cpp)
 endif()
-
-# embed
-set(B_PRODUCTION_MODE ON)
-FetchContent_Declare(
-  battery-embed
-  GIT_REPOSITORY https://github.com/batterycenter/embed.git
-  GIT_TAG        v1.2.16
-)
-FetchContent_MakeAvailable(battery-embed)
-
-execute_process(COMMAND glslc ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.vert -o ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.vert.spv)
-execute_process(COMMAND glslc ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.frag -o ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.frag.spv)
-b_embed(brightcpp graphics/shaders/shader.vert.spv)
-b_embed(brightcpp graphics/shaders/shader.frag.spv)
 
 # GLFW
 if(NOT IOS)
@@ -189,58 +179,6 @@ FetchContent_Populate(
   minimp3
   GIT_REPOSITORY https://github.com/lieff/minimp3.git)
 target_include_directories(brightcpp PRIVATE ${minimp3_SOURCE_DIR})
-
-# VMA
-FetchContent_Declare(
-  VulkanMemoryAllocator
-  GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
-  GIT_TAG v3.1.0)
-FetchContent_MakeAvailable(VulkanMemoryAllocator)
-target_link_libraries(brightcpp PRIVATE VulkanMemoryAllocator)
-
-# VMA-Hpp
-FetchContent_Populate(
-  VulkanMemoryAllocator-Hpp
-  GIT_REPOSITORY https://github.com/YaaZ/VulkanMemoryAllocator-Hpp.git
-  GIT_TAG v3.1.0)
-target_include_directories(brightcpp PRIVATE ${vulkanmemoryallocator-hpp_SOURCE_DIR}/include)
-
-# stb
-FetchContent_Populate(
-  stb
-  GIT_REPOSITORY https://github.com/nothings/stb.git)
-target_include_directories(brightcpp PRIVATE ${stb_SOURCE_DIR})
-
-# Vulkan
-if(IOS)
-## on IOS
-message(STATUS "iOS platform")
-
-target_sources(brightcpp INTERFACE $ENV{VULKAN_SDK}/share/vulkan)
-set_source_files_properties(Assets
-   $ENV{VULKAN_SDK}/share/vulkan
-   PROPERTIES
-   MACOSX_PACKAGE_LOCATION Resources
-)
-
-# for loading src/cmake/FindVulkan.cmake
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/graphics/cmake")
-find_package(Vulkan REQUIRED COMPONENTS MoltenVK)
-target_link_libraries(brightcpp PRIVATE
-  "-framework UIKit"
-  "-framework QuartzCore"
-)
-target_link_libraries(brightcpp PRIVATE Vulkan::Vulkan)
-target_link_libraries(brightcpp PUBLIC
-  "-framework Foundation"
-)
-
-else()
-## on other platforms
-find_package(Vulkan REQUIRED)
-target_include_directories(brightcpp PRIVATE ${Vulkan_INCLUDE_DIRS})
-target_link_libraries(brightcpp PRIVATE ${Vulkan_LIBRARIES})
-endif()
 
 find_package(X11)
 if(X11_FOUND)
