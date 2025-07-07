@@ -9,7 +9,7 @@ add_library(
     render_target.cpp
     renderer2d.cpp
 
-    key/key.cpp
+    os/key/key.cpp
 
     graphics/vulkan/graphics.cpp
     graphics/vulkan/util.cpp
@@ -40,21 +40,21 @@ target_include_directories(brightcpp PUBLIC ../include)
 
 if(WIN32)
 ## windows
-target_sources(brightcpp PRIVATE key/key_windows.cpp)
+target_sources(brightcpp PRIVATE os/key/key_windows.cpp)
 elseif(APPLE)
 if(IOS)
 ## iOS(dummy)
-target_sources(brightcpp PRIVATE key/key_dummy.cpp)
+target_sources(brightcpp PRIVATE os/key/key_dummy.cpp)
 else()
 ## macOS
-target_sources(brightcpp PRIVATE key/key_macos.cpp)
+target_sources(brightcpp PRIVATE os/key/key_macos.cpp)
 endif()
 elseif(UNIX)
 ## X11
-target_sources(brightcpp PRIVATE key/key_x11.cpp)
+target_sources(brightcpp PRIVATE os/key/key_x11.cpp)
 else()
 ## other(dummy)
-target_sources(brightcpp PRIVATE key/key_dummy.cpp)
+target_sources(brightcpp PRIVATE os/key/key_dummy.cpp)
 endif()
 
 # embed

@@ -1,6 +1,6 @@
 #ifdef _WIN32
 
-#include "../global_module.hpp"
+#include "../../global_module.hpp"
 #include "key.hpp"
 #include <Windows.h>
 #include <unordered_map>

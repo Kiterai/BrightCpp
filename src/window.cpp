@@ -1,7 +1,7 @@
 #include "global_module.hpp"
 #include "interfaces/graphics.hpp"
 #include "interfaces/os_util.hpp"
-#include "key/key.hpp"
+#include "os/key/key.hpp"
 #include <brightcpp/window.hpp>
 #include <stdexcept>
 #include <unordered_set>

@@ -1,6 +1,6 @@
 #include "key.hpp"
-#include "../global_module.hpp"
-#include "../interfaces/os_util.hpp"
+#include "../../global_module.hpp"
+#include "../../interfaces/os_util.hpp"
 #include <brightcpp/key.hpp>
 #include <iostream>
 

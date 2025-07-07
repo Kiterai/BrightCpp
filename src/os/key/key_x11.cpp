@@ -1,6 +1,6 @@
 #ifdef __unix__
 
-#include "../global_module.hpp"
+#include "../../global_module.hpp"
 #include "key.hpp"
 #include <X11/Xlib.h>
 #define XK_LATIN1

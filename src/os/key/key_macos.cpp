@@ -2,7 +2,7 @@
 
 #if !TARGET_OS_IOS
 
-#include "../global_module.hpp"
+#include "../../global_module.hpp"
 #include "key.hpp"
 #include <ApplicationServices/ApplicationServices.h>
 #include <Carbon/Carbon.h>

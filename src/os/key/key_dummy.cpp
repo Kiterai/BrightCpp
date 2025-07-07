@@ -1,4 +1,4 @@
-#include "../global_module.hpp"
+#include "../../global_module.hpp"
 #include "key.hpp"
 
 BRIGHTCPP_START
