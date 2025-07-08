@@ -25,7 +25,7 @@ execute_process(COMMAND
 
 message(STATUS "Compiling shader.vert...")
 execute_process(COMMAND
-  $ENV{VULKAN_SDK}/bin/glslangValidator
+  $ENV{VULKAN_SDK}/bin/glslang
   ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert
   -V
   -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert.spv
@@ -37,7 +37,7 @@ endif()
 
 message(STATUS "Compiling shader.frag...")
 execute_process(COMMAND
-  $ENV{VULKAN_SDK}/bin/glslangValidator
+  $ENV{VULKAN_SDK}/bin/glslang
   ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag
   -V
   -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag.spv
