@@ -47,6 +47,11 @@ if(NOT result EQUAL "0")
     message( FATAL_ERROR "Failed to compile shader.frag")
 endif()
 
+message(STATUS "debug")
+execute_process(COMMAND
+  ls ${CMAKE_CURRENT_SOURCE_DIR}/shaders
+)
+
 b_embed(brightcpp shaders/shader.vert.spv)
 b_embed(brightcpp shaders/shader.frag.spv)
 
