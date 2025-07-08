@@ -70,23 +70,6 @@ jobs:
       shell: bash
       run: |
         echo "workspace-normalized=${{ github.workspace }}" | sed -e 's/\\/\//g' >> "$GITHUB_OUTPUT"
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-        echo "artifact-name=${{ matrix.os }}-${{ matrix.arch }}" >> "$GITHUB_OUTPUT"
-        echo "artifact-path=${{ github.workspace }}/artifacts/${{ matrix.os }}-${{ matrix.arch }}.zip" >> "$GITHUB_OUTPUT"
-
-    - name: Install dependency (linux)
-      if: matrix.os == 'ubuntu-latest'
-      shell: bash
-      run: |
-        sudo apt-get update
-        sudo apt-get install libxkbcommon-x11-dev xorg-dev
-
-    - name: Install dependency (linux-aarch64)
-      if: matrix.c_compiler == 'aarch64-linux-gnu-gcc'
-      shell: bash
-      run: |
-        sudo apt-get update
-        sudo apt-get install g++-aarch64-linux-gnu
 
     - name: Fetch Vulkan SDK version spec
       shell: bash
