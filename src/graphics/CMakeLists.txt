@@ -8,6 +8,21 @@ target_sources(brightcpp PRIVATE
     vulkan/vbuffer.cpp
 )
 
+message(STATUS "debug")
+execute_process(COMMAND
+  echo $ENV{VULKAN_SDK}
+)
+
+message(STATUS "debug")
+execute_process(COMMAND
+  ls $ENV{VULKAN_SDK}
+)
+
+message(STATUS "debug")
+execute_process(COMMAND
+  ls $ENV{VULKAN_SDK}/bin
+)
+
 message(STATUS "Compiling shader.vert...")
 execute_process(COMMAND
   $ENV{VULKAN_SDK}/bin/glslangValidator
