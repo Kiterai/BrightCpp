@@ -9,7 +9,100 @@ on:
     branches: [ "main" ]
 
 jobs:
+  prebuild:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: false
+
+      matrix:
+        include:
+          - os: windows-latest
+            c_compiler: cl
+            arch: x86
+            option: CMAKE_GENERATOR_PLATFORM=Win32
+          - os: windows-latest
+            c_compiler: cl
+            arch: x86_64
+            option: CMAKE_GENERATOR_PLATFORM=x64
+          - os: windows-latest
+            c_compiler: cl
+            arch: arm
+            option: CMAKE_GENERATOR_PLATFORM=ARM
+          - os: windows-latest
+            c_compiler: cl
+            arch: arm64
+            option: CMAKE_GENERATOR_PLATFORM=ARM64
+          - os: ubuntu-latest
+            c_compiler: aarch64-linux-gnu-gcc
+            arch: ARM64
+            option: 
+            additional_cmake_option: -DAARCH64=1
+          - os: ubuntu-latest
+            c_compiler: x86_64-linux-gnu-gcc
+            arch: x86_64
+            option: 
+          - os: macos-latest
+            c_compiler: gcc
+            arch: arm64
+            option: CMAKE_OSX_ARCHITECTURES=arm64
+          - os: macos-latest
+            c_compiler: gcc
+            arch: x86_64
+            option: CMAKE_OSX_ARCHITECTURES=x86_64
+          - os: macos-latest
+            c_compiler: gcc
+            arch: universal
+            option: CMAKE_OSX_ARCHITECTURES=x86_64;arm64
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set environment variables
+      shell: bash
+      run: |
+        echo "${{ matrix.option }}" >> "$GITHUB_ENV"
+
+    - name: Set reusable strings
+      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+      id: strings
+      shell: bash
+      run: |
+        echo "workspace-normalized=${{ github.workspace }}" | sed -e 's/\\/\//g' >> "$GITHUB_OUTPUT"
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        echo "artifact-name=${{ matrix.os }}-${{ matrix.arch }}" >> "$GITHUB_OUTPUT"
+        echo "artifact-path=${{ github.workspace }}/artifacts/${{ matrix.os }}-${{ matrix.arch }}.zip" >> "$GITHUB_OUTPUT"
+
+    - name: Install dependency (linux)
+      if: matrix.os == 'ubuntu-latest'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install libxkbcommon-x11-dev xorg-dev
+
+    - name: Install dependency (linux-aarch64)
+      if: matrix.c_compiler == 'aarch64-linux-gnu-gcc'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install g++-aarch64-linux-gnu
+
+    - name: Fetch Vulkan SDK version spec
+      shell: bash
+      run: |
+        curl -o "${{ steps.strings.outputs.workspace-normalized }}/vulkan-sdk-config.json" https://vulkan.lunarg.com/sdk/config/1.3.283.0/linux/config.json
+  
+    - name: Configure Vulkan SDK using the downloaded spec
+      uses: humbletim/setup-vulkan-sdk@v1.2.1
+      with:
+        vulkan-config-file: "${{ steps.strings.outputs.workspace-normalized }}/vulkan-sdk-config.json"
+        vulkan-components: Vulkan-Headers, Vulkan-Loader, SPIRV-Tools, Glslang
+        vulkan-use-cache: ${{ matrix.os }}-${{ matrix.arch }}
+
   build:
+    needs: prebuild
+
     runs-on: ${{ matrix.os }}
 
     strategy:
