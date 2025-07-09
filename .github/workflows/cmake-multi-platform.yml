@@ -208,12 +208,12 @@ jobs:
     - name: Zip artifacts (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        mkdir -p ${{ github.workspace }}/tmp
-        cp -r ${{ github.workspace }}/include ${{ github.workspace }}/tmp/
-        mkdir -p ${{ github.workspace }}/tmp/lib
-        cp ${{ steps.strings.outputs.build-output-dir }}/src/libbrightcpp.a ${{ github.workspace }}/tmp/lib/libbrightcpp.a
-        mkdir -p ${{ github.workspace }}/artifacts
-        cd ${{ github.workspace }}/tmp
+        mkdir -p ${{ github.workspace }}\tmp
+        cp -r ${{ github.workspace }}\include ${{ github.workspace }}\tmp\
+        mkdir -p ${{ github.workspace }}\tmp\lib
+        cp ${{ steps.strings.outputs.build-output-dir }}\src\Release\brightcpp.lib ${{ github.workspace }}\tmp\lib\
+        mkdir -p ${{ github.workspace }}\artifacts
+        cd ${{ github.workspace }}\tmp
         Compress-Archive -Destination ${{ steps.strings.outputs.artifact-path }} -Path ${{ steps.strings.outputs.build-output-dir }}/*
 
     - name: Upload artifact
