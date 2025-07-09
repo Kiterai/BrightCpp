@@ -8,53 +8,6 @@ target_sources(brightcpp PRIVATE
     vulkan/vbuffer.cpp
 )
 
-message(STATUS "debug")
-execute_process(COMMAND
-  echo $ENV{VULKAN_SDK}
-)
-
-message(STATUS "debug")
-execute_process(COMMAND
-  ls $ENV{VULKAN_SDK}
-)
-
-message(STATUS "debug")
-execute_process(COMMAND
-  ls $ENV{VULKAN_SDK}/bin
-)
-
-message(STATUS "Compiling shader.vert...")
-execute_process(COMMAND
-  $ENV{VULKAN_SDK}/bin/glslang
-  ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert
-  -V
-  -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.vert.spv
-  RESULT_VARIABLE result
-)
-if(NOT result EQUAL "0")
-    message( FATAL_ERROR "Failed to compile shader.vert")
-endif()
-
-message(STATUS "Compiling shader.frag...")
-execute_process(COMMAND
-  $ENV{VULKAN_SDK}/bin/glslang
-  ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag
-  -V
-  -o ${CMAKE_CURRENT_SOURCE_DIR}/shaders/shader.frag.spv
-  RESULT_VARIABLE result
-)
-if(NOT result EQUAL "0")
-    message( FATAL_ERROR "Failed to compile shader.frag")
-endif()
-
-message(STATUS "debug")
-execute_process(COMMAND
-  ls ${CMAKE_CURRENT_SOURCE_DIR}/shaders
-)
-
-b_embed(brightcpp shaders/shader.vert.spv)
-b_embed(brightcpp shaders/shader.frag.spv)
-
 # VMA
 FetchContent_Declare(
   VulkanMemoryAllocator

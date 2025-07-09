@@ -62,7 +62,7 @@ static auto create_render_pass(vk::Device device, vk::Format format) {
 }
 
 static auto create_vert_shader(vk::Device device) {
-    const auto data = b::embed<"shaders/shader.vert.spv">();
+    const auto data = b::embed<"graphics/shaders/shader.vert.spv">();
 
     vk::ShaderModuleCreateInfo create_info;
     create_info.codeSize = data.size();
@@ -72,7 +72,7 @@ static auto create_vert_shader(vk::Device device) {
 }
 
 static auto create_frag_shader(vk::Device device) {
-    const auto data = b::embed<"shaders/shader.frag.spv">();
+    const auto data = b::embed<"graphics/shaders/shader.frag.spv">();
 
     vk::ShaderModuleCreateInfo create_info;
     create_info.codeSize = data.size();

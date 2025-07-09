@@ -26,6 +26,33 @@ add_subdirectory(audio)
 add_subdirectory(graphics)
 add_subdirectory(os)
 
+message(STATUS "Compiling shader.vert...")
+execute_process(COMMAND
+  $ENV{VULKAN_SDK}/bin/glslang
+  ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.vert
+  -V
+  -o ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.vert.spv
+  RESULT_VARIABLE result
+)
+if(NOT result EQUAL "0")
+    message( FATAL_ERROR "Failed to compile shader.vert")
+endif()
+
+message(STATUS "Compiling shader.frag...")
+execute_process(COMMAND
+  $ENV{VULKAN_SDK}/bin/glslang
+  ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.frag
+  -V
+  -o ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.frag.spv
+  RESULT_VARIABLE result
+)
+if(NOT result EQUAL "0")
+    message( FATAL_ERROR "Failed to compile shader.frag")
+endif()
+
+b_embed(brightcpp graphics/shaders/shader.vert.spv)
+b_embed(brightcpp graphics/shaders/shader.frag.spv)
+
 target_include_directories(brightcpp PUBLIC ../include)
 
 set_target_properties(brightcpp PROPERTIES CXX_STANDARD 20)
