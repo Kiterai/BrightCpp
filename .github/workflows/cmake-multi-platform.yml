@@ -210,7 +210,8 @@ jobs:
       run: |
         mkdir -p ${{ github.workspace }}/tmp
         cp -rp ${{ github.workspace }}/include ${{ github.workspace }}/tmp/include
-        cp -rp ${{ steps.strings.outputs.build-output-dir }}/src/libbrightcpp.a ${{ github.workspace }}/tmp/lib/libbrightcpp.a
+        mkdir -p ${{ github.workspace }}/tmp/lib
+        cp ${{ steps.strings.outputs.build-output-dir }}/src/libbrightcpp.a ${{ github.workspace }}/tmp/lib/libbrightcpp.a
         mkdir -p ${{ github.workspace }}/artifacts
         cd ${{ github.workspace }}/tmp
         Compress-Archive -Destination ${{ steps.strings.outputs.artifact-path }} -Path ${{ steps.strings.outputs.build-output-dir }}/*
