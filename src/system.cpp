@@ -12,6 +12,7 @@
 #include "graphics/vulkan/graphics.hpp"
 #include "graphics/vulkan/renderer2d.hpp"
 #include "graphics/vulkan/texture.hpp"
+#include "graphics/vulkan/vbuffer.hpp"
 
 BRIGHTCPP_START
 
@@ -32,6 +33,7 @@ struct global_objects_t {
     std::unique_ptr<vulkan::graphics_vulkan> graphics;
     std::unique_ptr<vulkan::texture_factory_vulkan> tex_factory;
     std::unique_ptr<vulkan::renderer2d_factory_vulkan> renderer2d_factory;
+    std::unique_ptr<vulkan::vbuffer_factory_vulkan> vbuffer_factory;
 };
 
 global_objects_t global_objects;
@@ -74,6 +76,16 @@ vulkan::renderer2d_factory_vulkan *global_module_constructor<vulkan::renderer2d_
 template <>
 renderer2d_factory_backend *global_module_constructor<renderer2d_factory_backend>() {
     return &global_module<vulkan::renderer2d_factory_vulkan>::get();
+}
+
+template <>
+vulkan::vbuffer_factory_vulkan *global_module_constructor<vulkan::vbuffer_factory_vulkan>() {
+    global_objects.vbuffer_factory = std::make_unique<vulkan::vbuffer_factory_vulkan>();
+    return global_objects.vbuffer_factory.get();
+}
+template <>
+vbuffer_factory_backend *global_module_constructor<vbuffer_factory_backend>() {
+    return &global_module<vulkan::vbuffer_factory_vulkan>::get();
 }
 
 template <>

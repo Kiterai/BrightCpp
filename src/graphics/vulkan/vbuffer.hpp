@@ -3,6 +3,7 @@
 #include <brightcpp/common.hpp>
 #include <unordered_map>
 
+#include "../../global_module.hpp"
 #include "../../interfaces/vbuffer_factory.hpp"
 #include "util.hpp"
 #include "vma.hpp"
@@ -15,6 +16,8 @@ struct vbuffer_vulkan {
 };
 
 class vbuffer_factory_vulkan : public vbuffer_factory_backend {
+  
+
   public:
     vbuffer_factory_vulkan();
     ~vbuffer_factory_vulkan();
