@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vulkan_common.hpp"
+#include "vma.hpp"
 #include <brightcpp/common.hpp>
 #include <span>
 #include <vector>
@@ -34,5 +35,8 @@ std::vector<vk::UniqueFence> create_fences(vk::Device device, bool signaled, uin
 
 vk::UniqueSemaphore create_semaphore(vk::Device device);
 std::vector<vk::UniqueSemaphore> create_semaphores(vk::Device device, uint32_t num);
+
+std::pair<vma::UniqueBuffer, vma::UniqueAllocation> create_empty_buffer(vma::Allocator allocator, vk::DeviceSize size, vk::BufferUsageFlags usage);
+std::pair<vma::UniqueBuffer, vma::UniqueAllocation> create_filled_buffer(vma::Allocator allocator, const uint8_t *p_data, vk::DeviceSize size, vk::BufferUsageFlags usage);
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

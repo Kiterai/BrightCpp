@@ -1,6 +1,7 @@
 #include "texture.hpp"
 #include "../../global_module.hpp"
 #include "graphics.hpp"
+#include "util.hpp"
 #include <iostream>
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
@@ -101,37 +102,6 @@ static auto create_empty_image(vma::Allocator allocator, const uint8_t *data, in
     allocation_info.flags = vma::AllocationCreateFlagBits::eDedicatedMemory;
 
     return allocator.createImageUnique(create_info, allocation_info);
-}
-
-static auto create_empty_buffer(vma::Allocator allocator, vk::DeviceSize size, vk::BufferUsageFlags usage) {
-    vk::BufferCreateInfo create_info;
-    create_info.size = size;
-    create_info.usage = usage;
-    create_info.sharingMode = vk::SharingMode::eExclusive;
-
-    vma::AllocationCreateInfo allocation_info;
-    allocation_info.usage = vma::MemoryUsage::eAuto;
-
-    return allocator.createBufferUnique(create_info, allocation_info);
-}
-
-static auto create_filled_buffer(vma::Allocator allocator, const uint8_t *p_data, vk::DeviceSize size, vk::BufferUsageFlags usage) {
-    vk::BufferCreateInfo create_info;
-    create_info.size = size;
-    create_info.usage = usage;
-    create_info.sharingMode = vk::SharingMode::eExclusive;
-
-    vma::AllocationCreateInfo allocation_info;
-    allocation_info.flags |= vma::AllocationCreateFlagBits::eHostAccessSequentialWrite;
-    allocation_info.usage = vma::MemoryUsage::eAuto;
-
-    auto buf = allocator.createBufferUnique(create_info, allocation_info);
-
-    auto p_memory = allocator.mapMemory(buf.second.get());
-    std::memcpy(p_memory, p_data, size);
-    allocator.unmapMemory(buf.second.get());
-
-    return buf;
 }
 
 static auto create_descriptorset_layout(vk::Device device) {

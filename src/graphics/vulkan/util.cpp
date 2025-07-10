@@ -157,4 +157,35 @@ std::vector<vk::UniqueSemaphore> create_semaphores(vk::Device device, uint32_t n
     return semaphores;
 }
 
+std::pair<vma::UniqueBuffer, vma::UniqueAllocation> create_empty_buffer(vma::Allocator allocator, vk::DeviceSize size, vk::BufferUsageFlags usage) {
+    vk::BufferCreateInfo create_info;
+    create_info.size = size;
+    create_info.usage = usage;
+    create_info.sharingMode = vk::SharingMode::eExclusive;
+
+    vma::AllocationCreateInfo allocation_info;
+    allocation_info.usage = vma::MemoryUsage::eAuto;
+
+    return allocator.createBufferUnique(create_info, allocation_info);
+}
+
+std::pair<vma::UniqueBuffer, vma::UniqueAllocation> create_filled_buffer(vma::Allocator allocator, const uint8_t *p_data, vk::DeviceSize size, vk::BufferUsageFlags usage) {
+    vk::BufferCreateInfo create_info;
+    create_info.size = size;
+    create_info.usage = usage;
+    create_info.sharingMode = vk::SharingMode::eExclusive;
+
+    vma::AllocationCreateInfo allocation_info;
+    allocation_info.flags |= vma::AllocationCreateFlagBits::eHostAccessSequentialWrite;
+    allocation_info.usage = vma::MemoryUsage::eAuto;
+
+    auto buf = allocator.createBufferUnique(create_info, allocation_info);
+
+    auto p_memory = allocator.mapMemory(buf.second.get());
+    std::memcpy(p_memory, p_data, size);
+    allocator.unmapMemory(buf.second.get());
+
+    return buf;
+}
+
 BRIGHTCPP_GRAPHICS_VULKAN_END
