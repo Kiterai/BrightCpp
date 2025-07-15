@@ -16,7 +16,8 @@ struct vbuffer_vulkan {
 };
 
 class vbuffer_factory_vulkan : public vbuffer_factory_backend {
-  
+    vk::Device device;
+    vma::Allocator allocator;
 
   public:
     vbuffer_factory_vulkan();
