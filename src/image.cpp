@@ -55,4 +55,9 @@ image_clip image::clip(int x, int y, int w, int h) const {
     return image_clip{*this, x, y, w, h};
 }
 
+render_target image::get_render_target() const {
+    // TODO
+    throw std::runtime_error("not implemented");
+}
+
 BRIGHTCPP_END
