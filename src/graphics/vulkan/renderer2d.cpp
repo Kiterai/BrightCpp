@@ -192,7 +192,7 @@ static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Ex
     return device.createGraphicsPipelineUnique(nullptr, pipelineCreateInfo).value;
 }
 
-renderer2d_vulkan::renderer2d_vulkan(vk::Device device, render_target_vulkan &_rt, const queue_index_set &queue_indices)
+renderer2d_vulkan::renderer2d_vulkan(vk::Device device, window_render_target_vulkan &_rt, const queue_index_set &queue_indices)
     : rt{_rt},
       device{device},
       renderpass{create_render_pass(device, rt.get().format())},
