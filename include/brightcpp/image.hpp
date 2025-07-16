@@ -4,6 +4,7 @@
 #include <brightcpp/handle_holder.hpp>
 #include <brightcpp/image_decl.hpp>
 #include <brightcpp/geometry.hpp>
+#include <brightcpp/render_target.hpp>
 #include <string>
 
 BRIGHTCPP_START
