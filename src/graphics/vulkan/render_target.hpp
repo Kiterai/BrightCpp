@@ -57,4 +57,36 @@ class window_render_target_vulkan : public abstract_render_target_vulkan {
     void wait_idle() override;
 };
 
+class texture_render_target_vulkan : public abstract_render_target_vulkan {
+    vk::Device device;
+    vk::Format _format;
+    vk::Extent2D _extent;
+    std::vector<vk::Image> images;
+    std::vector<vk::UniqueImageView> imageviews;
+
+    vk::UniqueCommandPool draw_cmd_pool;
+    std::vector<vk::UniqueCommandBuffer> draw_cmd_buf;
+
+    vk::Queue graphics_queue;
+    // std::vector<vk::UniqueSemaphore> rendered_semaphores;
+    std::vector<vk::UniqueFence> rendered_fences;
+    uint32_t current_img_index, current_frame_flight_index = 0;
+
+    bool rendering = false;
+
+  public:
+    texture_render_target_vulkan(vk::Device device, vk::Format _format, vk::Extent2D _extent, std::vector<vk::Image> &&images, const queue_index_set &queue_indices);
+    texture_render_target_vulkan(texture_render_target_vulkan&&) = default;
+    texture_render_target_vulkan& operator=(texture_render_target_vulkan&&) = default;
+    ~texture_render_target_vulkan();
+
+    const std::vector<vk::UniqueImageView> &image_views() const override { return imageviews; }
+    vk::Format format() const override { return _format; }
+    vk::Extent2D extent() const override { return _extent; }
+
+    render_begin_info render_begin() override;
+    void render_end() override;
+    void wait_idle() override;
+};
+
 BRIGHTCPP_GRAPHICS_VULKAN_END
