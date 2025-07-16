@@ -24,7 +24,7 @@ class graphics_vulkan : public graphics_backend {
 
     using handle_t = handle_holder<render_target>;
     using handle_value_t = handle_t::handle_value_t;
-    std::unordered_map<handle_value_t, vulkan::window_render_target_vulkan> rendertarget_db;
+    std::unordered_map<handle_value_t, vulkan::window_rendertarget_vulkan> rendertarget_db;
 
   public:
     graphics_vulkan();
@@ -39,7 +39,7 @@ class graphics_vulkan : public graphics_backend {
     vma::Allocator get_allocator() const { return allocator.get(); }
     const queue_index_set &get_queue_indices() const { return queue_indices; }
 
-    window_render_target_vulkan &get_render_target_vulkan(handle_holder<render_target> handle);
+    window_rendertarget_vulkan &get_render_target_vulkan(handle_holder<render_target> handle);
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

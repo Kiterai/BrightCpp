@@ -4,7 +4,7 @@
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
-class window_render_target_vulkan : public abstract_render_target_vulkan {
+class window_rendertarget_vulkan : public abstract_rendertarget_vulkan {
     vk::Device device;
     vk::UniqueSurfaceKHR surface;
     SwapchainWithInfo swapchain;
@@ -24,10 +24,10 @@ class window_render_target_vulkan : public abstract_render_target_vulkan {
 
   public:
     // this handles ownership of surface
-    window_render_target_vulkan(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, const queue_index_set &queue_indices, vk::UniqueSurfaceKHR &&surface);
-    window_render_target_vulkan(window_render_target_vulkan&&) = default;
-    window_render_target_vulkan& operator=(window_render_target_vulkan&&) = default;
-    ~window_render_target_vulkan();
+    window_rendertarget_vulkan(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, const queue_index_set &queue_indices, vk::UniqueSurfaceKHR &&surface);
+    window_rendertarget_vulkan(window_rendertarget_vulkan&&) = default;
+    window_rendertarget_vulkan& operator=(window_rendertarget_vulkan&&) = default;
+    ~window_rendertarget_vulkan();
 
     const std::vector<vk::UniqueImageView> &image_views() const override { return swapchain_imageviews; }
     vk::Format format() const override { return swapchain.format.format; }

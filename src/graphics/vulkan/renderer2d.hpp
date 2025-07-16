@@ -10,7 +10,7 @@
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
 class renderer2d_vulkan : public renderer2d_backend {
-    std::reference_wrapper<window_render_target_vulkan> rt;
+    std::reference_wrapper<window_rendertarget_vulkan> rt;
 
     vk::Device device;
     vk::UniqueRenderPass renderpass;
@@ -26,7 +26,7 @@ class renderer2d_vulkan : public renderer2d_backend {
     bool rendering = false;
 
   public:
-    renderer2d_vulkan(vk::Device device, window_render_target_vulkan &rt, const queue_index_set &queue_indices);
+    renderer2d_vulkan(vk::Device device, window_rendertarget_vulkan &rt, const queue_index_set &queue_indices);
     ~renderer2d_vulkan() override;
 
     void render_begin() override;

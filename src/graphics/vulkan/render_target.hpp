@@ -14,7 +14,7 @@ struct render_begin_info {
   uint32_t img_index;
 };
 
-class abstract_render_target_vulkan {
+class abstract_rendertarget_vulkan {
   public:
     virtual const std::vector<vk::UniqueImageView> &image_views() const = 0;
     virtual vk::Format format() const = 0;

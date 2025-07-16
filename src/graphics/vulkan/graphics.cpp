@@ -196,7 +196,7 @@ handle_holder<render_target>::handle_value_t graphics_vulkan::create_render_targ
 
     rendertarget_db.insert({
         handle,
-        window_render_target_vulkan(
+        window_rendertarget_vulkan(
             instance.get(),
             phys_device,
             device.get(),
@@ -209,7 +209,7 @@ void graphics_vulkan::destroy_render_target(handle_holder<render_target> &rt) no
     rendertarget_db.erase(rt.handle());
 }
 
-window_render_target_vulkan &graphics_vulkan::get_render_target_vulkan(handle_holder<render_target> handle) {
+window_rendertarget_vulkan &graphics_vulkan::get_render_target_vulkan(handle_holder<render_target> handle) {
     return rendertarget_db.at(handle.handle());
 }
 

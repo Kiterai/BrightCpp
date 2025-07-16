@@ -3,7 +3,7 @@
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
-window_render_target_vulkan::window_render_target_vulkan(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, const queue_index_set &queue_indices, vk::UniqueSurfaceKHR &&_surface)
+window_rendertarget_vulkan::window_rendertarget_vulkan(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, const queue_index_set &queue_indices, vk::UniqueSurfaceKHR &&_surface)
     : device{device},
       surface{std::move(_surface)},
       swapchain{create_swapchain(device, phys_device, surface.get())},
@@ -17,13 +17,13 @@ window_render_target_vulkan::window_render_target_vulkan(vk::Instance instance, 
       rendered_semaphores{create_semaphores(device, frames_inflight)},
       rendered_fences{create_fences(device, true, frames_inflight)} {}
 
-window_render_target_vulkan::~window_render_target_vulkan() {
+window_rendertarget_vulkan::~window_rendertarget_vulkan() {
     if (rendering)
         render_end();
     wait_idle();
 }
 
-render_begin_info window_render_target_vulkan::render_begin() {
+render_begin_info window_rendertarget_vulkan::render_begin() {
     assert(!rendering);
     rendering = true;
 
@@ -50,7 +50,7 @@ render_begin_info window_render_target_vulkan::render_begin() {
     };
 }
 
-void window_render_target_vulkan::render_end() {
+void window_rendertarget_vulkan::render_end() {
     assert(rendering);
     rendering = false;
 
@@ -102,7 +102,7 @@ void window_render_target_vulkan::render_end() {
     current_frame_flight_index %= frames_inflight;
 }
 
-void window_render_target_vulkan::wait_idle() {
+void window_rendertarget_vulkan::wait_idle() {
     if (rendered_fences.empty())
         return;
     std::array<vk::Fence, frames_inflight> fences;

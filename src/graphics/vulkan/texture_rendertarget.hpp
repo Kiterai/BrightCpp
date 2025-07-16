@@ -4,7 +4,7 @@
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
-class texture_render_target_vulkan : public abstract_render_target_vulkan {
+class texture_rendertarget_vulkan : public abstract_rendertarget_vulkan {
     vk::Device device;
     vk::Format _format;
     vk::Extent2D _extent;
@@ -22,10 +22,10 @@ class texture_render_target_vulkan : public abstract_render_target_vulkan {
     bool rendering = false;
 
   public:
-    texture_render_target_vulkan(vk::Device device, vk::Format _format, vk::Extent2D _extent, std::vector<vk::Image> &&images, const queue_index_set &queue_indices);
-    texture_render_target_vulkan(texture_render_target_vulkan&&) = default;
-    texture_render_target_vulkan& operator=(texture_render_target_vulkan&&) = default;
-    ~texture_render_target_vulkan();
+    texture_rendertarget_vulkan(vk::Device device, vk::Format _format, vk::Extent2D _extent, std::vector<vk::Image> &&images, const queue_index_set &queue_indices);
+    texture_rendertarget_vulkan(texture_rendertarget_vulkan&&) = default;
+    texture_rendertarget_vulkan& operator=(texture_rendertarget_vulkan&&) = default;
+    ~texture_rendertarget_vulkan();
 
     const std::vector<vk::UniqueImageView> &image_views() const override { return imageviews; }
     vk::Format format() const override { return _format; }

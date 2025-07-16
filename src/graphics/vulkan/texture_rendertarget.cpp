@@ -3,7 +3,7 @@
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
-texture_render_target_vulkan::texture_render_target_vulkan(vk::Device device, vk::Format _format, vk::Extent2D _extent, std::vector<vk::Image> &&images, const queue_index_set &queue_indices)
+texture_rendertarget_vulkan::texture_rendertarget_vulkan(vk::Device device, vk::Format _format, vk::Extent2D _extent, std::vector<vk::Image> &&images, const queue_index_set &queue_indices)
     : device{device},
       _format{_format},
       _extent{_extent},
@@ -14,13 +14,13 @@ texture_render_target_vulkan::texture_render_target_vulkan(vk::Device device, vk
       graphics_queue{device.getQueue(queue_indices.graphics_queue, 0)},
       rendered_fences{create_fences(device, true, frames_inflight)} {}
 
-texture_render_target_vulkan::~texture_render_target_vulkan() {
+texture_rendertarget_vulkan::~texture_rendertarget_vulkan() {
     if (rendering)
         render_end();
     wait_idle();
 }
 
-render_begin_info texture_render_target_vulkan::render_begin() {
+render_begin_info texture_rendertarget_vulkan::render_begin() {
         assert(!rendering);
     rendering = true;
 
@@ -41,7 +41,7 @@ render_begin_info texture_render_target_vulkan::render_begin() {
     };
 }
 
-void texture_render_target_vulkan::render_end() {
+void texture_rendertarget_vulkan::render_end() {
     assert(rendering);
     rendering = false;
 
@@ -63,7 +63,7 @@ void texture_render_target_vulkan::render_end() {
     current_frame_flight_index %= frames_inflight;
 }
 
-void texture_render_target_vulkan::wait_idle() {
+void texture_rendertarget_vulkan::wait_idle() {
     if (rendered_fences.empty())
         return;
     std::array<vk::Fence, frames_inflight> fences;
