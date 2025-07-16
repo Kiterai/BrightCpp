@@ -312,7 +312,7 @@ renderer2d_factory_vulkan::renderer2d_factory_vulkan()
     : device{global_module<graphics_vulkan>::get().get_device()},
       queue_indices{global_module<graphics_vulkan>::get().get_queue_indices()} {}
 
-std::unique_ptr<renderer2d_backend> renderer2d_factory_vulkan::make(render_target rt) {
+std::unique_ptr<renderer2d_backend> renderer2d_factory_vulkan::make(rendertarget rt) {
     return std::make_unique<renderer2d_vulkan>(
         device,
         global_module<graphics_vulkan>::get().get_render_target_vulkan(rt),

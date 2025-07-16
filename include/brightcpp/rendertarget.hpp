@@ -5,9 +5,9 @@
 
 BRIGHTCPP_START
 
-class render_target : public handle_holder<render_target> {
+class rendertarget : public handle_holder<rendertarget> {
   public:
-    render_target(handle_holder<render_target>::handle_value_t);
+    rendertarget(handle_holder<rendertarget>::handle_value_t);
 };
 
 BRIGHTCPP_END

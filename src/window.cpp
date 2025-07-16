@@ -15,7 +15,7 @@ namespace internal {
 
 class window_impl {
     std::unique_ptr<internal::window_backend> window;
-    render_target self_render_target;
+    rendertarget self_render_target;
 
   public:
     friend bool frame_update();
@@ -25,7 +25,7 @@ class window_impl {
           self_render_target{g_graphics::get().create_render_target(*window.get())} {}
     ~window_impl() {}
 
-    render_target get_render_target() const {
+    rendertarget get_render_target() const {
         return self_render_target;
     }
 
@@ -95,7 +95,7 @@ window::~window() = default;
 void window::resize(window_size size) { internal::available_windows.at(handle()).resize(size); }
 window::window_size window::size() const { return internal::available_windows.at(handle()).size(); }
 
-render_target window::get_render_target() const { return internal::available_windows.at(handle()).get_render_target(); }
+rendertarget window::get_render_target() const { return internal::available_windows.at(handle()).get_render_target(); }
 
 void window::set_resizable(bool is_resizable) { internal::available_windows.at(handle()).set_resizable(is_resizable); }
 bool window::is_resizable() const { return internal::available_windows.at(handle()).is_resizable(); };

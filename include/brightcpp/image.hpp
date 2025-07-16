@@ -4,7 +4,7 @@
 #include <brightcpp/handle_holder.hpp>
 #include <brightcpp/image_decl.hpp>
 #include <brightcpp/geometry.hpp>
-#include <brightcpp/render_target.hpp>
+#include <brightcpp/rendertarget.hpp>
 #include <string>
 
 BRIGHTCPP_START
@@ -32,7 +32,7 @@ class image : public handle_holder<image_impl> {
     image_clip clip() const;
     image_clip clip(int x, int y, int w, int h) const;
 
-    render_target get_render_target() const;
+    rendertarget get_render_target() const;
 };
 
 BRIGHTCPP_END

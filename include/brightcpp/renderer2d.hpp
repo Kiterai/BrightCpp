@@ -2,7 +2,7 @@
 
 #include <brightcpp/common.hpp>
 #include <brightcpp/image.hpp>
-#include <brightcpp/render_target.hpp>
+#include <brightcpp/rendertarget.hpp>
 #include <memory>
 
 BRIGHTCPP_START
@@ -15,7 +15,7 @@ class renderer2d {
     std::unique_ptr<internal::renderer2d_backend> p_renderer;
 
   public:
-    renderer2d(render_target render_to);
+    renderer2d(rendertarget render_to);
     ~renderer2d();
 
     template <class T>

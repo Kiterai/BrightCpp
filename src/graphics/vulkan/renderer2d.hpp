@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../interfaces/renderer2d.hpp"
-#include "render_target.hpp"
+#include "rendertarget.hpp"
 #include "window_rendertarget.hpp"
 #include "vulkan_common.hpp"
 #include <brightcpp/common.hpp>
@@ -40,7 +40,7 @@ class renderer2d_factory_vulkan : public renderer2d_factory_backend {
 
   public:
     renderer2d_factory_vulkan();
-    std::unique_ptr<renderer2d_backend> make(render_target rt_handle) override;
+    std::unique_ptr<renderer2d_backend> make(rendertarget rt_handle) override;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

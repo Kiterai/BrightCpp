@@ -29,7 +29,7 @@ class renderer2d_factory_backend {
   public:
     virtual ~renderer2d_factory_backend() = default;
 
-    virtual std::unique_ptr<renderer2d_backend> make(render_target rt) = 0;
+    virtual std::unique_ptr<renderer2d_backend> make(rendertarget rt) = 0;
 };
 
 } // namespace internal

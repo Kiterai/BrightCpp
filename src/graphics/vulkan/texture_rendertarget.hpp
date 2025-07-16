@@ -1,6 +1,6 @@
 #pragma once
 
-#include "render_target.hpp"
+#include "rendertarget.hpp"
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 

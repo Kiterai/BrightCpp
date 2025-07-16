@@ -1,11 +1,11 @@
 #pragma once
 
 #include "../../interfaces/graphics.hpp"
-#include "render_target.hpp"
+#include "rendertarget.hpp"
 #include "renderer2d.hpp"
 #include "texture.hpp"
 #include "vulkan_common.hpp"
-#include <brightcpp/render_target.hpp>
+#include <brightcpp/rendertarget.hpp>
 #include <functional>
 #include <memory>
 #include <unordered_map>
@@ -22,7 +22,7 @@ class graphics_vulkan : public graphics_backend {
     vk::Queue graphics_queue, presentation_queue;
     vma::UniqueAllocator allocator;
 
-    using handle_t = handle_holder<render_target>;
+    using handle_t = handle_holder<rendertarget>;
     using handle_value_t = handle_t::handle_value_t;
     std::unordered_map<handle_value_t, vulkan::window_rendertarget_vulkan> rendertarget_db;
 
@@ -32,14 +32,14 @@ class graphics_vulkan : public graphics_backend {
 
     void wait_idle();
 
-    handle_holder<render_target>::handle_value_t create_render_target(window_backend &window) override;
-    void destroy_render_target(handle_holder<render_target> &rt) noexcept override;
+    handle_holder<rendertarget>::handle_value_t create_render_target(window_backend &window) override;
+    void destroy_render_target(handle_holder<rendertarget> &rt) noexcept override;
 
     vk::Device get_device() const { return device.get(); }
     vma::Allocator get_allocator() const { return allocator.get(); }
     const queue_index_set &get_queue_indices() const { return queue_indices; }
 
-    window_rendertarget_vulkan &get_render_target_vulkan(handle_holder<render_target> handle);
+    window_rendertarget_vulkan &get_render_target_vulkan(handle_holder<rendertarget> handle);
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

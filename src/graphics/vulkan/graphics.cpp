@@ -1,6 +1,6 @@
 #include "graphics.hpp"
 #include "../../global_module.hpp"
-#include "render_target.hpp"
+#include "rendertarget.hpp"
 #include "util.hpp"
 #include "vma.hpp"
 #include <iostream>
@@ -191,7 +191,7 @@ void graphics_vulkan::wait_idle() {
     graphics_queue.waitIdle();
 }
 
-handle_holder<render_target>::handle_value_t graphics_vulkan::create_render_target(window_backend &window) {
+handle_holder<rendertarget>::handle_value_t graphics_vulkan::create_render_target(window_backend &window) {
     const auto handle = rendertarget_db.size();
 
     rendertarget_db.insert({
@@ -205,11 +205,11 @@ handle_holder<render_target>::handle_value_t graphics_vulkan::create_render_targ
     });
     return handle;
 }
-void graphics_vulkan::destroy_render_target(handle_holder<render_target> &rt) noexcept {
+void graphics_vulkan::destroy_render_target(handle_holder<rendertarget> &rt) noexcept {
     rendertarget_db.erase(rt.handle());
 }
 
-window_rendertarget_vulkan &graphics_vulkan::get_render_target_vulkan(handle_holder<render_target> handle) {
+window_rendertarget_vulkan &graphics_vulkan::get_render_target_vulkan(handle_holder<rendertarget> handle) {
     return rendertarget_db.at(handle.handle());
 }
 

@@ -7,7 +7,7 @@ BRIGHTCPP_START
 
 using g_rendererfactory_t = internal::global_module<internal::renderer2d_factory_backend>;
 
-renderer2d::renderer2d(render_target rt)
+renderer2d::renderer2d(rendertarget rt)
     : p_renderer(g_rendererfactory_t::get().make(rt)) {
     p_renderer->render_begin();
 }
