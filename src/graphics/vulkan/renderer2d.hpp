@@ -2,6 +2,7 @@
 
 #include "../../interfaces/renderer2d.hpp"
 #include "render_target.hpp"
+#include "window_rendertarget.hpp"
 #include "vulkan_common.hpp"
 #include <brightcpp/common.hpp>
 #include <unordered_map>

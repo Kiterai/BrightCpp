@@ -2,7 +2,8 @@ target_sources(brightcpp PRIVATE
     vulkan/graphics.cpp
     vulkan/util.cpp
     vulkan/vma_impl.cpp
-    vulkan/render_target.cpp
+    vulkan/window_rendertarget.cpp
+    vulkan/texture_rendertarget.cpp
     vulkan/renderer2d.cpp
     vulkan/texture.cpp
     vulkan/vbuffer.cpp

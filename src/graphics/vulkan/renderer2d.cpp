@@ -11,7 +11,6 @@
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
-constexpr uint32_t frames_inflight = 2;
 constexpr handle_holder<image_impl>::handle_value_t no_bind_texture = std::numeric_limits<size_t>::max();
 
 struct shader_pushconstant {
