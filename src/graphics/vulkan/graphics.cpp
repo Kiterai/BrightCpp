@@ -191,26 +191,4 @@ void graphics_vulkan::wait_idle() {
     graphics_queue.waitIdle();
 }
 
-handle_holder<rendertarget>::handle_value_t graphics_vulkan::create_render_target(window_backend &window) {
-    const auto handle = rendertarget_db.size();
-
-    rendertarget_db.insert({
-        handle,
-        window_rendertarget_vulkan(
-            instance.get(),
-            phys_device,
-            device.get(),
-            queue_indices,
-            window.get_vulkan_surface(instance.get())),
-    });
-    return handle;
-}
-void graphics_vulkan::destroy_render_target(handle_holder<rendertarget> &rt) noexcept {
-    rendertarget_db.erase(rt.handle());
-}
-
-window_rendertarget_vulkan &graphics_vulkan::get_render_target_vulkan(handle_holder<rendertarget> handle) {
-    return rendertarget_db.at(handle.handle());
-}
-
 BRIGHTCPP_GRAPHICS_VULKAN_END

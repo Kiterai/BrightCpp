@@ -10,6 +10,7 @@
 #include "global_module.hpp"
 #include "audio/libsoundio/audio.hpp"
 #include "graphics/vulkan/graphics.hpp"
+#include "graphics/vulkan/rendertarget_factory.hpp"
 #include "graphics/vulkan/renderer2d.hpp"
 #include "graphics/vulkan/texture.hpp"
 #include "graphics/vulkan/vbuffer.hpp"
@@ -31,6 +32,7 @@ struct global_objects_t {
     std::unique_ptr<glfw::os_util_backend_glfw> os_util;
 
     std::unique_ptr<vulkan::graphics_vulkan> graphics;
+    std::unique_ptr<vulkan::rendertarget_factory_vulkan> rt_factory;
     std::unique_ptr<vulkan::texture_factory_vulkan> tex_factory;
     std::unique_ptr<vulkan::renderer2d_factory_vulkan> renderer2d_factory;
     std::unique_ptr<vulkan::vbuffer_factory_vulkan> vbuffer_factory;
@@ -56,6 +58,16 @@ vulkan::graphics_vulkan *global_module_constructor<vulkan::graphics_vulkan>() {
 template <>
 graphics_backend *global_module_constructor<graphics_backend>() {
     return &global_module<vulkan::graphics_vulkan>::get();
+}
+
+template <>
+vulkan::rendertarget_factory_vulkan *global_module_constructor<vulkan::rendertarget_factory_vulkan>() {
+    global_objects.rt_factory = std::make_unique<vulkan::rendertarget_factory_vulkan>();
+    return global_objects.rt_factory.get();
+}
+template <>
+rendertarget_factory_backend *global_module_constructor<rendertarget_factory_backend>() {
+    return &global_module<vulkan::rendertarget_factory_vulkan>::get();
 }
 
 template <>

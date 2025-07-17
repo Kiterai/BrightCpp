@@ -1,5 +1,5 @@
 #include "global_module.hpp"
-#include "interfaces/graphics.hpp"
+#include "interfaces/rendertarget_factory.hpp"
 #include "interfaces/os_util.hpp"
 #include "os/key/key.hpp"
 #include <brightcpp/window.hpp>
@@ -9,7 +9,7 @@
 BRIGHTCPP_START
 
 using g_os_util = internal::global_module<internal::os_util_backend>;
-using g_graphics = internal::global_module<internal::graphics_backend>;
+using g_rt_factory = internal::global_module<internal::rendertarget_factory_backend>;
 
 namespace internal {
 
@@ -22,7 +22,7 @@ class window_impl {
 
     window_impl(const window::settings &initial_settings)
         : window{g_os_util::get().create_window(initial_settings)},
-          self_render_target{g_graphics::get().create_render_target(*window.get())} {}
+          self_render_target{g_rt_factory::get().create_render_target(*window.get())} {}
     ~window_impl() {}
 
     rendertarget get_render_target() const {

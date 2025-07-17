@@ -2,6 +2,7 @@
 #include "../../global_module.hpp"
 #include "../../linear_algebra.hpp"
 #include "graphics.hpp"
+#include "rendertarget_factory.hpp"
 #include "texture.hpp"
 #include "util.hpp"
 #include <cmath>
@@ -315,7 +316,7 @@ renderer2d_factory_vulkan::renderer2d_factory_vulkan()
 std::unique_ptr<renderer2d_backend> renderer2d_factory_vulkan::make(rendertarget rt) {
     return std::make_unique<renderer2d_vulkan>(
         device,
-        global_module<graphics_vulkan>::get().get_render_target_vulkan(rt),
+        global_module<rendertarget_factory_vulkan>::get().get_render_target_vulkan(rt),
         queue_indices);
 }
 
