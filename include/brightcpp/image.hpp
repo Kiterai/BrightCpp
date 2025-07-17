@@ -25,6 +25,7 @@ class image : public handle_holder<image_impl> {
 
   public:
     image(const char *path);
+    image(int w, int h);
     image(image &) = delete;
     ~image();
 

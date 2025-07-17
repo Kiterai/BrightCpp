@@ -22,6 +22,11 @@ static auto load_image_from_file(std::string path) {
     return handle;
 }
 
+static auto make_empty_image(int w, int h) {
+    std::vector<uint8_t> data(w * h * 4, 0);
+    return g_tex_factory::get().make(data.data(), w, h);
+}
+
 image_clip::image_clip(handle_holder<image_impl> _handle, int cx, int cy, int cw, int ch)
     : handle_holder(_handle), cx{cx}, cy{cy}, cw{cw}, ch{ch} {}
 image_clip::~image_clip() = default;
@@ -40,6 +45,7 @@ image_clip image_clip::clip(int x, int y, int w, int h) const {
 }
 
 image::image(const char *path) : handle_holder{load_image_from_file(path)} {}
+image::image(int w, int h) : handle_holder{make_empty_image(w, h)} {}
 image::~image() {
     g_tex_factory::get().destroy(*this);
 };
