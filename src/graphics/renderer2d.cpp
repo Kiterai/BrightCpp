@@ -33,6 +33,12 @@ renderer2d &renderer2d::draw(image &image, int x, int y, float scale_x, float sc
 renderer2d &renderer2d::draw(image_clip &clip, int x, int y, float scale_x, float scale_y) {
     return draw(clip, x, y, 0.0f, scale_x, scale_y, pivot_pos::left_top);
 }
+renderer2d &renderer2d::draw(image &image, int x, int y, float rotation, float scale_x, float scale_y) {
+    return draw(image, x, y, rotation, scale_x, scale_y, pivot_pos::left_top);
+}
+renderer2d &renderer2d::draw(image_clip &clip, int x, int y, float rotation, float scale_x, float scale_y) {
+    return draw(clip, x, y, rotation, scale_x, scale_y, pivot_pos::left_top);
+}
 
 renderer2d &renderer2d::draw(image &image, int x, int y, pivot image_pivot) {
     return draw(image, x, y, 0.0f, 1.0f, 1.0f, image_pivot);
