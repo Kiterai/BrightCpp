@@ -10,9 +10,9 @@ texture_rendertarget_vulkan::texture_rendertarget_vulkan(vk::Device device, vk::
       images{images},
       imageviews{create_image_views(device, images, _format)},
       draw_cmd_pool{create_cmd_pool(device, queue_indices, vk::CommandPoolCreateFlagBits::eResetCommandBuffer)},
-      draw_cmd_buf{create_cmd_bufs(device, draw_cmd_pool.get(), frames_inflight)},
+      draw_cmd_buf{create_cmd_bufs(device, draw_cmd_pool.get(), 1)},
       graphics_queue{device.getQueue(queue_indices.graphics_queue, 0)},
-      rendered_fences{create_fences(device, true, frames_inflight)} {}
+      rendered_fences{create_fences(device, true, 1)} {}
 
 texture_rendertarget_vulkan::~texture_rendertarget_vulkan() {
     if (rendering)
@@ -58,15 +58,12 @@ void texture_rendertarget_vulkan::render_end() {
 
         graphics_queue.submit({submitInfo}, rendered_fences[current_frame_flight_index].get());
     }
-
-    current_frame_flight_index++;
-    current_frame_flight_index %= frames_inflight;
 }
 
 void texture_rendertarget_vulkan::wait_idle() {
     if (rendered_fences.empty())
         return;
-    std::array<vk::Fence, frames_inflight> fences;
+    std::array<vk::Fence, 1> fences;
     for (uint32_t i = 0; i < rendered_fences.size(); i++)
         fences[i] = rendered_fences[i].get();
     device.waitForFences(fences, VK_TRUE, UINT64_MAX);
