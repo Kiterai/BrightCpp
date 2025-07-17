@@ -16,6 +16,8 @@ struct render_begin_info {
 
 class abstract_rendertarget_vulkan {
   public:
+    virtual ~abstract_rendertarget_vulkan() = default;
+
     virtual const std::vector<vk::UniqueImageView> &image_views() const = 0;
     virtual vk::Format format() const = 0;
     virtual vk::Extent2D extent() const = 0;

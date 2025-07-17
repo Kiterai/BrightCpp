@@ -25,7 +25,7 @@ class texture_rendertarget_vulkan : public abstract_rendertarget_vulkan {
     texture_rendertarget_vulkan(vk::Device device, vk::Format _format, vk::Extent2D _extent, std::vector<vk::Image> &&images, const queue_index_set &queue_indices);
     texture_rendertarget_vulkan(texture_rendertarget_vulkan&&) = default;
     texture_rendertarget_vulkan& operator=(texture_rendertarget_vulkan&&) = default;
-    ~texture_rendertarget_vulkan();
+    ~texture_rendertarget_vulkan() override;
 
     const std::vector<vk::UniqueImageView> &image_views() const override { return imageviews; }
     vk::Format format() const override { return _format; }

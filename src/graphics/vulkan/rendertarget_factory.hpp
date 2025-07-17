@@ -13,7 +13,7 @@ class rendertarget_factory_vulkan : public rendertarget_factory_backend {
     std::unordered_map<handle_value_t, std::unique_ptr<vulkan::abstract_rendertarget_vulkan>> rendertarget_db;
 
   public:
-    ~rendertarget_factory_vulkan();
+    ~rendertarget_factory_vulkan() override;
 
     handle_holder<rendertarget>::handle_value_t create_render_target(window_backend &window) override;
     void destroy_render_target(handle_holder<rendertarget> &rt) noexcept override;

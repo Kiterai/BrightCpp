@@ -27,7 +27,7 @@ class window_rendertarget_vulkan : public abstract_rendertarget_vulkan {
     window_rendertarget_vulkan(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, const queue_index_set &queue_indices, vk::UniqueSurfaceKHR &&surface);
     window_rendertarget_vulkan(window_rendertarget_vulkan&&) = default;
     window_rendertarget_vulkan& operator=(window_rendertarget_vulkan&&) = default;
-    ~window_rendertarget_vulkan();
+    ~window_rendertarget_vulkan() override;
 
     const std::vector<vk::UniqueImageView> &image_views() const override { return swapchain_imageviews; }
     vk::Format format() const override { return swapchain.format.format; }
