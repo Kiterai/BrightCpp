@@ -23,6 +23,13 @@ window_rendertarget_vulkan::~window_rendertarget_vulkan() {
     wait_idle();
 }
 
+vk::ImageLayout window_rendertarget_vulkan::srcLayout() const {
+    return vk::ImageLayout::eUndefined;
+}
+vk::ImageLayout window_rendertarget_vulkan::dstLayout() const {
+    return vk::ImageLayout::ePresentSrcKHR;
+}
+
 render_begin_info window_rendertarget_vulkan::render_begin() {
     assert(!rendering);
     rendering = true;

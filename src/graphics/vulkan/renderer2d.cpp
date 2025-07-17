@@ -30,7 +30,7 @@ static auto create_draw_cmd_pool(vk::Device device, const queue_index_set &queue
     return device.createCommandPoolUnique(create_info);
 }
 
-static auto create_render_pass(vk::Device device, vk::Format format) {
+static auto create_render_pass(vk::Device device, vk::Format format, vk::ImageLayout srcLayout, vk::ImageLayout dstLayout) {
     vk::AttachmentDescription attachments[1];
     attachments[0].format = format;
     attachments[0].samples = vk::SampleCountFlagBits::e1;
@@ -38,8 +38,8 @@ static auto create_render_pass(vk::Device device, vk::Format format) {
     attachments[0].storeOp = vk::AttachmentStoreOp::eStore;
     attachments[0].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
     attachments[0].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-    attachments[0].initialLayout = vk::ImageLayout::eUndefined;
-    attachments[0].finalLayout = vk::ImageLayout::ePresentSrcKHR;
+    attachments[0].initialLayout = srcLayout;
+    attachments[0].finalLayout = dstLayout;
 
     vk::AttachmentReference subpass0_attachmentRefs[1];
     subpass0_attachmentRefs[0].attachment = 0;
@@ -195,7 +195,7 @@ static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Ex
 renderer2d_vulkan::renderer2d_vulkan(vk::Device device, abstract_rendertarget_vulkan &_rt, const queue_index_set &queue_indices)
     : rt{_rt},
       device{device},
-      renderpass{create_render_pass(device, rt.get().format())},
+      renderpass{create_render_pass(device, rt.get().format(), rt.get().srcLayout(), rt.get().dstLayout())},
       vert_shader{create_vert_shader(device)},
       frag_shader{create_frag_shader(device)},
       pipeline_layout{create_pipeline_layout(device)},

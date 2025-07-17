@@ -21,6 +21,9 @@ class abstract_rendertarget_vulkan {
     virtual const std::vector<vk::UniqueImageView> &image_views() const = 0;
     virtual vk::Format format() const = 0;
     virtual vk::Extent2D extent() const = 0;
+    
+    virtual vk::ImageLayout srcLayout() const = 0;
+    virtual vk::ImageLayout dstLayout() const = 0;
 
     virtual render_begin_info render_begin() = 0;
     virtual void render_end() = 0;

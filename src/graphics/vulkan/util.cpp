@@ -210,6 +210,10 @@ void cmd_change_image_layout(vk::CommandBuffer cmd_buf, vk::Image image, vk::Ima
         barrior.srcAccessMask |= vk::AccessFlagBits::eTransferWrite;
         src_stage |= vk::PipelineStageFlagBits::eTransfer;
         break;
+    case vk::ImageLayout::eColorAttachmentOptimal:
+        barrior.srcAccessMask |= vk::AccessFlagBits::eColorAttachmentWrite;
+        src_stage |= vk::PipelineStageFlagBits::eAllGraphics;
+        break;
     default:
         src_stage |= vk::PipelineStageFlagBits::eTopOfPipe;
         break;
@@ -224,6 +228,7 @@ void cmd_change_image_layout(vk::CommandBuffer cmd_buf, vk::Image image, vk::Ima
         dst_stage |= vk::PipelineStageFlagBits::eFragmentShader;
         break;
     default:
+        dst_stage |= vk::PipelineStageFlagBits::eBottomOfPipe;
         break;
     }
 

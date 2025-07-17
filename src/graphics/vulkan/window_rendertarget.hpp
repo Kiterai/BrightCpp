@@ -33,6 +33,9 @@ class window_rendertarget_vulkan : public abstract_rendertarget_vulkan {
     vk::Format format() const override { return swapchain.format.format; }
     vk::Extent2D extent() const override { return swapchain.extent; }
 
+    vk::ImageLayout srcLayout() const override;
+    vk::ImageLayout dstLayout() const override;
+
     render_begin_info render_begin() override;
     void render_end() override;
     void wait_idle() override;

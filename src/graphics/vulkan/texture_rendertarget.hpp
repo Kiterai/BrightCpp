@@ -30,6 +30,9 @@ class texture_rendertarget_vulkan : public abstract_rendertarget_vulkan {
     const std::vector<vk::UniqueImageView> &image_views() const override { return imageviews; }
     vk::Format format() const override { return _format; }
     vk::Extent2D extent() const override { return _extent; }
+    
+    vk::ImageLayout srcLayout() const override;
+    vk::ImageLayout dstLayout() const override;
 
     render_begin_info render_begin() override;
     void render_end() override;

@@ -20,8 +20,15 @@ texture_rendertarget_vulkan::~texture_rendertarget_vulkan() {
     wait_idle();
 }
 
+vk::ImageLayout texture_rendertarget_vulkan::srcLayout() const {
+    return vk::ImageLayout::eShaderReadOnlyOptimal;
+}
+vk::ImageLayout texture_rendertarget_vulkan::dstLayout() const {
+    return vk::ImageLayout::eShaderReadOnlyOptimal;
+}
+
 render_begin_info texture_rendertarget_vulkan::render_begin() {
-        assert(!rendering);
+    assert(!rendering);
     rendering = true;
 
     device.waitForFences({rendered_fences[current_frame_flight_index].get()}, VK_TRUE, UINT64_MAX);
