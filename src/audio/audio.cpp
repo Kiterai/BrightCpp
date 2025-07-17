@@ -1,11 +1,11 @@
-#include "interfaces/audio.hpp"
-#include "audio/audio_asset_manager.hpp"
-#include "audio/audio_player_manager.hpp"
-#include "audio/player/player_normal.hpp"
-#include "audio/player/player_streaming.hpp"
-#include "audio/streaming_audio_asset_manager.hpp"
-#include "audio/streaming_manager.hpp"
-#include "global_module.hpp"
+#include "../interfaces/audio.hpp"
+#include "audio_asset_manager.hpp"
+#include "audio_player_manager.hpp"
+#include "player/player_normal.hpp"
+#include "player/player_streaming.hpp"
+#include "streaming_audio_asset_manager.hpp"
+#include "streaming_manager.hpp"
+#include "../global_module.hpp"
 #include <brightcpp/audio.hpp>
 #include <iostream>
 

@@ -1,8 +1,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#include "global_module.hpp"
-#include "interfaces/texture_factory.hpp"
+#include "../global_module.hpp"
+#include "../interfaces/texture_factory.hpp"
 #include <brightcpp/image.hpp>
 
 BRIGHTCPP_START

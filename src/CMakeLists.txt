@@ -12,15 +12,7 @@ FetchContent_MakeAvailable(battery-embed)
 # target
 add_library(
     brightcpp
-    window.cpp
     system.cpp
-
-    image.cpp
-    render_target.cpp
-    renderer2d.cpp
-
-    audio.cpp
-    oneshot_audio.cpp
 )
 add_subdirectory(audio)
 add_subdirectory(graphics)

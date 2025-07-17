@@ -1,4 +1,7 @@
 target_sources(brightcpp PRIVATE
+  audio.cpp
+  oneshot_audio.cpp
+
   audio_asset_manager.cpp
   streaming_audio_asset_manager.cpp
   audio_player_manager.cpp

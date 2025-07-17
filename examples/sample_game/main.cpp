@@ -36,6 +36,8 @@ int main() {
 
         bgt::image game_img{"examples/assets/game.png"};
 
+        bgt::image tmp_img{320, 240};
+
         bgt::renderer2d r(mainWindow);
 
         auto player_img = game_img.clip(0, 0, 32, 32);

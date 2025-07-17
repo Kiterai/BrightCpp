@@ -1,4 +1,8 @@
 target_sources(brightcpp PRIVATE
+    image.cpp
+    render_target.cpp
+    renderer2d.cpp
+
     vulkan/graphics.cpp
     vulkan/util.cpp
     vulkan/vma_impl.cpp

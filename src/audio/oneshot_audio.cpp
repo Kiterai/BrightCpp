@@ -1,7 +1,7 @@
-#include "audio/audio_asset_manager.hpp"
-#include "audio/mixer.hpp"
-#include "global_module.hpp"
-#include "interfaces/audio.hpp"
+#include "audio_asset_manager.hpp"
+#include "mixer.hpp"
+#include "../global_module.hpp"
+#include "../interfaces/audio.hpp"
 #include <brightcpp/audio.hpp>
 #include <stdexcept>
 
