@@ -36,7 +36,7 @@ rendertarget_factory_vulkan::create_render_target(handle_holder<image_impl> imag
         handle,
         std::make_unique<texture_rendertarget_vulkan>(
             g.get_device(),
-            vk::Format::eR8G8B8A8Snorm, // TODO
+            tex.format,
             vk::Extent2D(tex.w_int, tex.h_int),
             std::vector<vk::Image>{ tex.image.get() },
             g.get_queue_indices()
