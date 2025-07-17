@@ -188,4 +188,46 @@ std::pair<vma::UniqueBuffer, vma::UniqueAllocation> create_filled_buffer(vma::Al
     return buf;
 }
 
+void cmd_change_image_layout(vk::CommandBuffer cmd_buf, vk::Image image, vk::ImageLayout old_layout, vk::ImageLayout new_layout) {
+    vk::ImageMemoryBarrier barrior;
+    barrior.oldLayout = old_layout;
+    barrior.newLayout = new_layout;
+    barrior.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrior.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrior.image = image;
+    barrior.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+    barrior.subresourceRange.baseMipLevel = 0;
+    barrior.subresourceRange.levelCount = 1;
+    barrior.subresourceRange.baseArrayLayer = 0;
+    barrior.subresourceRange.layerCount = 1;
+    barrior.srcAccessMask = {};
+    barrior.dstAccessMask = {};
+
+    vk::PipelineStageFlags src_stage = {}, dst_stage = {};
+
+    switch (old_layout) {
+    case vk::ImageLayout::eTransferDstOptimal:
+        barrior.srcAccessMask |= vk::AccessFlagBits::eTransferWrite;
+        src_stage |= vk::PipelineStageFlagBits::eTransfer;
+        break;
+    default:
+        src_stage |= vk::PipelineStageFlagBits::eTopOfPipe;
+        break;
+    }
+    switch (new_layout) {
+    case vk::ImageLayout::eTransferDstOptimal:
+        barrior.dstAccessMask |= vk::AccessFlagBits::eTransferWrite;
+        dst_stage |= vk::PipelineStageFlagBits::eTransfer;
+        break;
+    case vk::ImageLayout::eShaderReadOnlyOptimal:
+        barrior.dstAccessMask |= vk::AccessFlagBits::eShaderRead;
+        dst_stage |= vk::PipelineStageFlagBits::eFragmentShader;
+        break;
+    default:
+        break;
+    }
+
+    cmd_buf.pipelineBarrier(src_stage, dst_stage, {}, {}, {}, {barrior});
+}
+
 BRIGHTCPP_GRAPHICS_VULKAN_END

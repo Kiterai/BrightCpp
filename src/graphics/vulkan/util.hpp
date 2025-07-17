@@ -39,4 +39,6 @@ std::vector<vk::UniqueSemaphore> create_semaphores(vk::Device device, uint32_t n
 std::pair<vma::UniqueBuffer, vma::UniqueAllocation> create_empty_buffer(vma::Allocator allocator, vk::DeviceSize size, vk::BufferUsageFlags usage);
 std::pair<vma::UniqueBuffer, vma::UniqueAllocation> create_filled_buffer(vma::Allocator allocator, const uint8_t *p_data, vk::DeviceSize size, vk::BufferUsageFlags usage);
 
+void cmd_change_image_layout(vk::CommandBuffer cmd_buf, vk::Image image, vk::ImageLayout old_layout, vk::ImageLayout new_layout);
+
 BRIGHTCPP_GRAPHICS_VULKAN_END
