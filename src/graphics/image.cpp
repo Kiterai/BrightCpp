@@ -3,6 +3,7 @@
 
 #include "../global_module.hpp"
 #include "../interfaces/texture_factory.hpp"
+#include "../interfaces/rendertarget_factory.hpp"
 #include <brightcpp/image.hpp>
 
 BRIGHTCPP_START
@@ -61,9 +62,10 @@ image_clip image::clip(int x, int y, int w, int h) const {
     return image_clip{*this, x, y, w, h};
 }
 
+using g_rt_factory = internal::global_module<internal::rendertarget_factory_backend>;
+
 rendertarget image::get_render_target() const {
-    // TODO
-    throw std::runtime_error("not implemented");
+    return rendertarget{ g_rt_factory::get().create_render_target(*this) };
 }
 
 BRIGHTCPP_END

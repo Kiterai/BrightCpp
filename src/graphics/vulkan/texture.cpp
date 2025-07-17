@@ -186,7 +186,7 @@ handle_holder<image_impl>::handle_value_t texture_factory_vulkan::make(const uin
     auto [image, image_allocation] =
         create_empty_image(
             allocator, data, w, h,
-            vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst);
+            vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eColorAttachment);
 
     {
         vk::CommandBufferBeginInfo cmd_begin_info;
