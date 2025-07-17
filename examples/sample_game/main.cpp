@@ -28,22 +28,19 @@ int main() {
         bgt::audio jump_se{"examples/assets/powa.wav"};
         bgt::oneshot_audio_player se_player;
 
+        bgt::image game_img{"examples/assets/game.png"};
+        auto player_img = game_img.clip(0, 0, 32, 32);
+        auto block_img = game_img.clip(32, 0, 32, 32);
+        auto flag_img = game_img.clip(64, 0, 32, 32);
+        auto clear_img = game_img.clip(0, 32, 96, 32);
+
         bgt::window mainWindow{
             bgt::window::settings{
                 .size = {640, 480},
                 .title = "Sample Game",
             }};
 
-        bgt::image game_img{"examples/assets/game.png"};
-
-        bgt::image tmp_img{320, 240};
-
         bgt::renderer2d r(mainWindow);
-
-        auto player_img = game_img.clip(0, 0, 32, 32);
-        auto block_img = game_img.clip(32, 0, 32, 32);
-        auto flag_img = game_img.clip(64, 0, 32, 32);
-        auto clear_img = game_img.clip(0, 32, 96, 32);
 
         int fx = 6 * 32, fy = 4 * 32;
 
