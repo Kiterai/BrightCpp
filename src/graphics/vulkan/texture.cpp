@@ -208,7 +208,9 @@ handle_holder<image_impl>::handle_value_t texture_factory_vulkan::make(const uin
         queue.submit({submit_info}, texture_creating_fence.get());
     }
 
-    auto image_view = create_image_view(device, image.get(), vk::Format::eR8G8B8A8Unorm);
+    constexpr auto format = vk::Format::eR8G8B8A8Unorm;
+
+    auto image_view = create_image_view(device, image.get(), format);
 
     auto desc_set = create_texture_descriptor_set(image_view.get());
 
@@ -225,6 +227,7 @@ handle_holder<image_impl>::handle_value_t texture_factory_vulkan::make(const uin
                 .allocation = std::move(image_allocation),
                 .image_view = std::move(image_view),
                 .desc_set = std::move(desc_set),
+                .format = format,
                 .w_int = int(w),
                 .h_int = int(h),
                 .w = float(w),

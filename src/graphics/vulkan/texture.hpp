@@ -15,6 +15,7 @@ struct texture_vulkan {
     vma::UniqueAllocation allocation;
     vk::UniqueImageView image_view;
     vk::UniqueDescriptorSet desc_set;
+    vk::Format format;
     int w_int, h_int;
     float w, h;
 };
