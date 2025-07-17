@@ -16,6 +16,7 @@ class rendertarget_factory_vulkan : public rendertarget_factory_backend {
     ~rendertarget_factory_vulkan() override;
 
     handle_holder<rendertarget>::handle_value_t create_render_target(window_backend &window) override;
+    handle_holder<rendertarget>::handle_value_t create_render_target(handle_holder<image_impl> image) override;
     void destroy_render_target(handle_holder<rendertarget> &rt) noexcept override;
     abstract_rendertarget_vulkan &get_render_target_vulkan(handle_holder<rendertarget> handle);
 };
