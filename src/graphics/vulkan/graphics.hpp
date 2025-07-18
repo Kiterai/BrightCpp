@@ -22,6 +22,11 @@ class graphics_vulkan : public graphics_backend {
     vk::Queue graphics_queue, presentation_queue;
     vma::UniqueAllocator allocator;
 
+    uint32_t onetime_cmdbuf_index;
+    vk::UniqueCommandPool onetime_cmdpool;
+    std::vector<vk::UniqueCommandBuffer> onetime_cmdbufs;
+    std::vector<vk::UniqueFence> onetime_cmd_fences;
+
   public:
     graphics_vulkan();
     ~graphics_vulkan();
@@ -33,6 +38,9 @@ class graphics_vulkan : public graphics_backend {
     vk::Device get_device() const { return device.get(); }
     vma::Allocator get_allocator() const { return allocator.get(); }
     const queue_index_set &get_queue_indices() const { return queue_indices; }
+
+    vk::CommandBuffer begin_onetime_command();
+    vk::Fence flush_onetime_command();
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

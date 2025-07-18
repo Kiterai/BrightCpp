@@ -17,6 +17,8 @@
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
+constexpr size_t onetime_cmdbuf_num = 16;
+
 auto instance_layer_required() {
     std::vector<const char *> layers;
 
@@ -181,7 +183,11 @@ graphics_vulkan::graphics_vulkan()
       device{create_device(phys_device, queue_indices)},
       graphics_queue{device->getQueue(queue_indices.graphics_queue, 0)},
       presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
-      allocator{create_allocator(instance.get(), phys_device, device.get())} {}
+      allocator{create_allocator(instance.get(), phys_device, device.get())},
+      onetime_cmdbuf_index{0},
+      onetime_cmdpool{create_cmd_pool(device.get(), global_module<graphics_vulkan>::get().get_queue_indices(), vk::CommandPoolCreateFlagBits::eTransient | vk::CommandPoolCreateFlagBits::eResetCommandBuffer)},
+      onetime_cmdbufs{create_cmd_bufs(device.get(), onetime_cmdpool.get(), onetime_cmdbuf_num)},
+      onetime_cmd_fences{create_fences(device.get(), true, onetime_cmdbuf_num)} {}
 graphics_vulkan::~graphics_vulkan() {
     wait_idle();
 }
@@ -189,6 +195,36 @@ graphics_vulkan::~graphics_vulkan() {
 void graphics_vulkan::wait_idle() {
     presentation_queue.waitIdle();
     graphics_queue.waitIdle();
+}
+
+vk::CommandBuffer graphics_vulkan::begin_onetime_command() {
+    auto cmdbuf = onetime_cmdbufs[onetime_cmdbuf_index].get();
+    auto fence = onetime_cmd_fences[onetime_cmdbuf_index].get();
+
+    device->waitForFences(fence, true, UINT64_MAX);
+
+    vk::CommandBufferBeginInfo cmd_begin_info;
+    cmd_begin_info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+
+    cmdbuf.begin(cmd_begin_info);
+
+    return cmdbuf;
+}
+vk::Fence graphics_vulkan::flush_onetime_command() {
+    auto cmdbuf = onetime_cmdbufs[onetime_cmdbuf_index].get();
+    auto fence = onetime_cmd_fences[onetime_cmdbuf_index].get();
+    onetime_cmdbuf_index++;
+    onetime_cmdbuf_index %= onetime_cmdbuf_num;
+
+    cmdbuf.end();
+
+    vk::SubmitInfo submit_info;
+    auto submit_cmd_buf = {cmdbuf};
+    submit_info.commandBufferCount = uint32_t(submit_cmd_buf.size());
+    submit_info.pCommandBuffers = submit_cmd_buf.begin();
+
+    graphics_queue.submit({submit_info}, fence);
+    return fence;
 }
 
 BRIGHTCPP_GRAPHICS_VULKAN_END
