@@ -171,16 +171,7 @@ std::pair<vma::UniqueBuffer, vma::UniqueAllocation> create_empty_buffer(vma::All
 }
 
 std::pair<vma::UniqueBuffer, vma::UniqueAllocation> create_filled_buffer(vma::Allocator allocator, const uint8_t *p_data, vk::DeviceSize size, vk::BufferUsageFlags usage) {
-    vk::BufferCreateInfo create_info;
-    create_info.size = size;
-    create_info.usage = usage;
-    create_info.sharingMode = vk::SharingMode::eExclusive;
-
-    vma::AllocationCreateInfo allocation_info;
-    allocation_info.flags |= vma::AllocationCreateFlagBits::eHostAccessSequentialWrite;
-    allocation_info.usage = vma::MemoryUsage::eAuto;
-
-    auto buf = allocator.createBufferUnique(create_info, allocation_info);
+    auto buf = create_empty_buffer(allocator, size, usage, vma::MemoryUsage::eAuto, vma::AllocationCreateFlagBits::eHostAccessSequentialWrite);
 
     auto p_memory = allocator.mapMemory(buf.second.get());
     std::memcpy(p_memory, p_data, size);
