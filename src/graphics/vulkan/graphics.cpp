@@ -185,7 +185,7 @@ graphics_vulkan::graphics_vulkan()
       presentation_queue{device->getQueue(queue_indices.presentation_queue, 0)},
       allocator{create_allocator(instance.get(), phys_device, device.get())},
       onetime_cmdbuf_index{0},
-      onetime_cmdpool{create_cmd_pool(device.get(), global_module<graphics_vulkan>::get().get_queue_indices(), vk::CommandPoolCreateFlagBits::eTransient | vk::CommandPoolCreateFlagBits::eResetCommandBuffer)},
+      onetime_cmdpool{create_cmd_pool(device.get(), get_queue_indices(), vk::CommandPoolCreateFlagBits::eTransient | vk::CommandPoolCreateFlagBits::eResetCommandBuffer)},
       onetime_cmdbufs{create_cmd_bufs(device.get(), onetime_cmdpool.get(), onetime_cmdbuf_num)},
       onetime_cmd_fences{create_fences(device.get(), true, onetime_cmdbuf_num)} {}
 graphics_vulkan::~graphics_vulkan() {
