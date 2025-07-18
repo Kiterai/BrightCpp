@@ -16,7 +16,8 @@ class vbuffer_factory_backend {
   public:
     virtual ~vbuffer_factory_backend() = default;
 
-    virtual handle_holder<vbuffer_impl>::handle_value_t make(const uint8_t *data, size_t bytes_num) = 0;
+    virtual handle_holder<vbuffer_impl>::handle_value_t make(size_t bytes_num) = 0;
+    virtual void update_data(const handle_holder<vbuffer_impl> &, const uint8_t *data, size_t bytes_num) = 0;
     virtual void destroy(const handle_holder<vbuffer_impl> &) noexcept = 0;
 };
 

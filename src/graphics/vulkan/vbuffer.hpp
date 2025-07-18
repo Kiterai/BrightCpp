@@ -19,11 +19,15 @@ class vbuffer_factory_vulkan : public vbuffer_factory_backend {
     vk::Device device;
     vma::Allocator allocator;
 
+    using handle_t = handle_holder<vbuffer_impl>::handle_value_t;
+    std::unordered_map<handle_t, vbuffer_vulkan> vbuffer_db;
+
   public:
     vbuffer_factory_vulkan();
     ~vbuffer_factory_vulkan();
 
-    handle_holder<vbuffer_impl>::handle_value_t make(const uint8_t *data, size_t bytes_num) override;
+    handle_holder<vbuffer_impl>::handle_value_t make(size_t bytes_num) override;
+    void update_data(const handle_holder<vbuffer_impl> &, const uint8_t *data, size_t bytes_num) override;
     void destroy(const handle_holder<vbuffer_impl> &) noexcept override;
 };
 
