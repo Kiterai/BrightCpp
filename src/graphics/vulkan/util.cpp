@@ -157,14 +157,15 @@ std::vector<vk::UniqueSemaphore> create_semaphores(vk::Device device, uint32_t n
     return semaphores;
 }
 
-std::pair<vma::UniqueBuffer, vma::UniqueAllocation> create_empty_buffer(vma::Allocator allocator, vk::DeviceSize size, vk::BufferUsageFlags usage) {
+std::pair<vma::UniqueBuffer, vma::UniqueAllocation> create_empty_buffer(vma::Allocator allocator, vk::DeviceSize size, vk::BufferUsageFlags usage, vma::MemoryUsage memUsage, vma::AllocationCreateFlags memFlags) {
     vk::BufferCreateInfo create_info;
     create_info.size = size;
     create_info.usage = usage;
     create_info.sharingMode = vk::SharingMode::eExclusive;
 
     vma::AllocationCreateInfo allocation_info;
-    allocation_info.usage = vma::MemoryUsage::eAuto;
+    allocation_info.flags = memFlags;
+    allocation_info.usage = memUsage;
 
     return allocator.createBufferUnique(create_info, allocation_info);
 }
