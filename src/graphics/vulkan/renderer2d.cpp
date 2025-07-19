@@ -309,6 +309,38 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
     cmd_buf.draw(4, 1, 0, 0);
 }
 
+void renderer2d_vulkan::attach_texture(handle_holder<image_impl> image, const render_texture_info &info) {
+    const auto &texture = global_module<texture_factory_vulkan>::get().get(image);
+
+    if (last_binded_texture != image.handle()) {
+        cmd_buf.bindDescriptorSets(
+            vk::PipelineBindPoint::eGraphics,
+            pipeline_layout.get(),
+            0,
+            {texture.desc_set.get()},
+            {});
+        last_binded_texture = image.handle();
+    }
+}
+void renderer2d_vulkan::draw_polygon(handle_holder<vbuffer_impl> vbuffer) {
+    const shader_pushconstant data{
+        // .draw_matrix{move_mat * rotate_mat * scale_mat * pivot_mat},
+        // .screen_size{
+        //     .v{float(rt.get().extent().width), float(rt.get().extent().height)},
+        // },
+        // .tex_clip_pos{
+        //     .v{rect_info.clip_pos.v[0] / tex_w, rect_info.clip_pos.v[1] / tex_h},
+        // },
+        // .tex_clip_size{
+        //     .v{rect_info.clip_size.v[0] / tex_w, rect_info.clip_size.v[1] / tex_h},
+        // },
+        // .color{rect_info.color},
+    };
+
+    cmd_buf.pushConstants<shader_pushconstant>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {data});
+    cmd_buf.draw(4, 1, 0, 0);
+}
+
 renderer2d_factory_vulkan::renderer2d_factory_vulkan()
     : device{global_module<graphics_vulkan>::get().get_device()},
       queue_indices{global_module<graphics_vulkan>::get().get_queue_indices()} {}

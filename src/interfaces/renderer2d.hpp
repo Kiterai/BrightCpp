@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../linear_algebra.hpp"
+#include "vbuffer_factory.hpp"
 #include <brightcpp/image_decl.hpp>
 #include <brightcpp/renderer2d.hpp>
 #include <memory>
@@ -23,6 +24,9 @@ class renderer2d_backend {
     virtual void render_end() = 0;
 
     virtual void draw_texture(handle_holder<image_impl> image, const render_texture_info &info) = 0;
+    
+    virtual void attach_texture(handle_holder<image_impl> image, const render_texture_info &info) = 0;
+    virtual void draw_polygon(handle_holder<vbuffer_impl> vbuffer) = 0;
 };
 
 class renderer2d_factory_backend {
