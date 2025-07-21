@@ -13,16 +13,12 @@ audio_player_manager::audio_player_manager() {
     global_module<audio_backend>::get();
 }
 
-handle_holder<audio_player>::handle_value_t audio_player_manager::register_player() {
-    auto new_id = player_serial_count;
-    player_serial_count++;
-    players[new_id] = {};
-    return new_id;
+entity_handle_t audio_player_manager::register_player() {
+    std::unique_ptr<audio_player_backend> tmp{};
+    return db.make(std::move(tmp));
 }
 
-std::unique_ptr<audio_player_backend> &audio_player_manager::get_player(handle_holder<audio_player>::handle_value_t id) {
-    return players.at(id);
-}
+std::unique_ptr<audio_player_backend> &audio_player_manager::get_player(entity_handle_t id) { return db.get(id); }
 
 } // namespace internal
 

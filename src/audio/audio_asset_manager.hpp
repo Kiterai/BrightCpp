@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../entity_holder.hpp"
 #include <brightcpp/audio.hpp>
 #include <brightcpp/common.hpp>
 #include <cstdint>
@@ -16,16 +17,15 @@ struct audio_buffer_info {
 };
 
 class audio_asset_manager {
-    size_t serial_id = 0;
-    std::unordered_map<size_t, std::vector<float>> loaded_audios;
+    entity_holder<std::vector<float>> db;
 
   public:
     ~audio_asset_manager() = default;
 
-    handle_holder<audio>::handle_value_t make(std::filesystem::path path, audio_file_type type);
-    void destroy(handle_holder<audio>::handle_value_t) noexcept;
+    entity_handle_t make(std::filesystem::path path, audio_file_type type);
+    void destroy(entity_handle_t) noexcept;
 
-    audio_buffer_info get_info(handle_holder<audio>::handle_value_t) const;
+    audio_buffer_info get_info(entity_handle_t) const;
 };
 
 } // namespace internal
