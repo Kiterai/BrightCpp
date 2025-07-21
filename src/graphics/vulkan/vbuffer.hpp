@@ -29,6 +29,8 @@ class vbuffer_factory_vulkan : public vbuffer_factory_backend {
     handle_holder<vbuffer_impl>::handle_value_t make(size_t bytes_num) override;
     void update_data(const handle_holder<vbuffer_impl> &, const uint8_t *data, size_t bytes_num) override;
     void destroy(const handle_holder<vbuffer_impl> &) noexcept override;
+
+    const vbuffer_vulkan &get_vbuffer(const handle_holder<vbuffer_impl> &vbuffer) const;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

@@ -45,4 +45,8 @@ void vbuffer_factory_vulkan::destroy(const handle_holder<vbuffer_impl> &vbuffer)
     vbuffer_db.erase(vbuffer.handle());
 };
 
+const vbuffer_vulkan &vbuffer_factory_vulkan::get_vbuffer(const handle_holder<vbuffer_impl> &vbuffer) const {
+    return vbuffer_db.at(vbuffer.handle());
+}
+
 BRIGHTCPP_GRAPHICS_VULKAN_END
