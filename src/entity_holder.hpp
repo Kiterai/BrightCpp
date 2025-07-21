@@ -14,7 +14,7 @@ template <class T> class entity_holder {
   public:
     template <class... Args> entity_handle_t make(Args &&...args) {
         auto new_id = id_count;
-        db.emplace(std::piecewise_construct, std::forward_as_tuple(new_id), std::forward_as_tuple(args...));
+        db.emplace(std::piecewise_construct, std::forward_as_tuple(new_id), std::forward_as_tuple(std::forward<Args>(args)...));
         id_count++;
 
         return new_id;
