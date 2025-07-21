@@ -6,20 +6,16 @@ BRIGHTCPP_START
 
 namespace internal {
 
-handle_holder<audio>::handle_value_t streaming_audio_asset_manager::make(std::filesystem::path path, audio_file_type type) {
-    streaming_audios[serial_id] = make_loader(path, type);
-    auto meta = streaming_audios[serial_id]->open(path);
-    auto id = serial_id;
-    serial_id++;
-    return id;
+entity_handle_t streaming_audio_asset_manager::make(std::filesystem::path path, audio_file_type type) {
+    auto loader = make_loader(path, type);
+    loader->open(path);
+    return streaming_audios.make(std::move(loader));
 }
 
-void streaming_audio_asset_manager::destroy(handle_holder<audio>::handle_value_t handle) noexcept {
-    streaming_audios.erase(handle);
-}
+void streaming_audio_asset_manager::destroy(entity_handle_t handle) noexcept { streaming_audios.destroy(handle); }
 
-audio_loader_backend &streaming_audio_asset_manager::get_loader(handle_holder<audio>::handle_value_t handle) const {
-    return *streaming_audios.at(handle).get();
+audio_loader_backend &streaming_audio_asset_manager::get_loader(entity_handle_t handle) const {
+    return *streaming_audios.get(handle).get();
 }
 
 } // namespace internal
