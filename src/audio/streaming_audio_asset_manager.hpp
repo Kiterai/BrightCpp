@@ -7,7 +7,6 @@
 #include <brightcpp/common.hpp>
 #include <cstdint>
 #include <filesystem>
-#include <unordered_map>
 
 BRIGHTCPP_START
 

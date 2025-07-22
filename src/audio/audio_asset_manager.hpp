@@ -5,7 +5,6 @@
 #include <brightcpp/common.hpp>
 #include <cstdint>
 #include <filesystem>
-#include <unordered_map>
 #include <vector>
 
 BRIGHTCPP_START
