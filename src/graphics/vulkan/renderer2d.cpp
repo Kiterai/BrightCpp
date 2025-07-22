@@ -32,11 +32,19 @@ static auto get_vertex_input_info() {
         },
     };
 
+    static vk::VertexInputBindingDescription bindings[] = {
+        vk::VertexInputBindingDescription{
+            0,
+            sizeof(renderer2d_vertex),
+            vk::VertexInputRate::eVertex,
+        },
+    };
+
     vk::PipelineVertexInputStateCreateInfo vertexInputInfo;
     vertexInputInfo.vertexAttributeDescriptionCount = std::size(attrs);
     vertexInputInfo.pVertexAttributeDescriptions = attrs;
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.pVertexBindingDescriptions = nullptr;
+    vertexInputInfo.vertexBindingDescriptionCount = std::size(bindings);
+    vertexInputInfo.pVertexBindingDescriptions = bindings;
 
     return vertexInputInfo;
 }
@@ -335,8 +343,8 @@ void renderer2d_vulkan::draw_polygon(size_t num, handle_holder<vbuffer_impl> vbu
     uniform2.screen_size = {float(rt_extent.width), float(rt_extent.height)};
     cmd_buf.pushConstants<renderer2d_uniform>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {uniform2});
 
-    const auto& buf = g_vbuffer::get().get_vbuffer(vbuffer.handle());
-    cmd_buf.bindVertexBuffers(0, { buf.buffer.get() }, {0});
+    const auto &buf = g_vbuffer::get().get_vbuffer(vbuffer.handle());
+    cmd_buf.bindVertexBuffers(0, {buf.buffer.get()}, {0});
     cmd_buf.draw(num, 1, 0, 0);
 }
 
