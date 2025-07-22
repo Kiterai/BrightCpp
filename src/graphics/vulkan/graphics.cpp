@@ -202,6 +202,7 @@ vk::CommandBuffer graphics_vulkan::begin_onetime_command() {
     auto fence = onetime_cmd_fences[onetime_cmdbuf_index].get();
 
     device->waitForFences(fence, true, UINT64_MAX);
+    device->resetFences({fence});
 
     vk::CommandBufferBeginInfo cmd_begin_info;
     cmd_begin_info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
