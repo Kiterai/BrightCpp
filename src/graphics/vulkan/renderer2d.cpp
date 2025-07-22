@@ -330,7 +330,10 @@ void renderer2d_vulkan::attach_texture(handle_holder<image_impl> image) {
 }
 void renderer2d_vulkan::draw_polygon(size_t num, handle_holder<vbuffer_impl> vbuffer,
                                      const renderer2d_uniform &uniform) {
-    cmd_buf.pushConstants<renderer2d_uniform>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {uniform});
+    auto uniform2 = uniform;
+    auto rt_extent = rt.get().extent();
+    uniform2.screen_size = {float(rt_extent.width), float(rt_extent.height)};
+    cmd_buf.pushConstants<renderer2d_uniform>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {uniform2});
 
     const auto& buf = g_vbuffer::get().get_vbuffer(vbuffer.handle());
     cmd_buf.bindVertexBuffers(0, { buf.buffer.get() }, {0});
