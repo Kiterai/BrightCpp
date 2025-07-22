@@ -2,8 +2,8 @@
 
 #include "../../interfaces/renderer2d.hpp"
 #include "rendertarget.hpp"
-#include "window_rendertarget.hpp"
 #include "vulkan_common.hpp"
+#include "window_rendertarget.hpp"
 #include <brightcpp/common.hpp>
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
@@ -32,8 +32,8 @@ class renderer2d_vulkan : public renderer2d_backend {
     void render_end() override;
     void draw_texture(handle_holder<image_impl> image, const render_texture_info &rect_info) override;
 
-    void attach_texture(handle_holder<image_impl> image, const render_texture_info &info) override;
-    void draw_polygon(handle_holder<vbuffer_impl> vbuffer) override;
+    void attach_texture(handle_holder<image_impl> image) override;
+    void draw_polygon(size_t num, handle_holder<vbuffer_impl> vbuffer, const renderer2d_uniform &uniform) override;
 };
 
 class renderer2d_factory_vulkan : public renderer2d_factory_backend {

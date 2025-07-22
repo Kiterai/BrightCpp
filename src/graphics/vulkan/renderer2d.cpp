@@ -6,6 +6,7 @@
 #include "rendertarget_factory.hpp"
 #include "texture.hpp"
 #include "util.hpp"
+#include "vbuffer.hpp"
 #include <cmath>
 #include <iostream>
 
@@ -316,7 +317,9 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
     cmd_buf.draw(4, 1, 0, 0);
 }
 
-void renderer2d_vulkan::attach_texture(handle_holder<image_impl> image, const render_texture_info &info) {
+using g_vbuffer = global_module<vbuffer_factory_vulkan>;
+
+void renderer2d_vulkan::attach_texture(handle_holder<image_impl> image) {
     const auto &texture = global_module<texture_factory_vulkan>::get().get(image);
 
     if (last_binded_texture != image.handle()) {
@@ -325,23 +328,13 @@ void renderer2d_vulkan::attach_texture(handle_holder<image_impl> image, const re
         last_binded_texture = image.handle();
     }
 }
-void renderer2d_vulkan::draw_polygon(handle_holder<vbuffer_impl> vbuffer) {
-    const renderer2d_uniform data{
-        // .draw_matrix{move_mat * rotate_mat * scale_mat * pivot_mat},
-        // .screen_size{
-        //     .v{float(rt.get().extent().width), float(rt.get().extent().height)},
-        // },
-        // .tex_clip_pos{
-        //     .v{rect_info.clip_pos.v[0] / tex_w, rect_info.clip_pos.v[1] / tex_h},
-        // },
-        // .tex_clip_size{
-        //     .v{rect_info.clip_size.v[0] / tex_w, rect_info.clip_size.v[1] / tex_h},
-        // },
-        // .color{rect_info.color},
-    };
+void renderer2d_vulkan::draw_polygon(size_t num, handle_holder<vbuffer_impl> vbuffer,
+                                     const renderer2d_uniform &uniform) {
+    cmd_buf.pushConstants<renderer2d_uniform>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {uniform});
 
-    cmd_buf.pushConstants<renderer2d_uniform>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {data});
-    cmd_buf.draw(4, 1, 0, 0);
+    const auto& buf = g_vbuffer::get().get_vbuffer(vbuffer.handle());
+    cmd_buf.bindVertexBuffers(0, { buf.buffer.get() }, {0});
+    cmd_buf.draw(num, 1, 0, 0);
 }
 
 renderer2d_factory_vulkan::renderer2d_factory_vulkan()
