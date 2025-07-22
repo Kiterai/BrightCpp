@@ -5,7 +5,6 @@
 #include "window_rendertarget.hpp"
 #include "vulkan_common.hpp"
 #include <brightcpp/common.hpp>
-#include <unordered_map>
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 

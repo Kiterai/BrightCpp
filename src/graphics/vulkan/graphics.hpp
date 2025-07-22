@@ -6,9 +6,7 @@
 #include "texture.hpp"
 #include "vulkan_common.hpp"
 #include <brightcpp/rendertarget.hpp>
-#include <functional>
 #include <memory>
-#include <unordered_map>
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 

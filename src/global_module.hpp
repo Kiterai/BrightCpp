@@ -1,7 +1,6 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
-#include <unordered_map>
 
 BRIGHTCPP_START
 
