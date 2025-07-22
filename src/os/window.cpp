@@ -1,10 +1,10 @@
+#include "../entity_holder.hpp"
 #include "../global_module.hpp"
-#include "../interfaces/rendertarget_factory.hpp"
 #include "../interfaces/os_util.hpp"
+#include "../interfaces/rendertarget_factory.hpp"
 #include "key/key.hpp"
 #include <brightcpp/window.hpp>
 #include <stdexcept>
-#include <unordered_map>
 
 BRIGHTCPP_START
 
@@ -25,13 +25,9 @@ class window_impl {
           self_render_target{g_rt_factory::get().create_render_target(*window.get())} {}
     ~window_impl() {}
 
-    rendertarget get_render_target() const {
-        return self_render_target;
-    }
+    rendertarget get_render_target() const { return self_render_target; }
 
-    void resize(window::window_size size) {
-        window->set_size(size.w, size.h);
-    }
+    void resize(window::window_size size) { window->set_size(size.w, size.h); }
     window::window_size size() const {
         auto res = window->get_size();
         return window::window_size{
@@ -40,86 +36,67 @@ class window_impl {
         };
     }
 
-    void set_resizable(bool is_resizable) {
-        window->set_resizable(is_resizable);
-    }
-    bool is_resizable() const {
-        return window->is_resizable();
-    }
+    void set_resizable(bool is_resizable) { window->set_resizable(is_resizable); }
+    bool is_resizable() const { return window->is_resizable(); }
 
-    void set_fullscreen(bool is_fullscreen) {
-        window->set_fullscreen(is_fullscreen);
-    }
-    bool is_fullscreen() const {
-        return window->is_fullscreen();
-    }
+    void set_fullscreen(bool is_fullscreen) { window->set_fullscreen(is_fullscreen); }
+    bool is_fullscreen() const { return window->is_fullscreen(); }
 
-    void set_title(const std::string &title) {
-        window->set_title(title);
-    }
-    std::string title() const {
-        return window->get_title();
-    }
+    void set_title(const std::string &title) { window->set_title(title); }
+    std::string title() const { return window->get_title(); }
 
-    bool close_requested() const {
-        return window->is_close_requested();
+    bool close_requested() const { return window->is_close_requested(); }
+};
+
+class window_manager : public entity_holder<window_impl> {
+  public:
+    bool is_closed_any() {
+        for (const auto &[id, available_window] : db) {
+            if (available_window.close_requested()) {
+                return false;
+            }
+        }
+        return true;
     }
 };
 
-handle_holder<window>::handle_value_t window_serial_id = 0;
-std::unordered_map<handle_holder<window>::handle_value_t, window_impl> available_windows;
+std::optional<window_manager> wnd_backend;
+
+template <> window_manager *global_module_constructor<window_manager>() {
+    wnd_backend.emplace();
+    return &*wnd_backend;
+}
 
 } // namespace internal
 
-handle_holder<window>::handle_value_t register_window(const window::settings &settings) {
-    const auto new_id = internal::window_serial_id;
-    internal::window_serial_id++;
+using g_wnd_manager_t = internal::global_module<internal::window_manager>;
 
-    internal::available_windows.emplace(
-        std::piecewise_construct,
-        std::forward_as_tuple(new_id),
-        std::forward_as_tuple(settings));
-    return new_id;
-}
+window::window() : handle_holder{g_wnd_manager_t::get().make(settings{})} {}
+window::window(const settings &initial_settings) : handle_holder{g_wnd_manager_t::get().make(initial_settings)} {}
+window::~window() { g_wnd_manager_t::get().destroy(handle()); };
 
-void unregister_window(handle_holder<window>::handle_value_t id) {
-    internal::available_windows.erase(id);
-}
+void window::resize(window_size size) { g_wnd_manager_t::get().get(handle()).resize(size); }
+window::window_size window::size() const { return g_wnd_manager_t::get().get(handle()).size(); }
 
-window::window()
-    : handle_holder{register_window(settings{})} {}
-window::window(const settings &initial_settings)
-    : handle_holder{register_window(initial_settings)} {}
-window::~window() = default;
+rendertarget window::get_render_target() const { return g_wnd_manager_t::get().get(handle()).get_render_target(); }
 
-void window::resize(window_size size) { internal::available_windows.at(handle()).resize(size); }
-window::window_size window::size() const { return internal::available_windows.at(handle()).size(); }
+void window::set_resizable(bool is_resizable) { g_wnd_manager_t::get().get(handle()).set_resizable(is_resizable); }
+bool window::is_resizable() const { return g_wnd_manager_t::get().get(handle()).is_resizable(); };
 
-rendertarget window::get_render_target() const { return internal::available_windows.at(handle()).get_render_target(); }
+void window::set_fullscreen(bool is_fullscreen) { g_wnd_manager_t::get().get(handle()).set_fullscreen(is_fullscreen); }
+bool window::is_fullscreen() const { return g_wnd_manager_t::get().get(handle()).is_fullscreen(); }
 
-void window::set_resizable(bool is_resizable) { internal::available_windows.at(handle()).set_resizable(is_resizable); }
-bool window::is_resizable() const { return internal::available_windows.at(handle()).is_resizable(); };
+void window::set_title(std::string title) { g_wnd_manager_t::get().get(handle()).set_title(title); }
+std::string window::title() const { return g_wnd_manager_t::get().get(handle()).title(); }
 
-void window::set_fullscreen(bool is_fullscreen) { internal::available_windows.at(handle()).set_fullscreen(is_fullscreen); }
-bool window::is_fullscreen() const { return internal::available_windows.at(handle()).is_fullscreen(); }
-
-void window::set_title(std::string title) { internal::available_windows.at(handle()).set_title(title); }
-std::string window::title() const { return internal::available_windows.at(handle()).title(); }
-
-bool window::close_requested() const { return internal::available_windows.at(handle()).close_requested(); }
+bool window::close_requested() const { return g_wnd_manager_t::get().get(handle()).close_requested(); }
 
 bool frame_update() {
     // internal::apply_render();
     g_os_util::get().poll_events();
     internal::global_module<internal::key_manager>::get().update();
 
-    // one of windows closed, to finish application
-    for (const auto &[id, available_window] : internal::available_windows) {
-        if (available_window.close_requested()) {
-            return false;
-        }
-    }
-    return true;
+    return g_wnd_manager_t::get().is_closed_any();
 }
 
 BRIGHTCPP_END

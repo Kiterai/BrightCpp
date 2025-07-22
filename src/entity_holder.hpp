@@ -9,6 +9,7 @@ namespace internal {
 
 template <class T> class entity_holder {
     size_t id_count = 0;
+  protected:
     std::unordered_map<entity_handle_t, T> db;
 
   public:
