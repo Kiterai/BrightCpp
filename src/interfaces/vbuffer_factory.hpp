@@ -16,9 +16,9 @@ class vbuffer_factory_backend {
   public:
     virtual ~vbuffer_factory_backend() = default;
 
-    virtual handle_holder<vbuffer_impl>::handle_value_t make(size_t bytes_num) = 0;
-    virtual void update_data(const handle_holder<vbuffer_impl> &, const uint8_t *data, size_t bytes_num) = 0;
-    virtual void destroy(const handle_holder<vbuffer_impl> &) noexcept = 0;
+    virtual entity_handle_t make(size_t bytes_num) = 0;
+    virtual void update_data(entity_handle_t handle, const uint8_t *data, size_t bytes_num) = 0;
+    virtual void destroy(entity_handle_t) noexcept = 0;
 };
 
 } // namespace internal

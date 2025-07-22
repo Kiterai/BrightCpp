@@ -26,11 +26,11 @@ class vbuffer_factory_vulkan : public vbuffer_factory_backend {
     vbuffer_factory_vulkan();
     ~vbuffer_factory_vulkan();
 
-    handle_holder<vbuffer_impl>::handle_value_t make(size_t bytes_num) override;
-    void update_data(const handle_holder<vbuffer_impl> &, const uint8_t *data, size_t bytes_num) override;
-    void destroy(const handle_holder<vbuffer_impl> &) noexcept override;
+    entity_handle_t make(size_t bytes_num) override;
+    void update_data(entity_handle_t, const uint8_t *data, size_t bytes_num) override;
+    void destroy(entity_handle_t) noexcept override;
 
-    const vbuffer_vulkan &get_vbuffer(const handle_holder<vbuffer_impl> &vbuffer) const;
+    const vbuffer_vulkan &get_vbuffer(entity_handle_t vbuffer) const;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END
