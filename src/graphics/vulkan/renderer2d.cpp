@@ -1,6 +1,7 @@
 #include "renderer2d.hpp"
 #include "../../global_module.hpp"
 #include "../../linear_algebra.hpp"
+#include "../shader_input.hpp"
 #include "graphics.hpp"
 #include "rendertarget_factory.hpp"
 #include "texture.hpp"
@@ -14,13 +15,30 @@ BRIGHTCPP_GRAPHICS_VULKAN_START
 
 constexpr handle_holder<image_impl>::handle_value_t no_bind_texture = std::numeric_limits<size_t>::max();
 
-struct shader_pushconstant {
-    mat3 draw_matrix;
-    vec2 screen_size;
-    vec2 tex_clip_pos;
-    vec2 tex_clip_size;
-    vec4 color;
-};
+static auto get_vertex_input_info() {
+    static vk::VertexInputAttributeDescription attrs[] = {
+        vk::VertexInputAttributeDescription{
+            0,
+            0,
+            vk::Format::eR32G32Sfloat,
+            offsetof(renderer2d_vertex, renderer2d_vertex::pos),
+        },
+        vk::VertexInputAttributeDescription{
+            1,
+            0,
+            vk::Format::eR32G32Sfloat,
+            offsetof(renderer2d_vertex, renderer2d_vertex::uv),
+        },
+    };
+
+    vk::PipelineVertexInputStateCreateInfo vertexInputInfo;
+    vertexInputInfo.vertexAttributeDescriptionCount = std::size(attrs);
+    vertexInputInfo.pVertexAttributeDescriptions = attrs;
+    vertexInputInfo.vertexBindingDescriptionCount = 0;
+    vertexInputInfo.pVertexBindingDescriptions = nullptr;
+
+    return vertexInputInfo;
+}
 
 static auto create_draw_cmd_pool(vk::Device device, const queue_index_set &queue_indices) {
     vk::CommandPoolCreateInfo create_info;
@@ -30,7 +48,8 @@ static auto create_draw_cmd_pool(vk::Device device, const queue_index_set &queue
     return device.createCommandPoolUnique(create_info);
 }
 
-static auto create_render_pass(vk::Device device, vk::Format format, vk::ImageLayout srcLayout, vk::ImageLayout dstLayout) {
+static auto create_render_pass(vk::Device device, vk::Format format, vk::ImageLayout srcLayout,
+                               vk::ImageLayout dstLayout) {
     vk::AttachmentDescription attachments[1];
     attachments[0].format = format;
     attachments[0].samples = vk::SampleCountFlagBits::e1;
@@ -85,7 +104,7 @@ static auto create_pipeline_layout(vk::Device device) {
     auto pushConstantRanges = {
         vk::PushConstantRange{}
             .setOffset(0)
-            .setSize(sizeof(shader_pushconstant))
+            .setSize(sizeof(renderer2d_uniform))
             .setStageFlags(vk::ShaderStageFlagBits::eVertex),
     };
 
@@ -102,7 +121,9 @@ static auto create_pipeline_layout(vk::Device device) {
     return device.createPipelineLayoutUnique(layoutCreateInfo);
 }
 
-static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D extent, vk::PipelineLayout pipeline_layout, vk::ShaderModule vert_shader, vk::ShaderModule frag_shader, bool alpha = true) {
+static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Extent2D extent,
+                            vk::PipelineLayout pipeline_layout, vk::ShaderModule vert_shader,
+                            vk::ShaderModule frag_shader, bool alpha = true) {
     vk::Viewport viewports[1];
     viewports[0].x = 0.0;
     viewports[0].y = 0.0;
@@ -121,11 +142,7 @@ static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Ex
     viewportState.scissorCount = 1;
     viewportState.pScissors = scissors;
 
-    vk::PipelineVertexInputStateCreateInfo vertexInputInfo;
-    vertexInputInfo.vertexAttributeDescriptionCount = 0;
-    vertexInputInfo.pVertexAttributeDescriptions = nullptr;
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.pVertexBindingDescriptions = nullptr;
+    vk::PipelineVertexInputStateCreateInfo vertexInputInfo = get_vertex_input_info();
 
     vk::PipelineInputAssemblyStateCreateInfo inputAssembly;
     inputAssembly.topology = vk::PrimitiveTopology::eTriangleStrip;
@@ -145,11 +162,8 @@ static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Ex
     multisample.rasterizationSamples = vk::SampleCountFlagBits::e1;
 
     vk::PipelineColorBlendAttachmentState blendattachment[1];
-    blendattachment[0].colorWriteMask =
-        vk::ColorComponentFlagBits::eA |
-        vk::ColorComponentFlagBits::eR |
-        vk::ColorComponentFlagBits::eG |
-        vk::ColorComponentFlagBits::eB;
+    blendattachment[0].colorWriteMask = vk::ColorComponentFlagBits::eA | vk::ColorComponentFlagBits::eR |
+                                        vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB;
     blendattachment[0].blendEnable = alpha;
     if (alpha) {
         blendattachment[0].srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
@@ -192,14 +206,14 @@ static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Ex
     return device.createGraphicsPipelineUnique(nullptr, pipelineCreateInfo).value;
 }
 
-renderer2d_vulkan::renderer2d_vulkan(vk::Device device, abstract_rendertarget_vulkan &_rt, const queue_index_set &queue_indices)
-    : rt{_rt},
-      device{device},
+renderer2d_vulkan::renderer2d_vulkan(vk::Device device, abstract_rendertarget_vulkan &_rt,
+                                     const queue_index_set &queue_indices)
+    : rt{_rt}, device{device},
       renderpass{create_render_pass(device, rt.get().format(), rt.get().srcLayout(), rt.get().dstLayout())},
-      vert_shader{create_vert_shader(device)},
-      frag_shader{create_frag_shader(device)},
+      vert_shader{create_vert_shader(device)}, frag_shader{create_frag_shader(device)},
       pipeline_layout{create_pipeline_layout(device)},
-      pipeline{create_pipeline(device, renderpass.get(), rt.get().extent(), pipeline_layout.get(), vert_shader.get(), frag_shader.get())},
+      pipeline{create_pipeline(device, renderpass.get(), rt.get().extent(), pipeline_layout.get(), vert_shader.get(),
+                               frag_shader.get())},
       framebufs{create_frame_bufs(device, rt.get().image_views(), rt.get().extent(), renderpass.get())} {}
 
 renderer2d_vulkan::~renderer2d_vulkan() {
@@ -223,8 +237,7 @@ void renderer2d_vulkan::render_begin() {
     renderpassBeginInfo.renderArea = vk::Rect2D({0, 0}, rt.get().extent());
 
     auto clearVal = {
-        vk::ClearValue{}
-            .setColor(vk::ClearColorValue(0.0f, 0.0f, 0.0f, 1.0f)),
+        vk::ClearValue{}.setColor(vk::ClearColorValue(0.0f, 0.0f, 0.0f, 1.0f)),
     };
 
     renderpassBeginInfo.clearValueCount = uint32_t(clearVal.size());
@@ -248,19 +261,13 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
     const auto &texture = global_module<texture_factory_vulkan>::get().get(image);
 
     if (last_binded_texture != image.handle()) {
-        cmd_buf.bindDescriptorSets(
-            vk::PipelineBindPoint::eGraphics,
-            pipeline_layout.get(),
-            0,
-            {texture.desc_set.get()},
-            {});
+        cmd_buf.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipeline_layout.get(), 0, {texture.desc_set.get()},
+                                   {});
         last_binded_texture = image.handle();
     }
 
     // gcc not supports cosf, sinf
-    const auto
-        cos_th = std::cos(rect_info.theta),
-        sin_th = std::sin(rect_info.theta);
+    const auto cos_th = std::cos(rect_info.theta), sin_th = std::sin(rect_info.theta);
 
     const auto anchor_x = rect_info.anchor_pos.v[0];
     const auto anchor_y = rect_info.anchor_pos.v[1];
@@ -292,7 +299,7 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
 
     const auto tex_w = texture.w;
     const auto tex_h = texture.h;
-    const shader_pushconstant data{
+    const renderer2d_uniform data{
         .draw_matrix{move_mat * rotate_mat * scale_mat * pivot_mat},
         .screen_size{
             .v{float(rt.get().extent().width), float(rt.get().extent().height)},
@@ -305,7 +312,7 @@ void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const rend
         },
         .color{rect_info.color},
     };
-    cmd_buf.pushConstants<shader_pushconstant>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {data});
+    cmd_buf.pushConstants<renderer2d_uniform>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {data});
     cmd_buf.draw(4, 1, 0, 0);
 }
 
@@ -313,17 +320,13 @@ void renderer2d_vulkan::attach_texture(handle_holder<image_impl> image, const re
     const auto &texture = global_module<texture_factory_vulkan>::get().get(image);
 
     if (last_binded_texture != image.handle()) {
-        cmd_buf.bindDescriptorSets(
-            vk::PipelineBindPoint::eGraphics,
-            pipeline_layout.get(),
-            0,
-            {texture.desc_set.get()},
-            {});
+        cmd_buf.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipeline_layout.get(), 0, {texture.desc_set.get()},
+                                   {});
         last_binded_texture = image.handle();
     }
 }
 void renderer2d_vulkan::draw_polygon(handle_holder<vbuffer_impl> vbuffer) {
-    const shader_pushconstant data{
+    const renderer2d_uniform data{
         // .draw_matrix{move_mat * rotate_mat * scale_mat * pivot_mat},
         // .screen_size{
         //     .v{float(rt.get().extent().width), float(rt.get().extent().height)},
@@ -337,7 +340,7 @@ void renderer2d_vulkan::draw_polygon(handle_holder<vbuffer_impl> vbuffer) {
         // .color{rect_info.color},
     };
 
-    cmd_buf.pushConstants<shader_pushconstant>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {data});
+    cmd_buf.pushConstants<renderer2d_uniform>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {data});
     cmd_buf.draw(4, 1, 0, 0);
 }
 
@@ -347,9 +350,7 @@ renderer2d_factory_vulkan::renderer2d_factory_vulkan()
 
 std::unique_ptr<renderer2d_backend> renderer2d_factory_vulkan::make(rendertarget rt) {
     return std::make_unique<renderer2d_vulkan>(
-        device,
-        global_module<rendertarget_factory_vulkan>::get().get_render_target_vulkan(rt),
-        queue_indices);
+        device, global_module<rendertarget_factory_vulkan>::get().get_render_target_vulkan(rt), queue_indices);
 }
 
 BRIGHTCPP_GRAPHICS_VULKAN_END
