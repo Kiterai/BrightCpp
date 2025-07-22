@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../linear_algebra.hpp"
 
 BRIGHTCPP_START
