@@ -266,65 +266,6 @@ void renderer2d_vulkan::render_end() {
     rt.get().render_end();
 }
 
-void renderer2d_vulkan::draw_texture(handle_holder<image_impl> image, const render_texture_info &rect_info) {
-    const auto &texture = global_module<texture_factory_vulkan>::get().get(image);
-
-    if (last_binded_texture != image.handle()) {
-        cmd_buf.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipeline_layout.get(), 0, {texture.desc_set.get()},
-                                   {});
-        last_binded_texture = image.handle();
-    }
-
-    // gcc not supports cosf, sinf
-    const auto cos_th = std::cos(rect_info.theta), sin_th = std::sin(rect_info.theta);
-
-    const auto anchor_x = rect_info.anchor_pos.v[0];
-    const auto anchor_y = rect_info.anchor_pos.v[1];
-    const auto w = rect_info.clip_size.v[0] * rect_info.scale.v[0];
-    const auto h = rect_info.clip_size.v[1] * rect_info.scale.v[1];
-    const auto x = rect_info.pos.v[0];
-    const auto y = rect_info.pos.v[1];
-
-    mat3 pivot_mat{.m{
-        {1.0f, 0.0f, -anchor_x},
-        {0.0f, 1.0f, -anchor_y},
-        {0.0f, 0.0f, 1.0f},
-    }};
-    mat3 scale_mat{.m{
-        {w, 0.0f, 0.0f},
-        {0.0f, h, 0.0f},
-        {0.0f, 0.0f, 1.0f},
-    }};
-    mat3 rotate_mat{.m{
-        {cos_th, -sin_th, 0.0f},
-        {sin_th, cos_th, 0.0f},
-        {0.0f, 0.0f, 1.0f},
-    }};
-    mat3 move_mat{.m{
-        {1.0f, 0.0f, x},
-        {0.0f, 1.0f, y},
-        {0.0f, 0.0f, 1.0f},
-    }};
-
-    const auto tex_w = texture.w;
-    const auto tex_h = texture.h;
-    const renderer2d_uniform data{
-        .draw_matrix{move_mat * rotate_mat * scale_mat * pivot_mat},
-        .screen_size{
-            .v{float(rt.get().extent().width), float(rt.get().extent().height)},
-        },
-        .tex_clip_pos{
-            .v{rect_info.clip_pos.v[0] / tex_w, rect_info.clip_pos.v[1] / tex_h},
-        },
-        .tex_clip_size{
-            .v{rect_info.clip_size.v[0] / tex_w, rect_info.clip_size.v[1] / tex_h},
-        },
-        .color{rect_info.color},
-    };
-    cmd_buf.pushConstants<renderer2d_uniform>(pipeline_layout.get(), vk::ShaderStageFlagBits::eVertex, 0, {data});
-    cmd_buf.draw(4, 1, 0, 0);
-}
-
 using g_vbuffer = global_module<vbuffer_factory_vulkan>;
 
 void renderer2d_vulkan::attach_texture(handle_holder<image_impl> image) {

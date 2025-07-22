@@ -24,8 +24,6 @@ class renderer2d_backend {
     virtual void render_begin() = 0;
     virtual void render_end() = 0;
 
-    virtual void draw_texture(handle_holder<image_impl> image, const render_texture_info &info) = 0;
-    
     virtual void attach_texture(handle_holder<image_impl> image) = 0;
     virtual void draw_polygon(size_t num, handle_holder<vbuffer_impl> vbuffer, const renderer2d_uniform& uniform) = 0;
 };

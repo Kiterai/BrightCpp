@@ -30,7 +30,6 @@ class renderer2d_vulkan : public renderer2d_backend {
 
     void render_begin() override;
     void render_end() override;
-    void draw_texture(handle_holder<image_impl> image, const render_texture_info &rect_info) override;
 
     void attach_texture(handle_holder<image_impl> image) override;
     void draw_polygon(size_t num, handle_holder<vbuffer_impl> vbuffer, const renderer2d_uniform &uniform) override;
