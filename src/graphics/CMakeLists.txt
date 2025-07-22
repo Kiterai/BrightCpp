@@ -2,6 +2,7 @@ target_sources(brightcpp PRIVATE
     image.cpp
     render_target.cpp
     renderer2d.cpp
+    renderer2d_middleware.cpp
 )
 add_subdirectory(vulkan)
 

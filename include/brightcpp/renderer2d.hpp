@@ -1,6 +1,7 @@
 #pragma once
 
 #include <brightcpp/common.hpp>
+#include <brightcpp/handle_holder.hpp>
 #include <brightcpp/image.hpp>
 #include <brightcpp/rendertarget.hpp>
 #include <memory>
@@ -11,15 +12,12 @@ namespace internal {
 class renderer2d_backend;
 }
 
-class renderer2d {
-    std::unique_ptr<internal::renderer2d_backend> p_renderer;
-
+class renderer2d : handle_holder<renderer2d> {
   public:
     renderer2d(rendertarget render_to);
     ~renderer2d();
 
-    template <class T>
-    renderer2d(T &renderable) : renderer2d(renderable.get_render_target()) {}
+    template <class T> renderer2d(T &renderable) : renderer2d(renderable.get_render_target()) {}
 
     renderer2d &draw(image &image, int x, int y);
     renderer2d &draw(image_clip &clip, int x, int y);

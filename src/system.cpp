@@ -14,6 +14,7 @@
 #include "graphics/vulkan/renderer2d.hpp"
 #include "graphics/vulkan/texture.hpp"
 #include "graphics/vulkan/vbuffer.hpp"
+#include "graphics/renderer2d_middleware.hpp"
 
 BRIGHTCPP_START
 
@@ -36,6 +37,8 @@ struct global_objects_t {
     std::unique_ptr<vulkan::texture_factory_vulkan> tex_factory;
     std::unique_ptr<vulkan::renderer2d_factory_vulkan> renderer2d_factory;
     std::unique_ptr<vulkan::vbuffer_factory_vulkan> vbuffer_factory;
+    
+    std::optional<renderer2d_middleware_manager> global_renderer2d_middleware_manager;
 };
 
 global_objects_t global_objects;
@@ -98,6 +101,11 @@ vulkan::vbuffer_factory_vulkan *global_module_constructor<vulkan::vbuffer_factor
 template <>
 vbuffer_factory_backend *global_module_constructor<vbuffer_factory_backend>() {
     return &global_module<vulkan::vbuffer_factory_vulkan>::get();
+}
+
+template <> renderer2d_middleware_manager *global_module_constructor<renderer2d_middleware_manager>() {
+    global_objects.global_renderer2d_middleware_manager.emplace();
+    return &*global_objects.global_renderer2d_middleware_manager;
 }
 
 template <>
