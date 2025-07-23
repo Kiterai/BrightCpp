@@ -24,13 +24,13 @@ static auto get_vertex_input_info() {
             0,
             0,
             vk::Format::eR32G32Sfloat,
-            offsetof(renderer2d_vertex, renderer2d_vertex::pos),
+            offsetof(renderer2d_vertex, pos),
         },
         vk::VertexInputAttributeDescription{
             1,
             0,
             vk::Format::eR32G32Sfloat,
-            offsetof(renderer2d_vertex, renderer2d_vertex::uv),
+            offsetof(renderer2d_vertex, uv),
         },
     };
 
