@@ -6,6 +6,7 @@
 #include "key.hpp"
 #include <ApplicationServices/ApplicationServices.h>
 #include <Carbon/Carbon.h>
+#include <unordered_map>
 
 BRIGHTCPP_START
 
