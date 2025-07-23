@@ -4,10 +4,10 @@ target_sources(brightcpp PRIVATE
 
 # libsoundio
 # NOTE: temporary fix for latest macOS and iOS
+# NOTE: temporary fix for high cpu usage
 FetchContent_Declare(
   libsoundio
   GIT_REPOSITORY https://github.com/Kiterai/libsoundio.git
-  GIT_TAG ios-build
 )
 # FetchContent_Declare(
 #   libsoundio
