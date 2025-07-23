@@ -2,6 +2,7 @@
 #include "../interfaces/rendertarget_factory.hpp"
 #include "../interfaces/texture_factory.hpp"
 #include "shader_input.hpp"
+#include <cmath>
 
 BRIGHTCPP_START
 
