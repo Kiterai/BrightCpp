@@ -9,6 +9,7 @@
 #include <bitset>
 #include <iostream>
 #include <optional>
+#include <unordered_map>
 
 BRIGHTCPP_START
 
