@@ -1,5 +1,3 @@
-#pragma once
-
 #include "renderer2d_middleware.hpp"
 #include "../interfaces/rendertarget_factory.hpp"
 #include "../interfaces/texture_factory.hpp"
