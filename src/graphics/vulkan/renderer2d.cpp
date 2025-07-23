@@ -8,7 +8,9 @@
 #include "util.hpp"
 #include "vbuffer.hpp"
 #include <cmath>
+#include <cstddef>
 #include <iostream>
+#include <iterator>
 
 #include <battery/embed.hpp>
 
