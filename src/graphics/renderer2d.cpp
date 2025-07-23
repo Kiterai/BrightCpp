@@ -68,6 +68,12 @@ renderer2d &renderer2d::draw(image_clip &clip, int x, int y, float rotation, flo
     return *this;
 }
 
+renderer2d &renderer2d::draw_filled_rect(color fill_color, int x, int y, int width, int height) {
+    g_renderer_middleware_manager_t::get().get(handle()).draw_rect(fill_color, x, y, 0.0f, width, height,
+                                                                   bgt::pivot_pos::left_top);
+    return *this;
+}
+
 renderer2d &renderer2d::flush() {
     g_renderer_middleware_manager_t::get().get(handle()).flush();
     return *this;

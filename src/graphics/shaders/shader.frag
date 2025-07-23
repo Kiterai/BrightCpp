@@ -9,6 +9,6 @@ layout(location = 0) out vec4 outColor;
 layout(binding = 0) uniform sampler2D texSampler;
 
 void main() {
-    outColor = texture(texSampler, inTexCoord);
+    outColor = texture(texSampler, inTexCoord) + inColor;
     if(outColor.a == 0.0) discard;
 }

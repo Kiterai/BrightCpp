@@ -1,5 +1,6 @@
 #pragma once
 
+#include "color.hpp"
 #include <brightcpp/common.hpp>
 #include <brightcpp/handle_holder.hpp>
 #include <brightcpp/image.hpp>
@@ -36,6 +37,8 @@ class renderer2d : handle_holder<renderer2d> {
     renderer2d &draw(image_clip &clip, int x, int y, float scale_x, float scale_y, pivot clip_pivot);
     renderer2d &draw(image &image, int x, int y, float rotation, float scale_x, float scale_y, pivot clip_pivot);
     renderer2d &draw(image_clip &clip, int x, int y, float rotation, float scale_x, float scale_y, pivot clip_pivot);
+
+    renderer2d &draw_filled_rect(color fill_color, int x, int y, int width, int height);
 
     renderer2d &flush();
 };

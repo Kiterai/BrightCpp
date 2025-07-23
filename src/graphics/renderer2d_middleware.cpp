@@ -14,7 +14,8 @@ using g_tex = global_module<texture_factory_backend>;
 using g_rt = global_module<rendertarget_factory_backend>;
 using g_rendererfactory_t = global_module<renderer2d_factory_backend>;
 
-renderer2d_middleware::renderer2d_middleware(rendertarget rt) : rect_buffer{sizeof(renderer2d_vertex) * 4}, rt{rt} {
+renderer2d_middleware::renderer2d_middleware(rendertarget rt)
+    : rect_buffer{sizeof(renderer2d_vertex) * 4}, empty_texture{4, 4}, rt{rt} {
     renderer2d_vertex rect_buffer_data[4] = {
         renderer2d_vertex{
             .pos{0.0, 0.0},
@@ -100,8 +101,49 @@ void renderer2d_middleware::draw_texture(const image_clip &clip, int x, int y, f
     p_renderer->draw_polygon(4, rect_buffer, data);
 };
 
-void renderer2d_middleware::draw_rect() {
-    // TODO
+void renderer2d_middleware::draw_rect(color fill_color, int x, int y, float rotation, float width, float height,
+                                      pivot pivot) {
+    p_renderer->attach_texture(empty_texture);
+
+    // gcc not supports cosf, sinf
+    const auto cos_th = std::cos(rotation), sin_th = std::sin(rotation);
+
+    const auto anchor_x = pivot.x.value;
+    const auto anchor_y = pivot.y.value;
+
+    mat3 pivot_mat{.m{
+        {1.0f, 0.0f, -anchor_x},
+        {0.0f, 1.0f, -anchor_y},
+        {0.0f, 0.0f, 1.0f},
+    }};
+    mat3 scale_mat{.m{
+        {width, 0.0f, 0.0f},
+        {0.0f, height, 0.0f},
+        {0.0f, 0.0f, 1.0f},
+    }};
+    mat3 rotate_mat{.m{
+        {cos_th, -sin_th, 0.0f},
+        {sin_th, cos_th, 0.0f},
+        {0.0f, 0.0f, 1.0f},
+    }};
+    mat3 move_mat{.m{
+        {1.0f, 0.0f, float(x)},
+        {0.0f, 1.0f, float(y)},
+        {0.0f, 0.0f, 1.0f},
+    }};
+
+    const renderer2d_uniform data{
+        .draw_matrix{move_mat * rotate_mat * scale_mat * pivot_mat},
+        .tex_clip_pos{
+            .v{0, 0},
+        },
+        .tex_clip_size{
+            .v{1, 1},
+        },
+        .color{.v{fill_color.r, fill_color.g, fill_color.b, fill_color.a}},
+    };
+
+    p_renderer->draw_polygon(4, rect_buffer, data);
 }
 void renderer2d_middleware::draw_circle() {
     // TODO
