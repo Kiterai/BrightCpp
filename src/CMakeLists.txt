@@ -14,6 +14,9 @@ add_library(
     brightcpp
     system.cpp
 )
+install(TARGETS brightcpp
+    DESTINATION ${CMAKE_INSTALL_PREFIX}
+)
 add_subdirectory(audio)
 add_subdirectory(graphics)
 add_subdirectory(os)
