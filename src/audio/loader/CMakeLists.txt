@@ -11,7 +11,7 @@ set(BUILD_TESTING OFF CACHE INTERNAL "")
 FetchContent_Declare(
   ogg
   GIT_REPOSITORY https://github.com/xiph/ogg.git
-  GIT_TAG v1.3.5
+  GIT_TAG v1.3.6
 )
 FetchContent_MakeAvailable(ogg)
 set(BUILD_TESTING "${BUILD_TESTING_BK}")
