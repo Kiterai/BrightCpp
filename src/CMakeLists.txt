@@ -15,37 +15,32 @@ add_library(
     system.cpp
 )
 install(TARGETS brightcpp
-    DESTINATION ${CMAKE_INSTALL_PREFIX}
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
 )
 add_subdirectory(audio)
 add_subdirectory(graphics)
 add_subdirectory(os)
 
 message(STATUS "Compiling shader.vert...")
-execute_process(COMMAND
-  $ENV{VULKAN_SDK}/bin/glslang
-  ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.vert
-  -V
-  -o ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.vert.spv
-  RESULT_VARIABLE result
+add_custom_command(
+  COMMAND $ENV{VULKAN_SDK}/bin/glslang
+    ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.vert
+    -V
+    -o ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.vert.spv
+  DEPENDS graphics/shaders/shader.vert
+  OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.vert.spv
 )
-if(NOT result EQUAL "0")
-    message( FATAL_ERROR "Failed to compile shader.vert")
-endif()
+b_embed(brightcpp graphics/shaders/shader.vert.spv)
 
 message(STATUS "Compiling shader.frag...")
-execute_process(COMMAND
-  $ENV{VULKAN_SDK}/bin/glslang
-  ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.frag
-  -V
-  -o ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.frag.spv
-  RESULT_VARIABLE result
+add_custom_command(
+  COMMAND $ENV{VULKAN_SDK}/bin/glslang
+    ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.frag
+    -V
+    -o ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.frag.spv
+  DEPENDS graphics/shaders/shader.frag
+  OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/graphics/shaders/shader.frag.spv
 )
-if(NOT result EQUAL "0")
-    message( FATAL_ERROR "Failed to compile shader.frag")
-endif()
-
-b_embed(brightcpp graphics/shaders/shader.vert.spv)
 b_embed(brightcpp graphics/shaders/shader.frag.spv)
 
 target_include_directories(brightcpp PUBLIC ../include)
