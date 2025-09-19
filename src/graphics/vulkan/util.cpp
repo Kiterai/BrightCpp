@@ -27,6 +27,9 @@ SwapchainWithInfo create_swapchain(vk::Device device, vk::PhysicalDevice phys_de
 
     stable_sort(surfaceFormats.begin(), surfaceFormats.end(), [&](vk::SurfaceFormatKHR format1, vk::SurfaceFormatKHR format2) {
         const std::map<std::pair<vk::Format, vk::ColorSpaceKHR>, uint32_t> priority = {
+            {{vk::Format::eR8G8B8A8Unorm, vk::ColorSpaceKHR::eSrgbNonlinear}, 20},
+            {{vk::Format::eB8G8R8A8Unorm, vk::ColorSpaceKHR::eSrgbNonlinear}, 20},
+            {{vk::Format::eR8G8B8A8Srgb, vk::ColorSpaceKHR::eSrgbNonlinear}, 10},
             {{vk::Format::eB8G8R8A8Srgb, vk::ColorSpaceKHR::eSrgbNonlinear}, 10},
         };
 
