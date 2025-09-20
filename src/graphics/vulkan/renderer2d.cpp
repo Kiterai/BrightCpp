@@ -219,9 +219,8 @@ static auto create_pipeline(vk::Device device, vk::RenderPass renderpass, vk::Ex
 
 renderer2d_vulkan::renderer2d_vulkan(vk::Device device, abstract_rendertarget_vulkan &_rt,
                                      const queue_index_set &queue_indices)
-    : rt{_rt}, device{device},
+    : rt{_rt}, device{device}, vert_shader{create_vert_shader(device)}, frag_shader{create_frag_shader(device)},
       renderpass{create_render_pass(device, rt.get().format(), rt.get().srcLayout(), rt.get().dstLayout())},
-      vert_shader{create_vert_shader(device)}, frag_shader{create_frag_shader(device)},
       pipeline_layout{create_pipeline_layout(device)},
       pipeline{create_pipeline(device, renderpass.get(), rt.get().extent(), pipeline_layout.get(), vert_shader.get(),
                                frag_shader.get())},
@@ -233,6 +232,14 @@ renderer2d_vulkan::~renderer2d_vulkan() {
         rt.get().render_end();
     }
     rt.get().wait_idle();
+}
+
+void renderer2d_vulkan::recreate_resources() {
+    renderpass = create_render_pass(device, rt.get().format(), rt.get().srcLayout(), rt.get().dstLayout());
+    pipeline_layout = create_pipeline_layout(device);
+    pipeline = create_pipeline(device, renderpass.get(), rt.get().extent(), pipeline_layout.get(), vert_shader.get(),
+                               frag_shader.get());
+    framebufs = create_frame_bufs(device, rt.get().image_views(), rt.get().extent(), renderpass.get());
 }
 
 void renderer2d_vulkan::render_begin() {

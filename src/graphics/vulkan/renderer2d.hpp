@@ -12,9 +12,9 @@ class renderer2d_vulkan : public renderer2d_backend {
     std::reference_wrapper<abstract_rendertarget_vulkan> rt;
 
     vk::Device device;
-    vk::UniqueRenderPass renderpass;
     vk::UniqueShaderModule vert_shader;
     vk::UniqueShaderModule frag_shader;
+    vk::UniqueRenderPass renderpass;
     vk::UniquePipelineLayout pipeline_layout;
     vk::UniquePipeline pipeline;
     std::vector<vk::UniqueFramebuffer> framebufs;
@@ -23,6 +23,8 @@ class renderer2d_vulkan : public renderer2d_backend {
 
     handle_holder<image_impl>::handle_value_t last_binded_texture;
     bool rendering = false;
+
+    void recreate_resources();
 
   public:
     renderer2d_vulkan(vk::Device device, abstract_rendertarget_vulkan &rt, const queue_index_set &queue_indices);

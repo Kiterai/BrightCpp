@@ -5,6 +5,7 @@
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
 class window_rendertarget_vulkan : public abstract_rendertarget_vulkan {
+    vk::PhysicalDevice phys_device;
     vk::Device device;
     vk::UniqueSurfaceKHR surface;
     SwapchainWithInfo swapchain;
@@ -21,6 +22,8 @@ class window_rendertarget_vulkan : public abstract_rendertarget_vulkan {
     uint32_t current_img_index, current_frame_flight_index = 0;
 
     bool rendering = false;
+
+    void recreate_swapchain();
 
   public:
     // this handles ownership of surface

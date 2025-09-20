@@ -4,7 +4,8 @@
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
 window_rendertarget_vulkan::window_rendertarget_vulkan(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, const queue_index_set &queue_indices, vk::UniqueSurfaceKHR &&_surface)
-    : device{device},
+    : phys_device{phys_device},
+      device{device},
       surface{std::move(_surface)},
       swapchain{create_swapchain(device, phys_device, surface.get())},
       swapchain_images{device.getSwapchainImagesKHR(swapchain.swapchain.get())},
@@ -30,6 +31,12 @@ vk::ImageLayout window_rendertarget_vulkan::dstLayout() const {
     return vk::ImageLayout::ePresentSrcKHR;
 }
 
+void window_rendertarget_vulkan::recreate_swapchain() {
+    swapchain = create_swapchain(device, phys_device, surface.get());
+    swapchain_images = device.getSwapchainImagesKHR(swapchain.swapchain.get());
+    swapchain_imageviews = create_image_views(device, swapchain_images, swapchain.format.format);
+}
+
 render_begin_info window_rendertarget_vulkan::render_begin() {
     assert(!rendering);
     rendering = true;
@@ -37,7 +44,7 @@ render_begin_info window_rendertarget_vulkan::render_begin() {
     device.waitForFences({rendered_fences[current_frame_flight_index].get()}, VK_TRUE, UINT64_MAX);
 
     vk::ResultValue acquire_image_result = device.acquireNextImageKHR(swapchain.swapchain.get(), 1'000'000'000, image_acquire_semaphores[current_frame_flight_index].get(), {});
-    if (acquire_image_result.result != vk::Result::eSuccess) {
+    if (acquire_image_result.result != vk::Result::eSuccess && acquire_image_result.result != vk::Result::eSuboptimalKHR) {
         throw std::runtime_error("error occured on acquireNextImageKHR(): " + vk::to_string(acquire_image_result.result));
     }
     current_img_index = acquire_image_result.value;
@@ -101,7 +108,10 @@ void window_rendertarget_vulkan::render_end() {
     presentInfo.pWaitSemaphores = wait_semaphore.begin();
 
     auto result = presentation_queue.presentKHR(presentInfo);
-    if (result != vk::Result::eSuccess) {
+    // if(result == vk::Result::eSuboptimalKHR) {
+    //     recreate_swapchain();
+    // } else 
+    if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR) {
         throw std::runtime_error("error occured on presentKHR(): " + vk::to_string(result));
     }
 
