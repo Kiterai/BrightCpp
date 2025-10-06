@@ -1,10 +1,13 @@
 #pragma once
 
 #include "rendertarget.hpp"
+#include "../../interfaces/os_util.hpp"
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
 class window_rendertarget_vulkan : public abstract_rendertarget_vulkan {
+    window_backend *const p_window;
+
     vk::PhysicalDevice phys_device;
     vk::Device device;
     vk::UniqueSurfaceKHR surface;
@@ -28,7 +31,7 @@ class window_rendertarget_vulkan : public abstract_rendertarget_vulkan {
 
   public:
     // this handles ownership of surface
-    window_rendertarget_vulkan(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, const queue_index_set &queue_indices, vk::UniqueSurfaceKHR &&surface);
+    window_rendertarget_vulkan(window_backend *const window, vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, const queue_index_set &queue_indices);
     window_rendertarget_vulkan(window_rendertarget_vulkan&&) = default;
     window_rendertarget_vulkan& operator=(window_rendertarget_vulkan&&) = default;
     ~window_rendertarget_vulkan() override;

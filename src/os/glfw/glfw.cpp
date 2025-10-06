@@ -9,8 +9,12 @@ BRIGHTCPP_OSUTIL_GLFW_START
 class window_backend_glfw : public window_backend {
     GLFWwindow *window_handle;
     window::window_size window_size;
+    bool resized_flag = false;
 
     void on_resize_framebuf(int width, int height) {
+        window_size.w = width;
+        window_size.h = height;
+        resized_flag = true;
     }
 
   public:
@@ -86,6 +90,12 @@ class window_backend_glfw : public window_backend {
         const char *p;
         BRIGHTCPP_GLFW_CHK_ERR(p = glfwGetWindowTitle(window_handle));
         return std::string(p);
+    }
+    
+    bool check_resized() override {
+        bool tmp = resized_flag;
+        resized_flag = false;
+        return tmp;
     }
 };
 

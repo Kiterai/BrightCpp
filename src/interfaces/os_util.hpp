@@ -30,6 +30,8 @@ class window_backend {
 
     virtual void set_title(const std::string &title) = 0;
     virtual std::string get_title() const = 0;
+
+    virtual bool check_resized() = 0;
 };
 
 class os_util_backend {

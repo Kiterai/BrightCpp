@@ -4,10 +4,11 @@
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
-window_rendertarget_vulkan::window_rendertarget_vulkan(vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, const queue_index_set &queue_indices, vk::UniqueSurfaceKHR &&_surface)
-    : phys_device{phys_device},
+window_rendertarget_vulkan::window_rendertarget_vulkan(window_backend *const window, vk::Instance instance, vk::PhysicalDevice phys_device, vk::Device device, const queue_index_set &queue_indices)
+    : p_window{window},
+      phys_device{phys_device},
       device{device},
-      surface{std::move(_surface)},
+      surface{window->get_vulkan_surface(instance)},
       swapchain{create_swapchain(device, phys_device, surface.get())},
       swapchain_images{device.getSwapchainImagesKHR(swapchain.swapchain.get())},
       swapchain_imageviews{create_image_views(device, swapchain_images, swapchain.format.format)},
@@ -114,12 +115,17 @@ void window_rendertarget_vulkan::render_end() {
     presentInfo.waitSemaphoreCount = uint32_t(wait_semaphore.size());
     presentInfo.pWaitSemaphores = wait_semaphore.begin();
 
-    auto result = presentation_queue.presentKHR(presentInfo);
-    if(result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) {
+    if (!p_window->check_resized()) {
+        auto result = presentation_queue.presentKHR(presentInfo);
+        if(result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) {
+            recreate_swapchain();
+            resource_recreation_flag = true;
+        } else if (result != vk::Result::eSuccess) {
+            throw std::runtime_error("error occured on presentKHR(): " + vk::to_string(result));
+        }        
+    } else {
         recreate_swapchain();
         resource_recreation_flag = true;
-    } else if (result != vk::Result::eSuccess) {
-        throw std::runtime_error("error occured on presentKHR(): " + vk::to_string(result));
     }
 
     current_frame_flight_index++;

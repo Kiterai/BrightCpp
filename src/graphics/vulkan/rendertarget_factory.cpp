@@ -14,8 +14,7 @@ entity_handle_t rendertarget_factory_vulkan::create_render_target(window_backend
     const auto &g = global_module<graphics_vulkan>::get();
 
     return rendertarget_db.make(std::make_unique<window_rendertarget_vulkan>(
-        g.get_instance(), g.get_physdevice(), g.get_device(), g.get_queue_indices(),
-        window.get_vulkan_surface(g.get_instance())));
+        &window, g.get_instance(), g.get_physdevice(), g.get_device(), g.get_queue_indices()));
 }
 
 entity_handle_t rendertarget_factory_vulkan::create_render_target(handle_holder<image_impl> image) {
