@@ -58,10 +58,8 @@ render_begin_info window_rendertarget_vulkan::render_begin() {
     current_img_index = acquire_image_result.value;
 
     const auto &cmd_buf = draw_cmd_buf[current_frame_flight_index].get();
-    const auto &fence = rendered_fences[current_frame_flight_index].get();
 
     cmd_buf.reset();
-    device.resetFences({fence});
 
     vk::CommandBufferBeginInfo cmdBeginInfo;
     cmd_buf.begin(cmdBeginInfo);
@@ -81,41 +79,44 @@ void window_rendertarget_vulkan::render_end() {
 
     cmd_buf.end();
 
-    {
-        vk::SubmitInfo submitInfo;
-
-        auto submit_cmd_buf = {cmd_buf};
-        submitInfo.commandBufferCount = uint32_t(submit_cmd_buf.size());
-        submitInfo.pCommandBuffers = submit_cmd_buf.begin();
-
-        auto render_signal_semaphores = {rendered_semaphore};
-        submitInfo.signalSemaphoreCount = uint32_t(render_signal_semaphores.size());
-        submitInfo.pSignalSemaphores = render_signal_semaphores.begin();
-
-        vk::Semaphore renderwaitSemaphores[] = {image_acquire_semaphores[current_frame_flight_index].get()};
-        vk::PipelineStageFlags renderwaitStages[] = {vk::PipelineStageFlagBits::eColorAttachmentOutput};
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = renderwaitSemaphores;
-        submitInfo.pWaitDstStageMask = renderwaitStages;
-
-        graphics_queue.submit({submitInfo}, rendered_fences[current_frame_flight_index].get());
-    }
-
-    // presentation
-    vk::PresentInfoKHR presentInfo;
-
-    auto presentSwapchains = {swapchain.swapchain.get()};
-    auto imgIndices = {current_img_index};
-
-    presentInfo.swapchainCount = uint32_t(presentSwapchains.size());
-    presentInfo.pSwapchains = presentSwapchains.begin();
-    presentInfo.pImageIndices = imgIndices.begin();
-
-    const auto wait_semaphore = {rendered_semaphore};
-    presentInfo.waitSemaphoreCount = uint32_t(wait_semaphore.size());
-    presentInfo.pWaitSemaphores = wait_semaphore.begin();
-
     if (!p_window->check_resized()) {
+        const auto &fence = rendered_fences[current_frame_flight_index].get();
+        device.resetFences({fence});
+
+        {
+            vk::SubmitInfo submitInfo;
+
+            auto submit_cmd_buf = {cmd_buf};
+            submitInfo.commandBufferCount = uint32_t(submit_cmd_buf.size());
+            submitInfo.pCommandBuffers = submit_cmd_buf.begin();
+
+            auto render_signal_semaphores = {rendered_semaphore};
+            submitInfo.signalSemaphoreCount = uint32_t(render_signal_semaphores.size());
+            submitInfo.pSignalSemaphores = render_signal_semaphores.begin();
+
+            vk::Semaphore renderwaitSemaphores[] = {image_acquire_semaphores[current_frame_flight_index].get()};
+            vk::PipelineStageFlags renderwaitStages[] = {vk::PipelineStageFlagBits::eColorAttachmentOutput};
+            submitInfo.waitSemaphoreCount = 1;
+            submitInfo.pWaitSemaphores = renderwaitSemaphores;
+            submitInfo.pWaitDstStageMask = renderwaitStages;
+
+            graphics_queue.submit({submitInfo}, rendered_fences[current_frame_flight_index].get());
+        }
+
+        // presentation
+        vk::PresentInfoKHR presentInfo;
+
+        auto presentSwapchains = {swapchain.swapchain.get()};
+        auto imgIndices = {current_img_index};
+
+        presentInfo.swapchainCount = uint32_t(presentSwapchains.size());
+        presentInfo.pSwapchains = presentSwapchains.begin();
+        presentInfo.pImageIndices = imgIndices.begin();
+
+        const auto wait_semaphore = {rendered_semaphore};
+        presentInfo.waitSemaphoreCount = uint32_t(wait_semaphore.size());
+        presentInfo.pWaitSemaphores = wait_semaphore.begin();
+
         auto result = presentation_queue.presentKHR(presentInfo);
         if(result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) {
             recreate_swapchain();
