@@ -123,8 +123,27 @@ void window_rendertarget_vulkan::render_end() {
             resource_recreation_flag = true;
         } else if (result != vk::Result::eSuccess) {
             throw std::runtime_error("error occured on presentKHR(): " + vk::to_string(result));
-        }        
+        }
     } else {
+        const auto &fence = rendered_fences[current_frame_flight_index].get();
+        device.resetFences({fence});
+
+        {
+            vk::SubmitInfo submitInfo;
+
+            auto submit_cmd_buf = {cmd_buf};
+            submitInfo.commandBufferCount = uint32_t(submit_cmd_buf.size());
+            submitInfo.pCommandBuffers = submit_cmd_buf.begin();
+
+            vk::Semaphore renderwaitSemaphores[] = {image_acquire_semaphores[current_frame_flight_index].get()};
+            vk::PipelineStageFlags renderwaitStages[] = {vk::PipelineStageFlagBits::eColorAttachmentOutput};
+            submitInfo.waitSemaphoreCount = 1;
+            submitInfo.pWaitSemaphores = renderwaitSemaphores;
+            submitInfo.pWaitDstStageMask = renderwaitStages;
+
+            graphics_queue.submit({submitInfo}, rendered_fences[current_frame_flight_index].get());
+        }
+
         recreate_swapchain();
         resource_recreation_flag = true;
     }
