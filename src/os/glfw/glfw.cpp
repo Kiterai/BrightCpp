@@ -10,6 +10,9 @@ class window_backend_glfw : public window_backend {
     GLFWwindow *window_handle;
     window::window_size window_size;
 
+    void on_resize_framebuf(int width, int height) {
+    }
+
   public:
     window_backend_glfw(const window::settings &settings) {
         BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API));
@@ -32,6 +35,10 @@ class window_backend_glfw : public window_backend {
             window_size = settings.size;
             BRIGHTCPP_GLFW_CHK_ERR(window_handle = glfwCreateWindow(window_size.w, window_size.h, settings.title.c_str(), NULL, NULL));
         }
+        glfwSetWindowUserPointer(window_handle, this);
+        glfwSetFramebufferSizeCallback(window_handle, [](GLFWwindow* window, int width, int height) {
+            static_cast<window_backend_glfw*>(glfwGetWindowUserPointer(window))->on_resize_framebuf(width, height);
+        });
     }
     ~window_backend_glfw() override {
         glfwDestroyWindow(window_handle);
