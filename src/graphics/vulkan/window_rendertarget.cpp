@@ -119,8 +119,11 @@ void window_rendertarget_vulkan::render_end() {
 
         auto result = presentation_queue.presentKHR(presentInfo);
         if(result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) {
-            recreate_swapchain();
-            resource_recreation_flag = true;
+            auto extent = phys_device.getSurfaceCapabilitiesKHR(surface.get()).currentExtent;
+            if(extent.width > 0 && extent.height > 0) {
+                recreate_swapchain();
+                resource_recreation_flag = true;
+            }
         } else if (result != vk::Result::eSuccess) {
             throw std::runtime_error("error occured on presentKHR(): " + vk::to_string(result));
         }
@@ -144,8 +147,11 @@ void window_rendertarget_vulkan::render_end() {
             graphics_queue.submit({submitInfo}, rendered_fences[current_frame_flight_index].get());
         }
 
-        recreate_swapchain();
-        resource_recreation_flag = true;
+        auto extent = phys_device.getSurfaceCapabilitiesKHR(surface.get()).currentExtent;
+        if(extent.width > 0 && extent.height > 0) {
+            recreate_swapchain();
+            resource_recreation_flag = true;
+        }
     }
 
     current_frame_flight_index++;
