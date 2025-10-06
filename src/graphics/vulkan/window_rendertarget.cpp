@@ -34,6 +34,11 @@ vk::ImageLayout window_rendertarget_vulkan::dstLayout() const {
 }
 
 void window_rendertarget_vulkan::recreate_swapchain() {
+    auto extent = phys_device.getSurfaceCapabilitiesKHR(surface.get()).currentExtent;
+    if(extent.width <= 0 || extent.height <= 0) {
+        return;
+    }
+
     std::array<vk::Fence, frames_inflight> fences;
     for(int i = 0; i < frames_inflight; i++) {
         fences[i] = rendered_fences[i].get();
@@ -43,6 +48,8 @@ void window_rendertarget_vulkan::recreate_swapchain() {
     swapchain = create_swapchain(device, phys_device, surface.get());
     swapchain_images = device.getSwapchainImagesKHR(swapchain.swapchain.get());
     swapchain_imageviews = create_image_views(device, swapchain_images, swapchain.format.format);
+    
+    resource_recreation_flag = true;
 }
 
 render_begin_info window_rendertarget_vulkan::render_begin() {
@@ -119,11 +126,7 @@ void window_rendertarget_vulkan::render_end() {
 
         auto result = presentation_queue.presentKHR(presentInfo);
         if(result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) {
-            auto extent = phys_device.getSurfaceCapabilitiesKHR(surface.get()).currentExtent;
-            if(extent.width > 0 && extent.height > 0) {
-                recreate_swapchain();
-                resource_recreation_flag = true;
-            }
+            recreate_swapchain();
         } else if (result != vk::Result::eSuccess) {
             throw std::runtime_error("error occured on presentKHR(): " + vk::to_string(result));
         }
@@ -147,11 +150,7 @@ void window_rendertarget_vulkan::render_end() {
             graphics_queue.submit({submitInfo}, rendered_fences[current_frame_flight_index].get());
         }
 
-        auto extent = phys_device.getSurfaceCapabilitiesKHR(surface.get()).currentExtent;
-        if(extent.width > 0 && extent.height > 0) {
-            recreate_swapchain();
-            resource_recreation_flag = true;
-        }
+        recreate_swapchain();
     }
 
     current_frame_flight_index++;
