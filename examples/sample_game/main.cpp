@@ -64,7 +64,14 @@ int main() {
         int count = 0;
         constexpr int fps = 60;
 
+        bool fullscr = false;
+
         while (bgt::frame_update()) {
+            if (bgt::key_f.pressed()) {
+                fullscr = !fullscr;
+                mainWindow.set_fullscreen(fullscr);
+            }
+
             if (!cleared) {
                 // action
                 if (bgt::key_left.pressing()) {
@@ -128,7 +135,7 @@ int main() {
                 base = now;
             }
         }
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
     }
 }

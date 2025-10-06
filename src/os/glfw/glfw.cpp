@@ -8,37 +8,75 @@ BRIGHTCPP_OSUTIL_GLFW_START
 
 class window_backend_glfw : public window_backend {
     GLFWwindow *window_handle;
-    window::window_size window_size;
+    window::window_size current_window_size, window_mode_window_size;
+    int window_mode_last_x = 100, window_mode_last_y = 100;
     bool resized_flag = false;
+    bool fullscreen_state;
+    bool fullscreen_state_working = false;
 
     void on_resize_framebuf(int width, int height) {
-        window_size.w = width;
-        window_size.h = height;
+        if(fullscreen_state_working) return;
+
+        current_window_size.w = width;
+        current_window_size.h = height;
+        if(!fullscreen_state)
+            window_mode_window_size = current_window_size;
         resized_flag = true;
+
+        std::cout << "resize" << std::endl;
+    }
+
+    void internal_set_fullscreen(bool is_fullscreen) {
+        fullscreen_state_working = true;
+        
+        if (is_fullscreen) {
+            glfwGetWindowPos(window_handle, &window_mode_last_x, &window_mode_last_y);
+            glfwGetWindowSize(window_handle, &window_mode_window_size.w, &window_mode_window_size.h);
+
+            // TODO
+            auto monitor = glfwGetPrimaryMonitor();
+            const auto mode = glfwGetVideoMode(monitor);
+
+            current_window_size = {.w = mode->width, .h = mode->height};
+            BRIGHTCPP_GLFW_CHK_ERR(glfwSetWindowSize(window_handle, current_window_size.w, current_window_size.h));
+            BRIGHTCPP_GLFW_CHK_ERR(glfwSetWindowAttrib(window_handle, GLFW_DECORATED, GLFW_FALSE));
+
+            int monitor_x, monitor_y;
+            BRIGHTCPP_GLFW_CHK_ERR(glfwGetMonitorPos(monitor, &monitor_x, &monitor_y));
+            BRIGHTCPP_GLFW_CHK_ERR(glfwSetWindowPos(window_handle, monitor_x, monitor_y));
+        } else {
+            current_window_size = window_mode_window_size;
+            BRIGHTCPP_GLFW_CHK_ERR(glfwSetWindowSize(window_handle, current_window_size.w, current_window_size.h));
+            BRIGHTCPP_GLFW_CHK_ERR(glfwSetWindowAttrib(window_handle, GLFW_DECORATED, GLFW_TRUE));
+            BRIGHTCPP_GLFW_CHK_ERR(glfwSetWindowPos(window_handle, window_mode_last_x, window_mode_last_y));
+        }
+        fullscreen_state = is_fullscreen;
+
+        fullscreen_state_working = false;
     }
 
   public:
     window_backend_glfw(const window::settings &settings) {
         BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API));
-        if (settings.is_fullscreen) {
-#ifdef _DEBUG
-            std::cerr << "WARNING: In fullscreen mode, width and height settings are ignored. monitor size is used." << std::endl;
-#endif
+
+        fullscreen_state = settings.is_fullscreen;
+        window_mode_window_size = settings.size;
+        if (fullscreen_state) {
             // TODO
             auto monitor = glfwGetPrimaryMonitor();
 
             const auto mode = glfwGetVideoMode(monitor);
-            window_size = {.w = mode->width, .h = mode->height};
+
+            current_window_size = {.w = mode->width, .h = mode->height};
             BRIGHTCPP_GLFW_CHK_ERR(glfwWindowHint(GLFW_DECORATED, GLFW_FALSE));
-            BRIGHTCPP_GLFW_CHK_ERR(window_handle = glfwCreateWindow(window_size.w, window_size.h, settings.title.c_str(), NULL, NULL));
 
             int monitor_x, monitor_y;
-            glfwGetMonitorPos(monitor, &monitor_x, &monitor_y);
-            glfwSetWindowPos(window_handle, monitor_x, monitor_y);
+            BRIGHTCPP_GLFW_CHK_ERR(glfwGetMonitorPos(monitor, &monitor_x, &monitor_y));
+            BRIGHTCPP_GLFW_CHK_ERR(glfwSetWindowPos(window_handle, monitor_x, monitor_y));
         } else {
-            window_size = settings.size;
-            BRIGHTCPP_GLFW_CHK_ERR(window_handle = glfwCreateWindow(window_size.w, window_size.h, settings.title.c_str(), NULL, NULL));
+            current_window_size = window_mode_window_size;
         }
+        BRIGHTCPP_GLFW_CHK_ERR(window_handle = glfwCreateWindow(current_window_size.w, current_window_size.h, settings.title.c_str(), NULL, NULL));
         glfwSetWindowUserPointer(window_handle, this);
         glfwSetFramebufferSizeCallback(window_handle, [](GLFWwindow* window, int width, int height) {
             static_cast<window_backend_glfw*>(glfwGetWindowUserPointer(window))->on_resize_framebuf(width, height);
@@ -76,11 +114,12 @@ class window_backend_glfw : public window_backend {
     }
 
     void set_fullscreen(bool is_fullscreen) override {
-        throw std::runtime_error("not implemented set_fullscreen() with GLFW");
+        if(fullscreen_state == is_fullscreen)
+            return;
+        internal_set_fullscreen(is_fullscreen);
     }
     bool is_fullscreen() const override {
-        throw std::runtime_error("not implemented is_fullscreen() with GLFW");
-        return false;
+        return fullscreen_state;
     }
 
     void set_title(const std::string &title) override {
