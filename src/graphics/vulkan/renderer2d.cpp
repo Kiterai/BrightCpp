@@ -273,6 +273,9 @@ void renderer2d_vulkan::render_end() {
 
     cmd_buf.endRenderPass();
     rt.get().render_end();
+
+    if(rt.get().resource_recreation_required())
+        recreate_resources();
 }
 
 using g_vbuffer = global_module<vbuffer_factory_vulkan>;

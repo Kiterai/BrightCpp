@@ -28,6 +28,8 @@ class abstract_rendertarget_vulkan {
     virtual render_begin_info render_begin() = 0;
     virtual void render_end() = 0;
     virtual void wait_idle() = 0;
+
+    virtual bool resource_recreation_required() = 0;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

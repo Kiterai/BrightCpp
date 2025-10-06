@@ -1,5 +1,6 @@
 #include "window_rendertarget.hpp"
 #include "util.hpp"
+#include <iostream>
 
 BRIGHTCPP_GRAPHICS_VULKAN_START
 
@@ -32,6 +33,12 @@ vk::ImageLayout window_rendertarget_vulkan::dstLayout() const {
 }
 
 void window_rendertarget_vulkan::recreate_swapchain() {
+    std::array<vk::Fence, frames_inflight> fences;
+    for(int i = 0; i < frames_inflight; i++) {
+        fences[i] = rendered_fences[i].get();
+    }
+    device.waitForFences(fences, VK_TRUE, UINT64_MAX);
+    
     swapchain = create_swapchain(device, phys_device, surface.get());
     swapchain_images = device.getSwapchainImagesKHR(swapchain.swapchain.get());
     swapchain_imageviews = create_image_views(device, swapchain_images, swapchain.format.format);
@@ -108,10 +115,10 @@ void window_rendertarget_vulkan::render_end() {
     presentInfo.pWaitSemaphores = wait_semaphore.begin();
 
     auto result = presentation_queue.presentKHR(presentInfo);
-    // if(result == vk::Result::eSuboptimalKHR) {
-    //     recreate_swapchain();
-    // } else 
-    if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR) {
+    if(result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) {
+        recreate_swapchain();
+        resource_recreation_flag = true;
+    } else if (result != vk::Result::eSuccess) {
         throw std::runtime_error("error occured on presentKHR(): " + vk::to_string(result));
     }
 
@@ -126,6 +133,12 @@ void window_rendertarget_vulkan::wait_idle() {
     for (uint32_t i = 0; i < rendered_fences.size(); i++)
         fences[i] = rendered_fences[i].get();
     device.waitForFences(fences, VK_TRUE, UINT64_MAX);
+}
+
+bool window_rendertarget_vulkan::resource_recreation_required() {
+    auto tmp = resource_recreation_flag;
+    resource_recreation_flag = false;
+    return tmp;
 }
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

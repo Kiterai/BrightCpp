@@ -22,6 +22,7 @@ class window_rendertarget_vulkan : public abstract_rendertarget_vulkan {
     uint32_t current_img_index, current_frame_flight_index = 0;
 
     bool rendering = false;
+    bool resource_recreation_flag = false;
 
     void recreate_swapchain();
 
@@ -42,6 +43,8 @@ class window_rendertarget_vulkan : public abstract_rendertarget_vulkan {
     render_begin_info render_begin() override;
     void render_end() override;
     void wait_idle() override;
+
+    bool resource_recreation_required() override;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END

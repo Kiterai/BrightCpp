@@ -76,4 +76,8 @@ void texture_rendertarget_vulkan::wait_idle() {
     device.waitForFences(fences, VK_TRUE, UINT64_MAX);
 }
 
+bool texture_rendertarget_vulkan::resource_recreation_required() {
+    return false;
+}
+
 BRIGHTCPP_GRAPHICS_VULKAN_END

@@ -37,6 +37,8 @@ class texture_rendertarget_vulkan : public abstract_rendertarget_vulkan {
     render_begin_info render_begin() override;
     void render_end() override;
     void wait_idle() override;
+
+    bool resource_recreation_required() override;
 };
 
 BRIGHTCPP_GRAPHICS_VULKAN_END
